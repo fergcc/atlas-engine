@@ -15,84 +15,30 @@
   },
   "series_b": {
     "id": "ca-bc_manufactura_total_sc",
-    "source": "Statistics Canada — Manufacturing sales (mock)",
+    "source": "Statistics Canada — Manufacturing sales (British Columbia, real)",
     "region": "59",
     "proxy_type": "output_index",
     "seasonal_adjustment": "nsa"
   },
   "sample": {
     "frequency_used": "quarterly",
-    "start": "2010-03-31",
+    "start": "2021-06-30",
     "end": "2025-12-31",
-    "n_obs": 64
+    "n_obs": 19
   },
-  "generated_at": "2026-07-20T20:49:50.687561+00:00",
-  "data_vintage": "2026-08-29",
+  "generated_at": "2026-07-20T20:58:12.515196+00:00",
+  "data_vintage": "2026-04-01",
   "data_vintage_detail": {
     "a": "2025-12-01",
-    "b": "2026-08-29"
+    "b": "2026-04-01"
   },
-  "insufficient_data": false,
-  "stationarity": {
-    "a": {
-      "adf_statistic": -9.67962693859083,
-      "adf_p_value": 1.214420732562091e-16,
-      "kpss_statistic": 0.41050857237300287,
-      "kpss_p_value": 0.07262561535646428,
-      "is_stationary": true,
-      "order_of_integration": 1,
-      "log_transformed": true
-    },
-    "b": {
-      "adf_statistic": -8.285935690852337,
-      "adf_p_value": 4.3908423245240633e-13,
-      "kpss_statistic": 0.14626970542396697,
-      "kpss_p_value": 0.1,
-      "is_stationary": true,
-      "order_of_integration": 1,
-      "log_transformed": true
-    }
-  },
-  "granger": {
-    "optimal_lag": 1,
-    "selection_criterion": "bic",
-    "a_causes_b": {
-      "f_stat": 1.5241891742146847,
-      "p_value": 0.21943952375859985,
-      "p_value_fdr_adj": 0.4535083491011063,
-      "significant": false
-    },
-    "b_causes_a": {
-      "f_stat": 3.9493004631489326,
-      "p_value": 0.04920721974053203,
-      "p_value_fdr_adj": 0.16057092757436767,
-      "significant": false
-    }
-  },
-  "cointegration_engle_granger": {
-    "statistic": -4.705575189593107,
-    "p_value": 0.0005515302435075166,
-    "cointegrated": true
-  },
-  "cointegration_johansen": {
-    "trace_statistic": [
-      11.684797185165774,
-      0.2754583642099536
-    ],
-    "critical_values": [
-      [
-        13.4294,
-        15.4943,
-        19.9349
-      ],
-      [
-        2.7055,
-        3.8415,
-        6.6349
-      ]
-    ],
-    "cointegration_rank": 0
-  },
-  "vecm": null,
-  "warnings": []
+  "insufficient_data": true,
+  "warnings": [
+    "n_obs=19 < mínimo requerido=30 para frecuencia 'quarterly'; no se corrió el motor econométrico sobre este par (resultado se omite para evitar un estadístico espurio)."
+  ],
+  "stationarity": null,
+  "granger": null,
+  "cointegration_engle_granger": null,
+  "cointegration_johansen": null,
+  "vecm": null
 }

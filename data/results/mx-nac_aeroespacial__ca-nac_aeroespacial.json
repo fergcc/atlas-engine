@@ -26,7 +26,7 @@
     "end": "2026-04-30",
     "n_obs": 60
   },
-  "generated_at": "2026-07-20T20:49:50.607612+00:00",
+  "generated_at": "2026-07-20T20:58:12.463218+00:00",
   "data_vintage": "2026-05-01",
   "data_vintage_detail": {
     "a": "2026-05-01",
@@ -59,7 +59,7 @@
     "a_causes_b": {
       "f_stat": 0.04893940926769534,
       "p_value": 0.9522611703218146,
-      "p_value_fdr_adj": 0.9839183317981374,
+      "p_value_fdr_adj": 0.9692718895455036,
       "significant": false
     },
     "b_causes_a": {

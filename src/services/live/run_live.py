@@ -380,13 +380,14 @@ def _fetch_canada_state_pair(
     ca_series_id = f"ca-{ca_abbr_lower}_{sector_id}_sc"
 
     # Determine province index for StatCan coordinate
+    # Geo dimension: 1=Canada, 2=NL, 3=PE, 4=NS, 5=NB, 6=QC, 7=ON, 8=MB, 9=SK, 10=AB, 11=BC, 12=YT, 13=NT, 14=NU
     _ca_province_index = {
-        "10": 1, "11": 2, "12": 3, "13": 4,
-        "24": 5, "35": 6, "46": 7, "47": 8,
-        "48": 9, "59": 10, "60": 11, "61": 12, "62": 13,
+        "10": 2, "11": 3, "12": 4, "13": 5,
+        "24": 6, "35": 7, "46": 8, "47": 9,
+        "48": 10, "59": 11, "60": 12, "61": 13, "62": 14,
     }
     geo_idx = _ca_province_index.get(ca_region_code, 1)
-    coordinate = f"1.{geo_idx}.1.1.0.0.0.0.0.0"
+    coordinate = f"{geo_idx}.1.1.1.0.0.0.0.0.0"
 
     try:
         raw = fetch_cube_coord_data(16100048, coordinate, latest_n=60)

@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-20T20:49:50.949850+00:00",
+  "generated_at": "2026-07-20T20:58:12.687193+00:00",
   "mode": "mixed",
   "refresh_cadence": "trimestral",
   "sectors": [
@@ -667,42 +667,42 @@
     },
     {
       "id": "ca-qc_aeroespacial_sc",
-      "nombre": "Manufacturing sales - Aerospace (Quebec)",
+      "nombre": "Manufacturing sales — Aerospace (Quebec, StatCan real)",
       "pais": "CA",
       "region_code": "24",
       "sector_id": "aeroespacial",
-      "fuente": "Statistics Canada — Manufacturing sales (mock)",
+      "fuente": "Statistics Canada — Manufacturing sales (Quebec, real)",
       "periodicidad": "mensual",
-      "unidad": "Thousands of dollars (synthetic)",
+      "unidad": "Thousands of dollars",
       "proxy_type": "output_index",
-      "ultima_actualizacion": "2026-06-30",
-      "proxima_actualizacion_estimada": "2026-07-30"
+      "ultima_actualizacion": "2026-05-01",
+      "proxima_actualizacion_estimada": "2026-05-31"
     },
     {
       "id": "ca-on_manufactura_total_sc",
-      "nombre": "Manufacturing sales - Total manufacturing (national reference) (Ontario)",
+      "nombre": "Manufacturing sales — Total manufacturing (national reference) (Ontario, StatCan real)",
       "pais": "CA",
       "region_code": "35",
       "sector_id": "manufactura_total",
-      "fuente": "Statistics Canada — Manufacturing sales (mock)",
+      "fuente": "Statistics Canada — Manufacturing sales (Ontario, real)",
       "periodicidad": "mensual",
-      "unidad": "Thousands of dollars (synthetic)",
+      "unidad": "Thousands of dollars",
       "proxy_type": "output_index",
-      "ultima_actualizacion": "2026-06-30",
-      "proxima_actualizacion_estimada": "2026-07-30"
+      "ultima_actualizacion": "2026-05-01",
+      "proxima_actualizacion_estimada": "2026-05-31"
     },
     {
       "id": "ca-bc_manufactura_total_sc",
-      "nombre": "Manufacturing sales - Total manufacturing (national reference) (British Columbia)",
+      "nombre": "Manufacturing sales — Total manufacturing (national reference) (British Columbia, StatCan real)",
       "pais": "CA",
       "region_code": "59",
       "sector_id": "manufactura_total",
-      "fuente": "Statistics Canada — Manufacturing sales (mock)",
+      "fuente": "Statistics Canada — Manufacturing sales (British Columbia, real)",
       "periodicidad": "mensual",
-      "unidad": "Thousands of dollars (synthetic)",
+      "unidad": "Thousands of dollars",
       "proxy_type": "output_index",
-      "ultima_actualizacion": "2026-06-30",
-      "proxima_actualizacion_estimada": "2026-07-30"
+      "ultima_actualizacion": "2026-04-01",
+      "proxima_actualizacion_estimada": "2026-05-01"
     },
     {
       "id": "mx-tam_petroquimica_itaee",
@@ -719,16 +719,16 @@
     },
     {
       "id": "ca-ab_petroquimica_sc",
-      "nombre": "Manufacturing sales - Petrochemicals (Alberta)",
+      "nombre": "Manufacturing sales — Petrochemicals (Alberta, StatCan real)",
       "pais": "CA",
       "region_code": "48",
       "sector_id": "petroquimica",
-      "fuente": "Statistics Canada — Manufacturing sales (mock)",
+      "fuente": "Statistics Canada — Manufacturing sales (Alberta, real)",
       "periodicidad": "mensual",
-      "unidad": "Thousands of dollars (synthetic)",
+      "unidad": "Thousands of dollars",
       "proxy_type": "output_index",
-      "ultima_actualizacion": "2026-06-30",
-      "proxima_actualizacion_estimada": "2026-07-30"
+      "ultima_actualizacion": "2026-05-01",
+      "proxima_actualizacion_estimada": "2026-05-31"
     }
   ],
   "pairs": [
