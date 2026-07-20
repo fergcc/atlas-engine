@@ -1,0 +1,107 @@
+{
+  "pair_id": "mx-nac_aeroespacial__ca-nac_aeroespacial",
+  "sector": {
+    "id": "aeroespacial",
+    "scian": "336410",
+    "naics": "3364",
+    "label": "Aeroespacial"
+  },
+  "series_a": {
+    "id": "mx-nac_aeroespacial_emim",
+    "source": "INEGI - EMIM (mock)",
+    "region": "NAC",
+    "proxy_type": "output_index",
+    "seasonal_adjustment": "nsa"
+  },
+  "series_b": {
+    "id": "ca-nac_aeroespacial_sc",
+    "source": "Statistics Canada — Monthly GDP (mock)",
+    "region": "NAC",
+    "proxy_type": "output_index",
+    "seasonal_adjustment": "nsa"
+  },
+  "sample": {
+    "frequency_used": "monthly",
+    "start": "2010-01-31",
+    "end": "2026-06-30",
+    "n_obs": 198
+  },
+  "generated_at": "2026-07-17T21:21:32.573685+00:00",
+  "data_vintage": "2026-08-29",
+  "data_vintage_detail": {
+    "a": "2026-08-14",
+    "b": "2026-08-29"
+  },
+  "insufficient_data": false,
+  "stationarity": {
+    "a": {
+      "adf_statistic": -9.104087732584867,
+      "adf_p_value": 3.541018243386684e-15,
+      "kpss_statistic": 0.20993022638680545,
+      "kpss_p_value": 0.1,
+      "is_stationary": true,
+      "order_of_integration": 1,
+      "log_transformed": true
+    },
+    "b": {
+      "adf_statistic": -10.290572844132791,
+      "adf_p_value": 3.579089973257841e-18,
+      "kpss_statistic": 0.26045326962618254,
+      "kpss_p_value": 0.1,
+      "is_stationary": true,
+      "order_of_integration": 2,
+      "log_transformed": true
+    }
+  },
+  "granger": {
+    "optimal_lag": 6,
+    "selection_criterion": "bic",
+    "a_causes_b": {
+      "f_stat": 5.2152791872630635,
+      "p_value": 3.676092147580409e-05,
+      "p_value_fdr_adj": 0.00037986285524997557,
+      "significant": true
+    },
+    "b_causes_a": {
+      "f_stat": 0.6905039898297446,
+      "p_value": 0.6574434245463506,
+      "p_value_fdr_adj": 0.7548424504050693,
+      "significant": false
+    }
+  },
+  "cointegration_engle_granger": {
+    "statistic": -8.400302109375133,
+    "p_value": 2.9441579138935544e-12,
+    "cointegrated": true
+  },
+  "cointegration_johansen": {
+    "trace_statistic": [
+      59.86208397930425,
+      1.0239123703583763
+    ],
+    "critical_values": [
+      [
+        13.4294,
+        15.4943,
+        19.9349
+      ],
+      [
+        2.7055,
+        3.8415,
+        6.6349
+      ]
+    ],
+    "cointegration_rank": 1
+  },
+  "vecm": {
+    "cointegration_vector": [
+      1.0,
+      -1.2650001197890794
+    ],
+    "adjustment_speed": [
+      -0.18477471166260034,
+      0.33855453805320873
+    ]
+  },
+  "warnings": []
+}

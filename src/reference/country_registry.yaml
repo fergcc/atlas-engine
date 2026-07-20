@@ -1,0 +1,110 @@
+# Registro de países con metadatos para el Engine.
+# Agregar un país nuevo aquí habilita la búsqueda de su oficina estadística
+# (vía el adapter correspondiente en adapters/).
+
+countries:
+  - code: MX
+    name: México
+    name_en: Mexico
+    iso_alpha3: MEX
+    region: LATAM
+    currency: MXN
+    statistical_office: INEGI
+    statistical_office_url: https://www.inegi.org.mx
+    api_availability: full
+    subnational_levels:
+      - name: estado
+        name_en: state
+        count: 32
+        code_field: code
+        code_length: 2
+      - name: municipio
+        name_en: municipality
+        count: 2457
+        code_field: muni_code
+        code_length: 5
+
+  - code: US
+    name: Estados Unidos
+    name_en: United States
+    iso_alpha3: USA
+    region: NA
+    currency: USD
+    statistical_office: Census Bureau / BLS / FRED / BEA
+    statistical_office_url: https://www.census.gov
+    api_availability: full
+    subnational_levels:
+      - name: estado
+        name_en: state
+        count: 51
+        code_field: fips
+        code_length: 2
+      - name: condado
+        name_en: county
+        count: 3143
+        code_field: county_fips
+        code_length: 5
+
+  - code: CA
+    name: Canadá
+    name_en: Canada
+    iso_alpha3: CAN
+    region: NA
+    currency: CAD
+    statistical_office: Statistics Canada
+    statistical_office_url: https://www.statcan.gc.ca
+    api_availability: full
+    subnational_levels:
+      - name: provincia
+        name_en: province
+        count: 13
+        code_field: statcan_code
+        code_length: 2
+
+  # Placeholders para futura expansión
+  - code: BR
+    name: Brasil
+    name_en: Brazil
+    iso_alpha3: BRA
+    region: LATAM
+    currency: BRL
+    statistical_office: IBGE
+    statistical_office_url: https://www.ibge.gov.br
+    api_availability: partial
+    subnational_levels:
+      - name: estado
+        name_en: state
+        count: 27
+        code_field: uf_code
+        code_length: 2
+
+  - code: CO
+    name: Colombia
+    name_en: Colombia
+    iso_alpha3: COL
+    region: LATAM
+    currency: COP
+    statistical_office: DANE
+    statistical_office_url: https://www.dane.gov.co
+    api_availability: partial
+    subnational_levels:
+      - name: departamento
+        name_en: department
+        count: 33
+        code_field: depto_code
+        code_length: 2
+
+  - code: AR
+    name: Argentina
+    name_en: Argentina
+    iso_alpha3: ARG
+    region: LATAM
+    currency: ARS
+    statistical_office: INDEC
+    statistical_office_url: https://www.indec.gob.ar
+    api_availability: limited
+    subnational_levels:
+      - name: provincia
+        name_en: province
+        count: 24
+        code_field: prov_code

@@ -1,0 +1,107 @@
+{
+  "pair_id": "mx-nac_farmaceutica__us-nac_farmaceutica",
+  "sector": {
+    "id": "farmaceutica",
+    "scian": "325400",
+    "naics": "3254",
+    "label": "Farmacéutica"
+  },
+  "series_a": {
+    "id": "mx-nac_farmaceutica_emim",
+    "source": "INEGI - EMIM (mock)",
+    "region": "NAC",
+    "proxy_type": "output_index",
+    "seasonal_adjustment": "nsa"
+  },
+  "series_b": {
+    "id": "us-nac_farmaceutica_ip",
+    "source": "FRED - Industrial Production (mock)",
+    "region": "NAC",
+    "proxy_type": "output_index",
+    "seasonal_adjustment": "nsa"
+  },
+  "sample": {
+    "frequency_used": "monthly",
+    "start": "2010-01-31",
+    "end": "2026-06-30",
+    "n_obs": 198
+  },
+  "generated_at": "2026-07-17T21:21:32.283510+00:00",
+  "data_vintage": "2026-08-14",
+  "data_vintage_detail": {
+    "a": "2026-08-14",
+    "b": "2026-07-15"
+  },
+  "insufficient_data": false,
+  "stationarity": {
+    "a": {
+      "adf_statistic": -3.9968598667539172,
+      "adf_p_value": 0.0014270434619208226,
+      "kpss_statistic": 0.16815714358318035,
+      "kpss_p_value": 0.1,
+      "is_stationary": true,
+      "order_of_integration": 1,
+      "log_transformed": true
+    },
+    "b": {
+      "adf_statistic": -15.240072307952056,
+      "adf_p_value": 5.177503335752686e-28,
+      "kpss_statistic": 0.10868676825398156,
+      "kpss_p_value": 0.1,
+      "is_stationary": true,
+      "order_of_integration": 1,
+      "log_transformed": true
+    }
+  },
+  "granger": {
+    "optimal_lag": 1,
+    "selection_criterion": "bic",
+    "a_causes_b": {
+      "f_stat": 0.10505888840512666,
+      "p_value": 0.7460167744487792,
+      "p_value_fdr_adj": 0.7839498307766832,
+      "significant": false
+    },
+    "b_causes_a": {
+      "f_stat": 0.27258951598665926,
+      "p_value": 0.6018994475192628,
+      "p_value_fdr_adj": 0.7203431187415519,
+      "significant": false
+    }
+  },
+  "cointegration_engle_granger": {
+    "statistic": -4.412076069630972,
+    "p_value": 0.0017017872059285118,
+    "cointegrated": true
+  },
+  "cointegration_johansen": {
+    "trace_statistic": [
+      20.57343997387089,
+      1.0826316679265318
+    ],
+    "critical_values": [
+      [
+        13.4294,
+        15.4943,
+        19.9349
+      ],
+      [
+        2.7055,
+        3.8415,
+        6.6349
+      ]
+    ],
+    "cointegration_rank": 1
+  },
+  "vecm": {
+    "cointegration_vector": [
+      1.0,
+      -1.4263815461052831
+    ],
+    "adjustment_speed": [
+      -0.10813234366031091,
+      0.030863911913775924
+    ]
+  },
+  "warnings": []
+}

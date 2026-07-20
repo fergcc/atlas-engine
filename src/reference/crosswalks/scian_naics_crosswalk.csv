@@ -1,0 +1,8 @@
+scian_code,scian_desc,naics_code,naics_desc,digit_level,match_type,sector_id
+333611,Fabricación de turbinas eólicas y de otro tipo de turbinas y transmisiones,333611,"Turbine and Turbine Generator Set Units Manufacturing",6,1:1,eolica
+325400,Fabricación de productos farmacéuticos,3254,Pharmaceutical and Medicine Manufacturing,4,1:1,farmaceutica
+336410,Fabricación de equipo aeroespacial,3364,Aerospace Product and Parts Manufacturing,4,1:1,aeroespacial
+311800,"Elaboración de productos de panadería, chocolate y confitería (proxy cacao/vainilla)",3118,Bakeries and Tortilla Manufacturing (proxy),4,n:n,agroindustrial
+324110,Refinación de petróleo,3241,Petroleum and Coal Products Manufacturing,4,1:1,petroquimica
+325100,Fabricación de productos químicos básicos,3251,Basic Chemical Manufacturing,4,1:1,petroquimica
+31-33,Industrias manufactureras (total),31-33,Manufacturing (total),2,1:1,manufactura_total

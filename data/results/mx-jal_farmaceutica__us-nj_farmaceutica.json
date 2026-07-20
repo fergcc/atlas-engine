@@ -1,0 +1,107 @@
+{
+  "pair_id": "mx-jal_farmaceutica__us-nj_farmaceutica",
+  "sector": {
+    "id": "farmaceutica",
+    "scian": "325400",
+    "naics": "3254",
+    "label": "Farmacéutica"
+  },
+  "series_a": {
+    "id": "mx-jal_farmaceutica_itaee",
+    "source": "INEGI - ITAEE (mock)",
+    "region": "14",
+    "proxy_type": "output_index",
+    "seasonal_adjustment": "nsa"
+  },
+  "series_b": {
+    "id": "us-nj_farmaceutica_jal_bls",
+    "source": "BLS - State and Area Employment (mock)",
+    "region": "34",
+    "proxy_type": "labor_input",
+    "seasonal_adjustment": "nsa"
+  },
+  "sample": {
+    "frequency_used": "quarterly",
+    "start": "2010-03-31",
+    "end": "2026-06-30",
+    "n_obs": 66
+  },
+  "generated_at": "2026-07-17T21:21:32.504475+00:00",
+  "data_vintage": "2026-10-03",
+  "data_vintage_detail": {
+    "a": "2026-10-03",
+    "b": "2026-07-21"
+  },
+  "insufficient_data": false,
+  "stationarity": {
+    "a": {
+      "adf_statistic": -7.587880491354818,
+      "adf_p_value": 2.5776563210314594e-11,
+      "kpss_statistic": 0.11212121310011547,
+      "kpss_p_value": 0.1,
+      "is_stationary": true,
+      "order_of_integration": 1,
+      "log_transformed": true
+    },
+    "b": {
+      "adf_statistic": -9.341975961719584,
+      "adf_p_value": 8.74749586354603e-16,
+      "kpss_statistic": 0.08729005966864282,
+      "kpss_p_value": 0.1,
+      "is_stationary": true,
+      "order_of_integration": 1,
+      "log_transformed": true
+    }
+  },
+  "granger": {
+    "optimal_lag": 1,
+    "selection_criterion": "bic",
+    "a_causes_b": {
+      "f_stat": 1.562453837648168,
+      "p_value": 0.21369874181639734,
+      "p_value_fdr_adj": 0.3896859409593128,
+      "significant": false
+    },
+    "b_causes_a": {
+      "f_stat": 0.724463493655018,
+      "p_value": 0.39635123664378563,
+      "p_value_fdr_adj": 0.5993604066320661,
+      "significant": false
+    }
+  },
+  "cointegration_engle_granger": {
+    "statistic": -5.282520686015392,
+    "p_value": 4.81735429632033e-05,
+    "cointegrated": true
+  },
+  "cointegration_johansen": {
+    "trace_statistic": [
+      33.32733793470685,
+      1.4580510463396887
+    ],
+    "critical_values": [
+      [
+        13.4294,
+        15.4943,
+        19.9349
+      ],
+      [
+        2.7055,
+        3.8415,
+        6.6349
+      ]
+    ],
+    "cointegration_rank": 1
+  },
+  "vecm": {
+    "cointegration_vector": [
+      1.0,
+      -1.5306569514557422
+    ],
+    "adjustment_speed": [
+      -0.10164683770238687,
+      0.5097197547664384
+    ]
+  },
+  "warnings": []
+}

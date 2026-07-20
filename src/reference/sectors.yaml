@@ -1,0 +1,60 @@
+# Registro de sectores a procesar. El pipeline y el motor econométrico iteran
+# sobre este archivo — nunca hardcodear sectores en código Python.
+# Para extender de los 5 sectores estratégicos a todo el árbol SCIAN/NAICS,
+# agregar más entradas aquí (o generarlas desde scian_naics_crosswalk.csv
+# con priority: full_scian) sin tocar la lógica de ingestión ni de tests.
+
+sectors:
+  - id: eolica
+    label: "Energía eólica y aerogeneradores"
+    label_en: "Wind energy & turbines"
+    icon: wind
+    scian_codes: ["333611"]
+    naics_codes: ["333611"]
+    priority: strategic
+    source_atlas: true
+
+  - id: farmaceutica
+    label: "Farmacéutica"
+    label_en: "Pharmaceuticals"
+    icon: pill
+    scian_codes: ["325400"]
+    naics_codes: ["3254"]
+    priority: strategic
+    source_atlas: true
+
+  - id: aeroespacial
+    label: "Aeroespacial"
+    label_en: "Aerospace"
+    icon: plane
+    scian_codes: ["336410"]
+    naics_codes: ["3364"]
+    priority: strategic
+    source_atlas: true
+
+  - id: agroindustrial
+    label: "Agroindustrial (cacao y vainilla)"
+    label_en: "Agroindustry (cocoa & vanilla)"
+    icon: bean
+    scian_codes: ["311800"]
+    naics_codes: ["3118"]
+    priority: strategic
+    source_atlas: true
+
+  - id: petroquimica
+    label: "Petroquímica"
+    label_en: "Petrochemicals"
+    icon: flask-conical
+    scian_codes: ["324110", "325100"]
+    naics_codes: ["3241", "3251"]
+    priority: strategic
+    source_atlas: true
+
+  - id: manufactura_total
+    label: "Manufactura total (referencia nacional)"
+    label_en: "Total manufacturing (national reference)"
+    icon: factory
+    scian_codes: ["31-33"]
+    naics_codes: ["31-33"]
+    priority: reference
+    source_atlas: false

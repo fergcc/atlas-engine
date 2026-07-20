@@ -1,0 +1,98 @@
+{
+  "pair_id": "mx-nac_eolica__us-nac_eolica",
+  "sector": {
+    "id": "eolica",
+    "scian": "333611",
+    "naics": "333611",
+    "label": "Energía eólica y aerogeneradores"
+  },
+  "series_a": {
+    "id": "mx-nac_eolica_emim",
+    "source": "INEGI - EMIM (mock)",
+    "region": "NAC",
+    "proxy_type": "output_index",
+    "seasonal_adjustment": "nsa"
+  },
+  "series_b": {
+    "id": "us-nac_eolica_ip",
+    "source": "FRED - Industrial Production (mock)",
+    "region": "NAC",
+    "proxy_type": "output_index",
+    "seasonal_adjustment": "nsa"
+  },
+  "sample": {
+    "frequency_used": "monthly",
+    "start": "2010-01-31",
+    "end": "2026-06-30",
+    "n_obs": 198
+  },
+  "generated_at": "2026-07-17T21:21:32.254743+00:00",
+  "data_vintage": "2026-08-14",
+  "data_vintage_detail": {
+    "a": "2026-08-14",
+    "b": "2026-07-15"
+  },
+  "insufficient_data": false,
+  "stationarity": {
+    "a": {
+      "adf_statistic": -7.719897009275167,
+      "adf_p_value": 1.2003881725073658e-11,
+      "kpss_statistic": 0.03503882842023476,
+      "kpss_p_value": 0.1,
+      "is_stationary": true,
+      "order_of_integration": 1,
+      "log_transformed": true
+    },
+    "b": {
+      "adf_statistic": -6.847347398129261,
+      "adf_p_value": 1.7292210102557155e-09,
+      "kpss_statistic": 0.026756951356896163,
+      "kpss_p_value": 0.1,
+      "is_stationary": true,
+      "order_of_integration": 1,
+      "log_transformed": true
+    }
+  },
+  "granger": {
+    "optimal_lag": 1,
+    "selection_criterion": "bic",
+    "a_causes_b": {
+      "f_stat": 6.5581889955270665,
+      "p_value": 0.010819695062054298,
+      "p_value_fdr_adj": 0.04754663656817562,
+      "significant": true
+    },
+    "b_causes_a": {
+      "f_stat": 1.7797592407346772,
+      "p_value": 0.1829654336279335,
+      "p_value_fdr_adj": 0.3544955276541212,
+      "significant": false
+    }
+  },
+  "cointegration_engle_granger": {
+    "statistic": -3.5850546968187014,
+    "p_value": 0.02556415009153609,
+    "cointegrated": true
+  },
+  "cointegration_johansen": {
+    "trace_statistic": [
+      10.698000768241304,
+      0.09519693009575377
+    ],
+    "critical_values": [
+      [
+        13.4294,
+        15.4943,
+        19.9349
+      ],
+      [
+        2.7055,
+        3.8415,
+        6.6349
+      ]
+    ],
+    "cointegration_rank": 0
+  },
+  "vecm": null,
+  "warnings": []
+}

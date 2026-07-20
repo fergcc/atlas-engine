@@ -1,0 +1,119 @@
+# Registro geográfico único. Se listan los 32 estados de México y los 50
+# estados + DC de EEUU desde el día uno (aunque la Fase 2 solo consuma un
+# subconjunto), para que ampliar cobertura geográfica no requiera rediseño.
+
+mx_states:
+  - { code: "01", name: "Aguascalientes", abbr: AGU, border: false }
+  - { code: "02", name: "Baja California", abbr: BC, border: true }
+  - { code: "03", name: "Baja California Sur", abbr: BCS, border: false }
+  - { code: "04", name: "Campeche", abbr: CAM, border: false }
+  - { code: "05", name: "Coahuila", abbr: COA, border: true }
+  - { code: "06", name: "Colima", abbr: COL, border: false }
+  - { code: "07", name: "Chiapas", abbr: CHP, border: false }
+  - { code: "08", name: "Chihuahua", abbr: CHH, border: true }
+  - { code: "09", name: "Ciudad de México", abbr: CDMX, border: false }
+  - { code: "10", name: "Durango", abbr: DUR, border: false }
+  - { code: "11", name: "Guanajuato", abbr: GUA, border: false }
+  - { code: "12", name: "Guerrero", abbr: GRO, border: false }
+  - { code: "13", name: "Hidalgo", abbr: HID, border: false }
+  - { code: "14", name: "Jalisco", abbr: JAL, border: false }
+  - { code: "15", name: "México", abbr: MEX, border: false }
+  - { code: "16", name: "Michoacán", abbr: MIC, border: false }
+  - { code: "17", name: "Morelos", abbr: MOR, border: false }
+  - { code: "18", name: "Nayarit", abbr: NAY, border: false }
+  - { code: "19", name: "Nuevo León", abbr: NL, border: true }
+  - { code: "20", name: "Oaxaca", abbr: OAX, border: false }
+  - { code: "21", name: "Puebla", abbr: PUE, border: false }
+  - { code: "22", name: "Querétaro", abbr: QUE, border: false }
+  - { code: "23", name: "Quintana Roo", abbr: ROO, border: false }
+  - { code: "24", name: "San Luis Potosí", abbr: SLP, border: false }
+  - { code: "25", name: "Sinaloa", abbr: SIN, border: false }
+  - { code: "26", name: "Sonora", abbr: SON, border: true }
+  - { code: "27", name: "Tabasco", abbr: TAB, border: false }
+  - { code: "28", name: "Tamaulipas", abbr: TAM, border: true }
+  - { code: "29", name: "Tlaxcala", abbr: TLA, border: false }
+  - { code: "30", name: "Veracruz", abbr: VER, border: false }
+  - { code: "31", name: "Yucatán", abbr: YUC, border: false }
+  - { code: "32", name: "Zacatecas", abbr: ZAC, border: false }
+
+us_states:
+  - { fips: "01", name: "Alabama", abbr: AL, border_mx: false }
+  - { fips: "02", name: "Alaska", abbr: AK, border_mx: false }
+  - { fips: "04", name: "Arizona", abbr: AZ, border_mx: true }
+  - { fips: "05", name: "Arkansas", abbr: AR, border_mx: false }
+  - { fips: "06", name: "California", abbr: CA, border_mx: true }
+  - { fips: "08", name: "Colorado", abbr: CO, border_mx: false }
+  - { fips: "09", name: "Connecticut", abbr: CT, border_mx: false }
+  - { fips: "10", name: "Delaware", abbr: DE, border_mx: false }
+  - { fips: "11", name: "District of Columbia", abbr: DC, border_mx: false }
+  - { fips: "12", name: "Florida", abbr: FL, border_mx: false }
+  - { fips: "13", name: "Georgia", abbr: GA, border_mx: false }
+  - { fips: "15", name: "Hawaii", abbr: HI, border_mx: false }
+  - { fips: "16", name: "Idaho", abbr: ID, border_mx: false }
+  - { fips: "17", name: "Illinois", abbr: IL, border_mx: false }
+  - { fips: "18", name: "Indiana", abbr: IN, border_mx: false }
+  - { fips: "19", name: "Iowa", abbr: IA, border_mx: false }
+  - { fips: "20", name: "Kansas", abbr: KS, border_mx: false }
+  - { fips: "21", name: "Kentucky", abbr: KY, border_mx: false }
+  - { fips: "22", name: "Louisiana", abbr: LA, border_mx: false }
+  - { fips: "23", name: "Maine", abbr: ME, border_mx: false }
+  - { fips: "24", name: "Maryland", abbr: MD, border_mx: false }
+  - { fips: "25", name: "Massachusetts", abbr: MA, border_mx: false }
+  - { fips: "26", name: "Michigan", abbr: MI, border_mx: false }
+  - { fips: "27", name: "Minnesota", abbr: MN, border_mx: false }
+  - { fips: "28", name: "Mississippi", abbr: MS, border_mx: false }
+  - { fips: "29", name: "Missouri", abbr: MO, border_mx: false }
+  - { fips: "30", name: "Montana", abbr: MT, border_mx: false }
+  - { fips: "31", name: "Nebraska", abbr: NE, border_mx: false }
+  - { fips: "32", name: "Nevada", abbr: NV, border_mx: false }
+  - { fips: "33", name: "New Hampshire", abbr: NH, border_mx: false }
+  - { fips: "34", name: "New Jersey", abbr: NJ, border_mx: false }
+  - { fips: "35", name: "New Mexico", abbr: NM, border_mx: true }
+  - { fips: "36", name: "New York", abbr: NY, border_mx: false }
+  - { fips: "37", name: "North Carolina", abbr: NC, border_mx: false }
+  - { fips: "38", name: "North Dakota", abbr: ND, border_mx: false }
+  - { fips: "39", name: "Ohio", abbr: OH, border_mx: false }
+  - { fips: "40", name: "Oklahoma", abbr: OK, border_mx: false }
+  - { fips: "41", name: "Oregon", abbr: OR, border_mx: false }
+  - { fips: "42", name: "Pennsylvania", abbr: PA, border_mx: false }
+  - { fips: "44", name: "Rhode Island", abbr: RI, border_mx: false }
+  - { fips: "45", name: "South Carolina", abbr: SC, border_mx: false }
+  - { fips: "46", name: "South Dakota", abbr: SD, border_mx: false }
+  - { fips: "47", name: "Tennessee", abbr: TN, border_mx: false }
+  - { fips: "48", name: "Texas", abbr: TX, border_mx: true }
+  - { fips: "49", name: "Utah", abbr: UT, border_mx: false }
+  - { fips: "50", name: "Vermont", abbr: VT, border_mx: false }
+  - { fips: "51", name: "Virginia", abbr: VA, border_mx: false }
+  - { fips: "53", name: "Washington", abbr: WA, border_mx: false }
+  - { fips: "54", name: "West Virginia", abbr: WV, border_mx: false }
+  - { fips: "55", name: "Wisconsin", abbr: WI, border_mx: false }
+  - { fips: "56", name: "Wyoming", abbr: WY, border_mx: false }
+
+# Corredores/clústeres industriales tomados como referencia del Atlas 2021.
+# Fase 3 los trata como agregados tabulares por grupo de estados (no mapa
+# municipal todavía).
+corridors:
+  - id: aeroespacial-noreste
+    label: "Corredor aeroespacial del noreste"
+    sector_id: aeroespacial
+    mx_state_codes: ["08", "22", "02", "05", "19"]   # Chihuahua, Querétaro, BC, Coahuila, NL
+
+  - id: farmaceutico-laguna-culiacan
+    label: "Corredor farmacéutico La Laguna–Culiacán"
+    sector_id: farmaceutica
+    mx_state_codes: ["05", "10", "25", "14"]          # Coahuila, Durango, Sinaloa, Jalisco
+
+  - id: agroindustrial-sureste
+    label: "Corredor agroindustrial Coatzacoalcos–Villahermosa–Palenque"
+    sector_id: agroindustrial
+    mx_state_codes: ["30", "27", "07"]                # Veracruz, Tabasco, Chiapas
+
+  - id: petroquimico-tamaulipas
+    label: "Polo petroquímico de Tamaulipas"
+    sector_id: petroquimica
+    mx_state_codes: ["28", "05"]                      # Tamaulipas, Coahuila (Nava)
+
+  - id: siderurgico-metalico
+    label: "Complejos siderúrgicos y metal-mecánicos"
+    sector_id: manufactura_total
+    mx_state_codes: ["19", "24", "21", "15", "11", "14"]  # NL, SLP, Puebla, Edomex, Guanajuato, Jalisco

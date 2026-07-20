@@ -1,0 +1,953 @@
+{
+  "generated_at": "2026-07-17T21:21:32.882701+00:00",
+  "mode": "mock",
+  "refresh_cadence": "trimestral",
+  "sectors": [
+    {
+      "id": "eolica",
+      "label": "Energía eólica y aerogeneradores",
+      "icon": "wind",
+      "priority": "strategic"
+    },
+    {
+      "id": "farmaceutica",
+      "label": "Farmacéutica",
+      "icon": "pill",
+      "priority": "strategic"
+    },
+    {
+      "id": "aeroespacial",
+      "label": "Aeroespacial",
+      "icon": "plane",
+      "priority": "strategic"
+    },
+    {
+      "id": "agroindustrial",
+      "label": "Agroindustrial (cacao y vainilla)",
+      "icon": "bean",
+      "priority": "strategic"
+    },
+    {
+      "id": "petroquimica",
+      "label": "Petroquímica",
+      "icon": "flask-conical",
+      "priority": "strategic"
+    },
+    {
+      "id": "manufactura_total",
+      "label": "Manufactura total (referencia nacional)",
+      "icon": "factory",
+      "priority": "reference"
+    }
+  ],
+  "series_catalog": [
+    {
+      "id": "mx-nac_eolica_emim",
+      "nombre": "Producción manufacturera - Energía eólica y aerogeneradores (México, nacional)",
+      "pais": "MX",
+      "region_code": "NAC",
+      "sector_id": "eolica",
+      "fuente": "INEGI - EMIM (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Índice base 2018=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "us-nac_eolica_ip",
+      "nombre": "Industrial Production Index - Wind energy & turbines (US, national)",
+      "pais": "US",
+      "region_code": "NAC",
+      "sector_id": "eolica",
+      "fuente": "FRED - Industrial Production (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Índice base 2017=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "mx-nac_farmaceutica_emim",
+      "nombre": "Producción manufacturera - Farmacéutica (México, nacional)",
+      "pais": "MX",
+      "region_code": "NAC",
+      "sector_id": "farmaceutica",
+      "fuente": "INEGI - EMIM (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Índice base 2018=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "us-nac_farmaceutica_ip",
+      "nombre": "Industrial Production Index - Pharmaceuticals (US, national)",
+      "pais": "US",
+      "region_code": "NAC",
+      "sector_id": "farmaceutica",
+      "fuente": "FRED - Industrial Production (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Índice base 2017=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "mx-nac_aeroespacial_emim",
+      "nombre": "Producción manufacturera - Aeroespacial (México, nacional)",
+      "pais": "MX",
+      "region_code": "NAC",
+      "sector_id": "aeroespacial",
+      "fuente": "INEGI - EMIM (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Índice base 2018=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "us-nac_aeroespacial_ip",
+      "nombre": "Industrial Production Index - Aerospace (US, national)",
+      "pais": "US",
+      "region_code": "NAC",
+      "sector_id": "aeroespacial",
+      "fuente": "FRED - Industrial Production (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Índice base 2017=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "mx-chh_aeroespacial_itaee",
+      "nombre": "ITAEE - Actividad industrial (Chihuahua)",
+      "pais": "MX",
+      "region_code": "08",
+      "sector_id": "aeroespacial",
+      "fuente": "INEGI - ITAEE (mock)",
+      "periodicidad": "trimestral",
+      "unidad": "Índice base 2018=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-09-30"
+    },
+    {
+      "id": "us-tx_aeroespacial_bls",
+      "nombre": "Empleo manufacturero - Aerospace (Texas)",
+      "pais": "US",
+      "region_code": "48",
+      "sector_id": "aeroespacial",
+      "fuente": "BLS - State and Area Employment (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Miles de empleos (sintético)",
+      "proxy_type": "labor_input",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "mx-nac_agroindustrial_emim",
+      "nombre": "Producción manufacturera - Agroindustrial (cacao y vainilla) (México, nacional)",
+      "pais": "MX",
+      "region_code": "NAC",
+      "sector_id": "agroindustrial",
+      "fuente": "INEGI - EMIM (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Índice base 2018=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "us-nac_agroindustrial_ip",
+      "nombre": "Industrial Production Index - Agroindustry (cocoa & vanilla) (US, national)",
+      "pais": "US",
+      "region_code": "NAC",
+      "sector_id": "agroindustrial",
+      "fuente": "FRED - Industrial Production (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Índice base 2017=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "mx-nac_petroquimica_emim",
+      "nombre": "Producción manufacturera - Petroquímica (México, nacional)",
+      "pais": "MX",
+      "region_code": "NAC",
+      "sector_id": "petroquimica",
+      "fuente": "INEGI - EMIM (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Índice base 2018=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "us-nac_petroquimica_ip",
+      "nombre": "Industrial Production Index - Petrochemicals (US, national)",
+      "pais": "US",
+      "region_code": "NAC",
+      "sector_id": "petroquimica",
+      "fuente": "FRED - Industrial Production (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Índice base 2017=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "mx-nac_manufactura_total_emim",
+      "nombre": "Producción manufacturera - Manufactura total (referencia nacional) (México, nacional)",
+      "pais": "MX",
+      "region_code": "NAC",
+      "sector_id": "manufactura_total",
+      "fuente": "INEGI - EMIM (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Índice base 2018=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "us-nac_manufactura_total_ip",
+      "nombre": "Industrial Production Index - Total manufacturing (national reference) (US, national)",
+      "pais": "US",
+      "region_code": "NAC",
+      "sector_id": "manufactura_total",
+      "fuente": "FRED - Industrial Production (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Índice base 2017=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "mx-bc_aeroespacial_itaee",
+      "nombre": "ITAEE - Actividad industrial (Baja California)",
+      "pais": "MX",
+      "region_code": "02",
+      "sector_id": "aeroespacial",
+      "fuente": "INEGI - ITAEE (mock)",
+      "periodicidad": "trimestral",
+      "unidad": "Índice base 2018=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-09-30"
+    },
+    {
+      "id": "us-ca_aeroespacial_bc_bls",
+      "nombre": "Empleo manufacturero - Aerospace (California)",
+      "pais": "US",
+      "region_code": "06",
+      "sector_id": "aeroespacial",
+      "fuente": "BLS - State and Area Employment (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Miles de empleos (sintético)",
+      "proxy_type": "labor_input",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "mx-son_aeroespacial_itaee",
+      "nombre": "ITAEE - Actividad industrial (Sonora)",
+      "pais": "MX",
+      "region_code": "26",
+      "sector_id": "aeroespacial",
+      "fuente": "INEGI - ITAEE (mock)",
+      "periodicidad": "trimestral",
+      "unidad": "Índice base 2018=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-09-30"
+    },
+    {
+      "id": "us-az_aeroespacial_son_bls",
+      "nombre": "Empleo manufacturero - Aerospace (Arizona)",
+      "pais": "US",
+      "region_code": "04",
+      "sector_id": "aeroespacial",
+      "fuente": "BLS - State and Area Employment (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Miles de empleos (sintético)",
+      "proxy_type": "labor_input",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "mx-coa_aeroespacial_itaee",
+      "nombre": "ITAEE - Actividad industrial (Coahuila)",
+      "pais": "MX",
+      "region_code": "05",
+      "sector_id": "aeroespacial",
+      "fuente": "INEGI - ITAEE (mock)",
+      "periodicidad": "trimestral",
+      "unidad": "Índice base 2018=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-09-30"
+    },
+    {
+      "id": "us-tx_aeroespacial_coa_bls",
+      "nombre": "Empleo manufacturero - Aerospace (Texas)",
+      "pais": "US",
+      "region_code": "48",
+      "sector_id": "aeroespacial",
+      "fuente": "BLS - State and Area Employment (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Miles de empleos (sintético)",
+      "proxy_type": "labor_input",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "mx-nl_aeroespacial_itaee",
+      "nombre": "ITAEE - Actividad industrial (Nuevo León)",
+      "pais": "MX",
+      "region_code": "19",
+      "sector_id": "aeroespacial",
+      "fuente": "INEGI - ITAEE (mock)",
+      "periodicidad": "trimestral",
+      "unidad": "Índice base 2018=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-09-30"
+    },
+    {
+      "id": "us-tx_aeroespacial_nl_bls",
+      "nombre": "Empleo manufacturero - Aerospace (Texas)",
+      "pais": "US",
+      "region_code": "48",
+      "sector_id": "aeroespacial",
+      "fuente": "BLS - State and Area Employment (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Miles de empleos (sintético)",
+      "proxy_type": "labor_input",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "mx-tam_aeroespacial_itaee",
+      "nombre": "ITAEE - Actividad industrial (Tamaulipas)",
+      "pais": "MX",
+      "region_code": "28",
+      "sector_id": "aeroespacial",
+      "fuente": "INEGI - ITAEE (mock)",
+      "periodicidad": "trimestral",
+      "unidad": "Índice base 2018=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-09-30"
+    },
+    {
+      "id": "us-tx_aeroespacial_tam_bls",
+      "nombre": "Empleo manufacturero - Aerospace (Texas)",
+      "pais": "US",
+      "region_code": "48",
+      "sector_id": "aeroespacial",
+      "fuente": "BLS - State and Area Employment (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Miles de empleos (sintético)",
+      "proxy_type": "labor_input",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "mx-bc_manufactura_total_itaee",
+      "nombre": "ITAEE - Actividad industrial (Baja California)",
+      "pais": "MX",
+      "region_code": "02",
+      "sector_id": "manufactura_total",
+      "fuente": "INEGI - ITAEE (mock)",
+      "periodicidad": "trimestral",
+      "unidad": "Índice base 2018=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-09-30"
+    },
+    {
+      "id": "us-ca_manufactura_total_bc_bls",
+      "nombre": "Empleo manufacturero - Total manufacturing (national reference) (California)",
+      "pais": "US",
+      "region_code": "06",
+      "sector_id": "manufactura_total",
+      "fuente": "BLS - State and Area Employment (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Miles de empleos (sintético)",
+      "proxy_type": "labor_input",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "mx-son_manufactura_total_itaee",
+      "nombre": "ITAEE - Actividad industrial (Sonora)",
+      "pais": "MX",
+      "region_code": "26",
+      "sector_id": "manufactura_total",
+      "fuente": "INEGI - ITAEE (mock)",
+      "periodicidad": "trimestral",
+      "unidad": "Índice base 2018=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-09-30"
+    },
+    {
+      "id": "us-az_manufactura_total_son_bls",
+      "nombre": "Empleo manufacturero - Total manufacturing (national reference) (Arizona)",
+      "pais": "US",
+      "region_code": "04",
+      "sector_id": "manufactura_total",
+      "fuente": "BLS - State and Area Employment (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Miles de empleos (sintético)",
+      "proxy_type": "labor_input",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "mx-chh_manufactura_total_itaee",
+      "nombre": "ITAEE - Actividad industrial (Chihuahua)",
+      "pais": "MX",
+      "region_code": "08",
+      "sector_id": "manufactura_total",
+      "fuente": "INEGI - ITAEE (mock)",
+      "periodicidad": "trimestral",
+      "unidad": "Índice base 2018=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-09-30"
+    },
+    {
+      "id": "us-tx_manufactura_total_chh_bls",
+      "nombre": "Empleo manufacturero - Total manufacturing (national reference) (Texas)",
+      "pais": "US",
+      "region_code": "48",
+      "sector_id": "manufactura_total",
+      "fuente": "BLS - State and Area Employment (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Miles de empleos (sintético)",
+      "proxy_type": "labor_input",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "mx-coa_manufactura_total_itaee",
+      "nombre": "ITAEE - Actividad industrial (Coahuila)",
+      "pais": "MX",
+      "region_code": "05",
+      "sector_id": "manufactura_total",
+      "fuente": "INEGI - ITAEE (mock)",
+      "periodicidad": "trimestral",
+      "unidad": "Índice base 2018=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-09-30"
+    },
+    {
+      "id": "us-tx_manufactura_total_coa_bls",
+      "nombre": "Empleo manufacturero - Total manufacturing (national reference) (Texas)",
+      "pais": "US",
+      "region_code": "48",
+      "sector_id": "manufactura_total",
+      "fuente": "BLS - State and Area Employment (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Miles de empleos (sintético)",
+      "proxy_type": "labor_input",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "mx-nl_manufactura_total_itaee",
+      "nombre": "ITAEE - Actividad industrial (Nuevo León)",
+      "pais": "MX",
+      "region_code": "19",
+      "sector_id": "manufactura_total",
+      "fuente": "INEGI - ITAEE (mock)",
+      "periodicidad": "trimestral",
+      "unidad": "Índice base 2018=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-09-30"
+    },
+    {
+      "id": "us-tx_manufactura_total_nl_bls",
+      "nombre": "Empleo manufacturero - Total manufacturing (national reference) (Texas)",
+      "pais": "US",
+      "region_code": "48",
+      "sector_id": "manufactura_total",
+      "fuente": "BLS - State and Area Employment (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Miles de empleos (sintético)",
+      "proxy_type": "labor_input",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "mx-tam_manufactura_total_itaee",
+      "nombre": "ITAEE - Actividad industrial (Tamaulipas)",
+      "pais": "MX",
+      "region_code": "28",
+      "sector_id": "manufactura_total",
+      "fuente": "INEGI - ITAEE (mock)",
+      "periodicidad": "trimestral",
+      "unidad": "Índice base 2018=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-09-30"
+    },
+    {
+      "id": "us-tx_manufactura_total_tam_bls",
+      "nombre": "Empleo manufacturero - Total manufacturing (national reference) (Texas)",
+      "pais": "US",
+      "region_code": "48",
+      "sector_id": "manufactura_total",
+      "fuente": "BLS - State and Area Employment (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Miles de empleos (sintético)",
+      "proxy_type": "labor_input",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "mx-jal_farmaceutica_itaee",
+      "nombre": "ITAEE - Actividad industrial (Jalisco)",
+      "pais": "MX",
+      "region_code": "14",
+      "sector_id": "farmaceutica",
+      "fuente": "INEGI - ITAEE (mock)",
+      "periodicidad": "trimestral",
+      "unidad": "Índice base 2018=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-09-30"
+    },
+    {
+      "id": "us-nj_farmaceutica_jal_bls",
+      "nombre": "Empleo manufacturero - Pharmaceuticals (New Jersey)",
+      "pais": "US",
+      "region_code": "34",
+      "sector_id": "farmaceutica",
+      "fuente": "BLS - State and Area Employment (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Miles de empleos (sintético)",
+      "proxy_type": "labor_input",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "mx-sin_farmaceutica_itaee",
+      "nombre": "ITAEE - Actividad industrial (Sinaloa)",
+      "pais": "MX",
+      "region_code": "25",
+      "sector_id": "farmaceutica",
+      "fuente": "INEGI - ITAEE (mock)",
+      "periodicidad": "trimestral",
+      "unidad": "Índice base 2018=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-09-30"
+    },
+    {
+      "id": "us-nc_farmaceutica_sin_bls",
+      "nombre": "Empleo manufacturero - Pharmaceuticals (North Carolina)",
+      "pais": "US",
+      "region_code": "37",
+      "sector_id": "farmaceutica",
+      "fuente": "BLS - State and Area Employment (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Miles de empleos (sintético)",
+      "proxy_type": "labor_input",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "mx-ver_agroindustrial_itaee",
+      "nombre": "ITAEE - Actividad industrial (Veracruz)",
+      "pais": "MX",
+      "region_code": "30",
+      "sector_id": "agroindustrial",
+      "fuente": "INEGI - ITAEE (mock)",
+      "periodicidad": "trimestral",
+      "unidad": "Índice base 2018=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-09-30"
+    },
+    {
+      "id": "us-fl_agroindustrial_ver_bls",
+      "nombre": "Empleo manufacturero - Agroindustry (cocoa & vanilla) (Florida)",
+      "pais": "US",
+      "region_code": "12",
+      "sector_id": "agroindustrial",
+      "fuente": "BLS - State and Area Employment (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Miles de empleos (sintético)",
+      "proxy_type": "labor_input",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "ca-nac_eolica_sc",
+      "nombre": "GDP by industry - Wind energy & turbines (Canada, national)",
+      "pais": "CA",
+      "region_code": "NAC",
+      "sector_id": "eolica",
+      "fuente": "Statistics Canada — Monthly GDP (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Chained (2017) dollars (synthetic)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "ca-nac_farmaceutica_sc",
+      "nombre": "GDP by industry - Pharmaceuticals (Canada, national)",
+      "pais": "CA",
+      "region_code": "NAC",
+      "sector_id": "farmaceutica",
+      "fuente": "Statistics Canada — Monthly GDP (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Chained (2017) dollars (synthetic)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "ca-nac_aeroespacial_sc",
+      "nombre": "GDP by industry - Aerospace (Canada, national)",
+      "pais": "CA",
+      "region_code": "NAC",
+      "sector_id": "aeroespacial",
+      "fuente": "Statistics Canada — Monthly GDP (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Chained (2017) dollars (synthetic)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "ca-nac_agroindustrial_sc",
+      "nombre": "GDP by industry - Agroindustry (cocoa & vanilla) (Canada, national)",
+      "pais": "CA",
+      "region_code": "NAC",
+      "sector_id": "agroindustrial",
+      "fuente": "Statistics Canada — Monthly GDP (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Chained (2017) dollars (synthetic)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "ca-nac_petroquimica_sc",
+      "nombre": "GDP by industry - Petrochemicals (Canada, national)",
+      "pais": "CA",
+      "region_code": "NAC",
+      "sector_id": "petroquimica",
+      "fuente": "Statistics Canada — Monthly GDP (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Chained (2017) dollars (synthetic)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "ca-nac_manufactura_total_sc",
+      "nombre": "GDP by industry - Total manufacturing (national reference) (Canada, national)",
+      "pais": "CA",
+      "region_code": "NAC",
+      "sector_id": "manufactura_total",
+      "fuente": "Statistics Canada — Monthly GDP (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Chained (2017) dollars (synthetic)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "ca-qc_aeroespacial_sc",
+      "nombre": "Manufacturing sales - Aerospace (Quebec)",
+      "pais": "CA",
+      "region_code": "24",
+      "sector_id": "aeroespacial",
+      "fuente": "Statistics Canada — Manufacturing sales (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Thousands of dollars (synthetic)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "ca-on_manufactura_total_sc",
+      "nombre": "Manufacturing sales - Total manufacturing (national reference) (Ontario)",
+      "pais": "CA",
+      "region_code": "35",
+      "sector_id": "manufactura_total",
+      "fuente": "Statistics Canada — Manufacturing sales (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Thousands of dollars (synthetic)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "ca-bc_manufactura_total_sc",
+      "nombre": "Manufacturing sales - Total manufacturing (national reference) (British Columbia)",
+      "pais": "CA",
+      "region_code": "59",
+      "sector_id": "manufactura_total",
+      "fuente": "Statistics Canada — Manufacturing sales (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Thousands of dollars (synthetic)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    },
+    {
+      "id": "mx-tam_petroquimica_itaee",
+      "nombre": "ITAEE - Actividad industrial (Tamaulipas)",
+      "pais": "MX",
+      "region_code": "28",
+      "sector_id": "petroquimica",
+      "fuente": "INEGI - ITAEE (mock)",
+      "periodicidad": "trimestral",
+      "unidad": "Índice base 2018=100 (sintético)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-09-30"
+    },
+    {
+      "id": "ca-ab_petroquimica_sc",
+      "nombre": "Manufacturing sales - Petrochemicals (Alberta)",
+      "pais": "CA",
+      "region_code": "48",
+      "sector_id": "petroquimica",
+      "fuente": "Statistics Canada — Manufacturing sales (mock)",
+      "periodicidad": "mensual",
+      "unidad": "Thousands of dollars (synthetic)",
+      "proxy_type": "output_index",
+      "ultima_actualizacion": "2026-06-30",
+      "proxima_actualizacion_estimada": "2026-07-30"
+    }
+  ],
+  "pairs": [
+    {
+      "pair_id": "mx-nac_eolica__us-nac_eolica",
+      "level": "nacional",
+      "sector_id": "eolica",
+      "series_a": "mx-nac_eolica_emim",
+      "series_b": "us-nac_eolica_ip"
+    },
+    {
+      "pair_id": "mx-nac_farmaceutica__us-nac_farmaceutica",
+      "level": "nacional",
+      "sector_id": "farmaceutica",
+      "series_a": "mx-nac_farmaceutica_emim",
+      "series_b": "us-nac_farmaceutica_ip"
+    },
+    {
+      "pair_id": "mx-nac_aeroespacial__us-nac_aeroespacial",
+      "level": "nacional",
+      "sector_id": "aeroespacial",
+      "series_a": "mx-nac_aeroespacial_emim",
+      "series_b": "us-nac_aeroespacial_ip"
+    },
+    {
+      "pair_id": "mx-chh_aeroespacial__us-tx_aeroespacial",
+      "level": "estatal",
+      "sector_id": "aeroespacial",
+      "series_a": "mx-chh_aeroespacial_itaee",
+      "series_b": "us-tx_aeroespacial_bls"
+    },
+    {
+      "pair_id": "mx-nac_agroindustrial__us-nac_agroindustrial",
+      "level": "nacional",
+      "sector_id": "agroindustrial",
+      "series_a": "mx-nac_agroindustrial_emim",
+      "series_b": "us-nac_agroindustrial_ip"
+    },
+    {
+      "pair_id": "mx-nac_petroquimica__us-nac_petroquimica",
+      "level": "nacional",
+      "sector_id": "petroquimica",
+      "series_a": "mx-nac_petroquimica_emim",
+      "series_b": "us-nac_petroquimica_ip"
+    },
+    {
+      "pair_id": "mx-nac_manufactura_total__us-nac_manufactura_total",
+      "level": "nacional",
+      "sector_id": "manufactura_total",
+      "series_a": "mx-nac_manufactura_total_emim",
+      "series_b": "us-nac_manufactura_total_ip"
+    },
+    {
+      "pair_id": "mx-bc_aeroespacial__us-ca_aeroespacial",
+      "level": "estatal",
+      "sector_id": "aeroespacial",
+      "series_a": "mx-bc_aeroespacial_itaee",
+      "series_b": "us-ca_aeroespacial_bc_bls"
+    },
+    {
+      "pair_id": "mx-son_aeroespacial__us-az_aeroespacial",
+      "level": "estatal",
+      "sector_id": "aeroespacial",
+      "series_a": "mx-son_aeroespacial_itaee",
+      "series_b": "us-az_aeroespacial_son_bls"
+    },
+    {
+      "pair_id": "mx-coa_aeroespacial__us-tx_aeroespacial",
+      "level": "estatal",
+      "sector_id": "aeroespacial",
+      "series_a": "mx-coa_aeroespacial_itaee",
+      "series_b": "us-tx_aeroespacial_coa_bls"
+    },
+    {
+      "pair_id": "mx-nl_aeroespacial__us-tx_aeroespacial",
+      "level": "estatal",
+      "sector_id": "aeroespacial",
+      "series_a": "mx-nl_aeroespacial_itaee",
+      "series_b": "us-tx_aeroespacial_nl_bls"
+    },
+    {
+      "pair_id": "mx-tam_aeroespacial__us-tx_aeroespacial",
+      "level": "estatal",
+      "sector_id": "aeroespacial",
+      "series_a": "mx-tam_aeroespacial_itaee",
+      "series_b": "us-tx_aeroespacial_tam_bls"
+    },
+    {
+      "pair_id": "mx-bc_manufactura_total__us-ca_manufactura_total",
+      "level": "estatal",
+      "sector_id": "manufactura_total",
+      "series_a": "mx-bc_manufactura_total_itaee",
+      "series_b": "us-ca_manufactura_total_bc_bls"
+    },
+    {
+      "pair_id": "mx-son_manufactura_total__us-az_manufactura_total",
+      "level": "estatal",
+      "sector_id": "manufactura_total",
+      "series_a": "mx-son_manufactura_total_itaee",
+      "series_b": "us-az_manufactura_total_son_bls"
+    },
+    {
+      "pair_id": "mx-chh_manufactura_total__us-tx_manufactura_total",
+      "level": "estatal",
+      "sector_id": "manufactura_total",
+      "series_a": "mx-chh_manufactura_total_itaee",
+      "series_b": "us-tx_manufactura_total_chh_bls"
+    },
+    {
+      "pair_id": "mx-coa_manufactura_total__us-tx_manufactura_total",
+      "level": "estatal",
+      "sector_id": "manufactura_total",
+      "series_a": "mx-coa_manufactura_total_itaee",
+      "series_b": "us-tx_manufactura_total_coa_bls"
+    },
+    {
+      "pair_id": "mx-nl_manufactura_total__us-tx_manufactura_total",
+      "level": "estatal",
+      "sector_id": "manufactura_total",
+      "series_a": "mx-nl_manufactura_total_itaee",
+      "series_b": "us-tx_manufactura_total_nl_bls"
+    },
+    {
+      "pair_id": "mx-tam_manufactura_total__us-tx_manufactura_total",
+      "level": "estatal",
+      "sector_id": "manufactura_total",
+      "series_a": "mx-tam_manufactura_total_itaee",
+      "series_b": "us-tx_manufactura_total_tam_bls"
+    },
+    {
+      "pair_id": "mx-jal_farmaceutica__us-nj_farmaceutica",
+      "level": "estatal",
+      "sector_id": "farmaceutica",
+      "series_a": "mx-jal_farmaceutica_itaee",
+      "series_b": "us-nj_farmaceutica_jal_bls"
+    },
+    {
+      "pair_id": "mx-sin_farmaceutica__us-nc_farmaceutica",
+      "level": "estatal",
+      "sector_id": "farmaceutica",
+      "series_a": "mx-sin_farmaceutica_itaee",
+      "series_b": "us-nc_farmaceutica_sin_bls"
+    },
+    {
+      "pair_id": "mx-ver_agroindustrial__us-fl_agroindustrial",
+      "level": "estatal",
+      "sector_id": "agroindustrial",
+      "series_a": "mx-ver_agroindustrial_itaee",
+      "series_b": "us-fl_agroindustrial_ver_bls"
+    },
+    {
+      "pair_id": "mx-nac_eolica__ca-nac_eolica",
+      "level": "nacional",
+      "sector_id": "eolica",
+      "series_a": "mx-nac_eolica_emim",
+      "series_b": "ca-nac_eolica_sc"
+    },
+    {
+      "pair_id": "mx-nac_farmaceutica__ca-nac_farmaceutica",
+      "level": "nacional",
+      "sector_id": "farmaceutica",
+      "series_a": "mx-nac_farmaceutica_emim",
+      "series_b": "ca-nac_farmaceutica_sc"
+    },
+    {
+      "pair_id": "mx-nac_aeroespacial__ca-nac_aeroespacial",
+      "level": "nacional",
+      "sector_id": "aeroespacial",
+      "series_a": "mx-nac_aeroespacial_emim",
+      "series_b": "ca-nac_aeroespacial_sc"
+    },
+    {
+      "pair_id": "mx-nac_agroindustrial__ca-nac_agroindustrial",
+      "level": "nacional",
+      "sector_id": "agroindustrial",
+      "series_a": "mx-nac_agroindustrial_emim",
+      "series_b": "ca-nac_agroindustrial_sc"
+    },
+    {
+      "pair_id": "mx-nac_petroquimica__ca-nac_petroquimica",
+      "level": "nacional",
+      "sector_id": "petroquimica",
+      "series_a": "mx-nac_petroquimica_emim",
+      "series_b": "ca-nac_petroquimica_sc"
+    },
+    {
+      "pair_id": "mx-nac_manufactura_total__ca-nac_manufactura_total",
+      "level": "nacional",
+      "sector_id": "manufactura_total",
+      "series_a": "mx-nac_manufactura_total_emim",
+      "series_b": "ca-nac_manufactura_total_sc"
+    },
+    {
+      "pair_id": "mx-chh_aeroespacial__ca-qc_aeroespacial",
+      "level": "estatal",
+      "sector_id": "aeroespacial",
+      "series_a": "mx-chh_aeroespacial_itaee",
+      "series_b": "ca-qc_aeroespacial_sc"
+    },
+    {
+      "pair_id": "mx-nl_manufactura_total__ca-on_manufactura_total",
+      "level": "estatal",
+      "sector_id": "manufactura_total",
+      "series_a": "mx-nl_manufactura_total_itaee",
+      "series_b": "ca-on_manufactura_total_sc"
+    },
+    {
+      "pair_id": "mx-bc_manufactura_total__ca-bc_manufactura_total",
+      "level": "estatal",
+      "sector_id": "manufactura_total",
+      "series_a": "mx-bc_manufactura_total_itaee",
+      "series_b": "ca-bc_manufactura_total_sc"
+    },
+    {
+      "pair_id": "mx-tam_petroquimica__ca-ab_petroquimica",
+      "level": "estatal",
+      "sector_id": "petroquimica",
+      "series_a": "mx-tam_petroquimica_itaee",
+      "series_b": "ca-ab_petroquimica_sc"
+    }
+  ]
+}
