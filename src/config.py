@@ -33,7 +33,7 @@ def _load_env() -> None:
             "Usando .env local como fallback.",
             file=sys.stderr,
         )
-    load_dotenv(Path(__file__).resolve().parents[2] / ".env", override=False)
+    load_dotenv(Path(__file__).resolve().parents[1] / ".env", override=False)
 
 
 _load_env()

@@ -142,6 +142,25 @@ def run_mock_pipeline() -> PipelineRunResult:
     )
 
 
+def run_live_pipeline_wrapped() -> PipelineRunResult:
+    from src.services.live.run_live import run_live_pipeline as _impl
+
+    try:
+        manifest = _impl()
+        if manifest is None:
+            return PipelineRunResult(error="Live pipeline produced no manifest", mode="live")
+        mode = manifest.get("mode", "mixed")
+        return PipelineRunResult(
+            manifest=manifest,
+            mode=mode,
+            pairs_total=len(manifest.get("pairs", [])),
+        )
+    except Exception as exc:
+        logger.error(f"Live pipeline failed: {exc}")
+        traceback.print_exc()
+        return PipelineRunResult(error=str(exc), mode="live")
+
+
 def run_pipeline(mode: str = "mock") -> PipelineRunResult:
     if mode == "mock":
         try:
@@ -151,4 +170,12 @@ def run_pipeline(mode: str = "mock") -> PipelineRunResult:
             traceback.print_exc()
             return PipelineRunResult(error=str(exc), mode="mock")
 
-    return PipelineRunResult(error=f"Live mode not yet implemented in Engine", mode=mode)
+    if mode in ("live", "mixed"):
+        try:
+            return run_live_pipeline_wrapped()
+        except Exception as exc:
+            logger.error(f"Live pipeline failed: {exc}")
+            traceback.print_exc()
+            return PipelineRunResult(error=str(exc), mode=mode)
+
+    return PipelineRunResult(error=f"Unknown pipeline mode: {mode}", mode=mode)
