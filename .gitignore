@@ -45,3 +45,7 @@ Thumbs.db
 # Coverage
 htmlcov/
 .coverage
+data/enoe/
+data/sesnsp/
+data/censo2020/
+data/coneval/
