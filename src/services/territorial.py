@@ -94,6 +94,7 @@ def compute_indicator_values(
     coneval_data = _load_coneval_if_needed(catalog, country)
     enoe_data = _load_enoe_if_needed(catalog, country)
     denue_data = _load_denue_if_needed(catalog, country)
+    conagua_data = _load_conagua_if_needed(catalog, country)
 
     rng = np.random.default_rng(42)
 
@@ -102,7 +103,7 @@ def compute_indicator_values(
         region_name = _get_region_name(country, region_code)
         for ind in catalog:
             value, data_quality, note = _compute_value(
-                ind, country, region_code, rng, crime_data, censo_data, coneval_data, enoe_data, denue_data
+                ind, country, region_code, rng, crime_data, censo_data, coneval_data, enoe_data, denue_data, conagua_data
             )
 
             results.append({
@@ -139,6 +140,7 @@ def _compute_value(
     coneval_data: dict[str, dict[str, float]] | None,
     enoe_data: dict[str, dict[str, float]] | None,
     denue_data: dict[str, dict[str, int]] | None,
+    conagua_data: dict[str, dict[str, float]] | None,
 ) -> tuple[float, str, str]:
     indicator_id = ind["id"]
 
@@ -181,6 +183,13 @@ def _compute_value(
     _denue_ids = {"foreign_capital_presence", "daycare_services", "innovation_economic_units"}
     if indicator_id in _denue_ids and denue_data:
         value, dq, note = _denue_indicator_value(indicator_id, region_code, denue_data)
+        if dq == "real":
+            return value, dq, note
+
+    # CONAGUA water indicators
+    _conagua_ids = {"water_stress", "water_consumption_intensity"}
+    if indicator_id in _conagua_ids and conagua_data:
+        value, dq, note = _conagua_indicator_value(indicator_id, region_code, conagua_data)
         if dq == "real":
             return value, dq, note
 
@@ -654,3 +663,63 @@ def _denue_indicator_value(
         "real",
         f"{name} — DENUE INEGI, {unit}, total estatal",
     )
+
+
+# ————————————————————————————————————————————
+# CONAGUA data loading and indicator computation
+# ————————————————————————————————————————————
+
+_CONAGUA_CACHE: dict[str, dict[str, float]] | None = None
+_CONAGUA_LOADED = False
+
+
+def _load_conagua_if_needed(
+    catalog: list[dict[str, Any]], country: str
+) -> dict[str, dict[str, float]] | None:
+    global _CONAGUA_CACHE, _CONAGUA_LOADED
+    if _CONAGUA_LOADED:
+        return _CONAGUA_CACHE
+    _CONAGUA_LOADED = True
+
+    if country != "MX":
+        return None
+
+    conagua_ids = {"water_stress", "water_consumption_intensity"}
+    if not any(ind["id"] in conagua_ids for ind in catalog):
+        return None
+
+    try:
+        from src.services.ingestion.conagua import get_conagua_data
+        data = get_conagua_data()
+        _CONAGUA_CACHE = data
+        logger.info(f"CONAGUA: loaded water data for {len(data)} indicators, {len(data.get('water_stress', {}))} states")
+        return _CONAGUA_CACHE
+    except Exception as exc:
+        logger.warning(f"CONAGUA: failed to load ({exc}), using mock values")
+        return None
+
+
+def _conagua_indicator_value(
+    indicator_id: str,
+    region_code: str,
+    conagua_data: dict[str, dict[str, float]],
+) -> tuple[float, str, str]:
+    values = conagua_data.get(indicator_id, {})
+    value = values.get(region_code)
+    if value is not None:
+        indicator_names = {
+            "water_stress": "Estrés hídrico",
+            "water_consumption_intensity": "Intensidad de consumo de agua",
+        }
+        units = {
+            "water_stress": "%",
+            "water_consumption_intensity": "m³/millón MXN",
+        }
+        name = indicator_names.get(indicator_id, indicator_id)
+        unit = units.get(indicator_id, "")
+        return (
+            round(value, 2),
+            "real",
+            f"{name} — CONAGUA 2023, {unit}, estatal",
+        )
+    return (0.0, "synthetic", f"Mock — CONAGUA sin datos para estado {region_code}")

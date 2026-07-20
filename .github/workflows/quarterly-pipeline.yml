@@ -1,0 +1,82 @@
+name: Quarterly Pipeline
+
+on:
+  schedule:
+    # Run at 6am UTC on the 1st of Jan, Apr, Jul, Oct
+    - cron: '0 6 1 1,4,7,10 *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Pipeline mode (live, mock, mixed)'
+        required: false
+        default: 'live'
+        type: choice
+        options:
+          - live
+          - mock
+          - mixed
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install .
+          pip install openpyxl
+
+      - name: Run pipeline
+        env:
+          INEGI_TOKEN: ${{ secrets.INEGI_TOKEN }}
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          BLS_API_KEY: ${{ secrets.BLS_API_KEY }}
+          BEA_API_KEY: ${{ secrets.BEA_API_KEY }}
+          BANXICO_TOKEN: ${{ secrets.BANXICO_TOKEN }}
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          SEARCH_API_KEY: ${{ secrets.SEARCH_API_KEY }}
+          ENGINE_ENV: production
+          ENGINE_USE_MOCKS: 'false'
+        run: |
+          python -c "
+          import logging
+          logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(name)s: %(message)s')
+          from src.services.live.run_live import run_live_pipeline
+          manifest = run_live_pipeline()
+          mode = manifest.get('mode', 'unknown')
+          print(f'Pipeline complete: mode={mode}, sectors={len(manifest.get(\"sectors\",[]))}, pairs={len(manifest.get(\"pairs\",[]))}')
+          "
+
+      - name: Export territorial indicators
+        env:
+          INEGI_TOKEN: ${{ secrets.INEGI_TOKEN }}
+        run: |
+          python -c "
+          import json
+          from src.services.territorial import export_territorial_json
+          from src.config import DATA_DIR
+          data = export_territorial_json('MX')
+          (DATA_DIR / 'territorial.json').write_text(json.dumps(data, ensure_ascii=False, indent=2))
+          real = sum(1 for v in data['raw_values'] if v['data_quality'] == 'real')
+          print(f'Territorial: {real}/{len(data[\"raw_values\"])} values real')
+          "
+
+      - name: Commit and push updated data
+        run: |
+          git config user.name "atlas-bot"
+          git config user.email "bot@atlas-prospectivo.local"
+          git add data/
+          if git diff --staged --quiet; then
+            echo "No data changes to commit"
+          else
+            git commit -m "data: quarterly pipeline run [skip ci]"
+            git push
+          fi
