@@ -47,12 +47,22 @@ jobs:
           ENGINE_USE_MOCKS: 'false'
         run: |
           python -c "
-          import logging
+          import logging, sys, traceback
           logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(name)s: %(message)s')
           from src.services.live.run_live import run_live_pipeline
-          manifest = run_live_pipeline()
-          mode = manifest.get('mode', 'unknown')
-          print(f'Pipeline complete: mode={mode}, sectors={len(manifest.get(\"sectors\",[]))}, pairs={len(manifest.get(\"pairs\",[]))}')
+          try:
+              manifest = run_live_pipeline()
+              if manifest is None:
+                  print('Pipeline returned None, continuing...')
+              else:
+                  mode = manifest.get('mode', 'unknown')
+                  pairs = len(manifest.get('pairs', []))
+                  sectors = len(manifest.get('sectors', []))
+                  print(f'Pipeline: mode={mode}, sectors={sectors}, pairs={pairs}')
+          except Exception as exc:
+              traceback.print_exc()
+              print(f'Pipeline failed: {exc}')
+              sys.exit(1)
           "
 
       - name: Export territorial indicators
