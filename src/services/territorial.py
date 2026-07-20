@@ -95,6 +95,7 @@ def compute_indicator_values(
     enoe_data = _load_enoe_if_needed(catalog, country)
     denue_data = _load_denue_if_needed(catalog, country)
     conagua_data = _load_conagua_if_needed(catalog, country)
+    survey_data = _load_surveys_if_needed(catalog, country)
 
     rng = np.random.default_rng(42)
 
@@ -103,7 +104,7 @@ def compute_indicator_values(
         region_name = _get_region_name(country, region_code)
         for ind in catalog:
             value, data_quality, note = _compute_value(
-                ind, country, region_code, rng, crime_data, censo_data, coneval_data, enoe_data, denue_data, conagua_data
+                ind, country, region_code, rng, crime_data, censo_data, coneval_data, enoe_data, denue_data, conagua_data, survey_data
             )
 
             results.append({
@@ -141,6 +142,7 @@ def _compute_value(
     enoe_data: dict[str, dict[str, float]] | None,
     denue_data: dict[str, dict[str, int]] | None,
     conagua_data: dict[str, dict[str, float]] | None,
+    survey_data: dict[str, dict[str, float]] | None,
 ) -> tuple[float, str, str]:
     indicator_id = ind["id"]
 
@@ -190,6 +192,16 @@ def _compute_value(
     _conagua_ids = {"water_stress", "water_consumption_intensity"}
     if indicator_id in _conagua_ids and conagua_data:
         value, dq, note = _conagua_indicator_value(indicator_id, region_code, conagua_data)
+        if dq == "real":
+            return value, dq, note
+
+    # Survey-based indicators (ENCIG, ENVE, ENAFIN, ENIGH)
+    _survey_ids = {"gov_paperwork_quantity", "gov_paperwork_costs", "tax_burden",
+                   "corruption_perception", "public_safety", "credit_access",
+                   "public_service_costs", "low_demand", "educated_personnel",
+                   "subcontracting_level", "continuous_training", "industrial_vacb_share"}
+    if indicator_id in _survey_ids and survey_data:
+        value, dq, note = _survey_indicator_value(indicator_id, region_code, survey_data)
         if dq == "real":
             return value, dq, note
 
@@ -725,3 +737,88 @@ def _conagua_indicator_value(
             f"{name} — CONAGUA 2023, {unit}, estatal",
         )
     return (0.0, "synthetic", f"Mock — CONAGUA sin datos para estado {region_code}")
+
+
+# ————————————————————————————————————————————
+# Surveys data loading and indicator computation
+# ————————————————————————————————————————————
+
+_SURVEY_CACHE: dict[str, dict[str, float]] | None = None
+_SURVEY_LOADED = False
+
+
+def _load_surveys_if_needed(
+    catalog: list[dict[str, Any]], country: str
+) -> dict[str, dict[str, float]] | None:
+    global _SURVEY_CACHE, _SURVEY_LOADED
+    if _SURVEY_LOADED:
+        return _SURVEY_CACHE
+    _SURVEY_LOADED = True
+
+    if country != "MX":
+        return None
+
+    survey_ids = {
+        "gov_paperwork_quantity", "gov_paperwork_costs", "tax_burden",
+        "corruption_perception", "public_safety", "credit_access",
+        "public_service_costs", "low_demand", "educated_personnel",
+        "subcontracting_level", "continuous_training", "industrial_vacb_share",
+    }
+    if not any(ind["id"] in survey_ids for ind in catalog):
+        return None
+
+    try:
+        from src.services.ingestion.surveys import get_survey_data
+        data = get_survey_data()
+        _SURVEY_CACHE = data
+        logger.info(f"Surveys: loaded {len(data)} indicators, {len(data.get('gov_paperwork_quantity', {}))} states")
+        return _SURVEY_CACHE
+    except Exception as exc:
+        logger.warning(f"Surveys: failed to load ({exc}), using mock values")
+        return None
+
+
+def _survey_indicator_value(
+    indicator_id: str,
+    region_code: str,
+    survey_data: dict[str, dict[str, float]],
+) -> tuple[float, str, str]:
+    values = survey_data.get(indicator_id, {})
+    value = values.get(region_code)
+    if value is not None:
+        indicator_names = {
+            "gov_paperwork_quantity": "Trámites",
+            "gov_paperwork_costs": "Costo trámites",
+            "tax_burden": "Carga fiscal",
+            "corruption_perception": "Percepción corrupción",
+            "public_safety": "Seguridad pública",
+            "credit_access": "Acceso al crédito",
+            "public_service_costs": "Costo servicios",
+            "low_demand": "Baja demanda",
+            "educated_personnel": "Personal educado",
+            "subcontracting_level": "Subcontratación",
+            "continuous_training": "Capacitación",
+            "industrial_vacb_share": "VACB Industrial",
+        }
+        names = {
+            "gov_paperwork_quantity": "ENCIG 2023",
+            "gov_paperwork_costs": "ENCIG 2023",
+            "tax_burden": "ENCIG 2023",
+            "corruption_perception": "ENCIG 2023",
+            "public_safety": "ENVE 2022",
+            "credit_access": "ENAFIN 2021",
+            "public_service_costs": "ENIGH 2022",
+            "low_demand": "ENOE 2026",
+            "educated_personnel": "ENOE 2026",
+            "subcontracting_level": "ENOE 2026",
+            "continuous_training": "ENOE 2026",
+            "industrial_vacb_share": "ENOE 2026",
+        }
+        name = indicator_names.get(indicator_id, indicator_id)
+        src = names.get(indicator_id, "INEGI")
+        return (
+            round(value, 2),
+            "real",
+            f"{name} — {src}, estatal, %",
+        )
+    return (0.0, "synthetic", f"Mock — sin datos para estado {region_code}")
