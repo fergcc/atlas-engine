@@ -72,6 +72,8 @@ def compute_indicator_values(
         region_codes = ["NAC"]
 
     crime_data = _load_sesnsp_if_needed(catalog, country)
+    censo_data = _load_censo_if_needed(catalog, country)
+    coneval_data = _load_coneval_if_needed(catalog, country)
 
     rng = np.random.default_rng(42)
 
@@ -80,7 +82,7 @@ def compute_indicator_values(
         region_name = _get_region_name(country, region_code)
         for ind in catalog:
             value, data_quality, note = _compute_value(
-                ind, country, region_code, rng, crime_data
+                ind, country, region_code, rng, crime_data, censo_data, coneval_data
             )
 
             results.append({
@@ -112,14 +114,38 @@ def _compute_value(
     region_code: str,
     rng: np.random.Generator,
     crime_data: dict[str, Any] | None,
+    censo_data: dict[str, dict[str, float]] | None,
+    coneval_data: dict[str, dict[str, float]] | None,
 ) -> tuple[float, str, str]:
     indicator_id = ind["id"]
 
-    if country == "MX" and indicator_id in ("homicide_rate", "robbery_rate", "domestic_violence_rate"):
+    if country != "MX":
+        value = rng.normal(50, 15)
+        value = max(0, min(100, value))
+        return value, "synthetic", "Mock — only MX data sources wired"
+
+    # SESNSP crime indicators
+    if indicator_id in ("homicide_rate", "robbery_rate", "domestic_violence_rate"):
         if crime_data:
             value, dq, note = _crime_indicator_value(indicator_id, region_code, crime_data)
             if dq == "real":
                 return value, dq, note
+
+    # Censo 2020 indicators (land_tenure_vulnerability is NOT in ITER — stays mock)
+    _censo_ids = {
+        "potable_water_access", "drainage_access", "internet_access",
+        "overcrowding", "self_built_housing",
+    }
+    if indicator_id in _censo_ids and censo_data:
+        value, dq, note = _censo_indicator_value(indicator_id, region_code, censo_data)
+        if dq == "real":
+            return value, dq, note
+
+    # CONEVAL indicators
+    if indicator_id == "extreme_poverty" and coneval_data:
+        value, dq, note = _coneval_indicator_value(indicator_id, region_code, coneval_data)
+        if dq == "real":
+            return value, dq, note
 
     value = rng.normal(50, 15)
     value = max(0, min(100, value))
@@ -299,7 +325,145 @@ def build_indicator_matrix(
         "sector_id": sector_id,
         "total_indicators": len(set(v["indicator_id"] for v in values)),
         "total_regions": len(by_region),
-        "data_quality": "synthetic",
+        "data_quality": _data_quality_override(values) if values else "synthetic",
         "by_region": list(by_region.values()),
         "raw_values": values,
     }
+
+
+def _data_quality_override(values: list[dict[str, Any]]) -> str:
+    qualities = {v.get("data_quality") for v in values}
+    if "real" in qualities:
+        return "mixed"
+    return "synthetic"
+
+
+# ————————————————————————————————————————————
+# Censo 2020 data loading and indicator computation
+# ————————————————————————————————————————————
+
+_CENSO_CACHE: dict[str, dict[str, float]] | None = None
+_CENSO_LOADED = False
+
+
+def _load_censo_if_needed(
+    catalog: list[dict[str, Any]], country: str
+) -> dict[str, dict[str, float]] | None:
+    global _CENSO_CACHE, _CENSO_LOADED
+    if _CENSO_LOADED:
+        return _CENSO_CACHE
+    _CENSO_LOADED = True
+
+    if country != "MX":
+        return None
+
+    censo_ids = {"potable_water_access", "drainage_access", "internet_access",
+                 "overcrowding", "self_built_housing"}
+    if not any(ind["id"] in censo_ids for ind in catalog):
+        return None
+
+    try:
+        from src.services.ingestion.censo2020 import get_state_aggregates, parse_iter_data
+        data = parse_iter_data()
+        if not data or not data.get("potable_water_access"):
+            logger.info("Censo2020: no data available")
+            return None
+        _CENSO_CACHE = data
+        logger.info(f"Censo2020: loaded data for {len(data)} indicators")
+        return _CENSO_CACHE
+    except Exception as exc:
+        logger.warning(f"Censo2020: failed to load ({exc}), using mock values")
+        return None
+
+
+def _censo_indicator_value(
+    indicator_id: str,
+    region_code: str,
+    censo_data: dict[str, dict[str, float]],
+) -> tuple[float, str, str]:
+    from src.services.ingestion.censo2020 import get_state_aggregates
+
+    indicator_names = {
+        "potable_water_access": "Agua potable",
+        "drainage_access": "Drenaje",
+        "internet_access": "Internet",
+        "overcrowding": "Hacinamiento",
+        "land_tenure_vulnerability": "Tenencia vulnerable",
+        "self_built_housing": "Autoconstrucción (piso tierra)",
+    }
+    units = {
+        "overcrowding": "ocupantes/cuarto",
+        "potable_water_access": "%",
+        "drainage_access": "%",
+        "internet_access": "%",
+        "land_tenure_vulnerability": "%",
+        "self_built_housing": "%",
+    }
+
+    state_vals = get_state_aggregates(censo_data, indicator_id)
+    value = state_vals.get(region_code)
+    if value is not None:
+        name = indicator_names.get(indicator_id, indicator_id)
+        unit = units.get(indicator_id, "%")
+        return (
+            round(value, 2),
+            "real",
+            f"{name} — Censo 2020 (ITER), promedio estatal, {unit}",
+        )
+
+    return (0.0, "synthetic", f"Mock — Censo 2020 sin datos para estado {region_code}")
+
+
+# ————————————————————————————————————————————
+# CONEVAL data loading and indicator computation
+# ————————————————————————————————————————————
+
+_CONEVAL_CACHE: dict[str, dict[str, float]] | None = None
+_CONEVAL_LOADED = False
+
+
+def _load_coneval_if_needed(
+    catalog: list[dict[str, Any]], country: str
+) -> dict[str, dict[str, float]] | None:
+    global _CONEVAL_CACHE, _CONEVAL_LOADED
+    if _CONEVAL_LOADED:
+        return _CONEVAL_CACHE
+    _CONEVAL_LOADED = True
+
+    if country != "MX":
+        return None
+
+    if not any(ind["id"] == "extreme_poverty" for ind in catalog):
+        return None
+
+    try:
+        from src.services.ingestion.coneval import get_state_aggregates, parse_coneval_data
+        data = parse_coneval_data()
+        if not data or not data.get("extreme_poverty"):
+            logger.info("CONEVAL: no data available")
+            return None
+        _CONEVAL_CACHE = data
+        logger.info(f"CONEVAL: loaded poverty data for {len(data.get('extreme_poverty', {}))} municipalities")
+        return _CONEVAL_CACHE
+    except Exception as exc:
+        logger.warning(f"CONEVAL: failed to load ({exc}), using mock values")
+        return None
+
+
+def _coneval_indicator_value(
+    indicator_id: str,
+    region_code: str,
+    coneval_data: dict[str, dict[str, float]],
+) -> tuple[float, str, str]:
+    from src.services.ingestion.coneval import get_state_aggregates
+
+    state_vals = get_state_aggregates(coneval_data, indicator_id)
+    value = state_vals.get(region_code)
+    if value is not None:
+        return (
+            round(value, 2),
+            "real",
+            f"Pobreza extrema — CONEVAL 2020, promedio municipal estatal, %",
+        )
+
+    return (0.0, "synthetic", f"Mock — CONEVAL sin datos para estado {region_code}")

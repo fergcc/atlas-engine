@@ -23,7 +23,11 @@ data/*.json
 !data/manifest.json
 data/*.csv
 data/*.parquet
+data/*.xlsx
 !data/.gitkeep
+data/sesnsp/
+data/censo2020/
+data/coneval/
 
 # IDE
 .idea/
