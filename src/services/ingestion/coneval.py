@@ -83,7 +83,12 @@ def parse_coneval_data(
     else:
         xlsx_files = _find_xlsx_files(CACHE_DIR)
         if not xlsx_files:
-            logger.info(f"{SOURCE_NAME}: no XLSX/CSV found in {CACHE_DIR}")
+            logger.info(
+                f"{SOURCE_NAME}: no XLSX found in {CACHE_DIR}. "
+                f"Download 'Concentrado indicadores de pobreza 2020' from "
+                f"https://www.coneval.org.mx/Medicion/Paginas/Pobreza-municipal.aspx "
+                f"and place the XLSX in {CACHE_DIR}/"
+            )
             return {}
         xlsx_path = xlsx_files[0]
 

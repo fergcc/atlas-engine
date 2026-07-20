@@ -30,6 +30,13 @@ SOURCE_NAME = "Censo2020"
 CACHE_DIR = DATA_DIR / "censo2020"
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
+# Stable INEGI URL for ITER 2020 national CSV (ZIP)
+ITER_URL = (
+    "https://www.inegi.org.mx/contenidos/programas/ccpv/2020/"
+    "datosabiertos/iter/iter_00_cpv2020_csv.zip"
+)
+ITER_CSV_NAME = "conjunto_de_datos_iter_00CSV20.csv"
+
 # Column candidates (ITER 2020 uses uppercase names)
 _COL_CANDIDATES = {
     "entidad": ["ENTIDAD", "NOM_ENT", "entidad", "CVE_ENT"],
@@ -101,6 +108,39 @@ def _find_csv_files(directory: Path) -> list[Path]:
     return files
 
 
+def _download_iter(dest_dir: Path) -> Path | None:
+    """Download and extract ITER 2020 ZIP from INEGI."""
+    import tempfile
+    import zipfile
+    import urllib.request
+
+    logger.info(f"{SOURCE_NAME}: downloading ITER from {ITER_URL} ...")
+    try:
+        with urllib.request.urlopen(ITER_URL, timeout=120) as resp:
+            zip_data = resp.read()
+    except Exception as exc:
+        logger.warning(f"{SOURCE_NAME}: download failed: {exc}")
+        return None
+
+    with tempfile.NamedTemporaryFile(suffix=".zip", delete=False) as tmp:
+        tmp.write(zip_data)
+        tmp_path = Path(tmp.name)
+
+    try:
+        with zipfile.ZipFile(tmp_path, "r") as zf:
+            for name in zf.namelist():
+                if name.endswith(ITER_CSV_NAME):
+                    csv_path = dest_dir / ITER_CSV_NAME
+                    with zf.open(name) as src, open(csv_path, "wb") as dst:
+                        dst.write(src.read())
+                    logger.info(f"{SOURCE_NAME}: extracted {csv_path} ({csv_path.stat().st_size} bytes)")
+                    return csv_path
+        logger.warning(f"{SOURCE_NAME}: {ITER_CSV_NAME} not found in ZIP")
+        return None
+    finally:
+        tmp_path.unlink(missing_ok=True)
+
+
 def _load_csv(path: Path) -> list[dict[str, str]]:
     for encoding in ["utf-8-sig", "utf-8", "latin-1", "cp1252"]:
         try:
@@ -159,9 +199,13 @@ def parse_iter_data(
     else:
         csv_files = _find_csv_files(CACHE_DIR)
         if not csv_files:
-            logger.info(f"{SOURCE_NAME}: no CSV found in {CACHE_DIR}")
-            return {}
-        csv_path = csv_files[0]
+            logger.info(f"{SOURCE_NAME}: no local CSV, attempting download...")
+            csv_path = _download_iter(CACHE_DIR)
+            if csv_path is None:
+                logger.info(f"{SOURCE_NAME}: download failed, no data available")
+                return {}
+        else:
+            csv_path = csv_files[0]
 
     if not csv_path.exists():
         return {}

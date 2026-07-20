@@ -229,7 +229,12 @@ def get_crime_data(
     else:
         csv_files = _find_csv_files(SESNSP_CACHE_DIR)
         if not csv_files:
-            logger.info(f"{SOURCE_NAME}: no CSV files found in {SESNSP_CACHE_DIR}")
+            logger.info(
+                f"{SOURCE_NAME}: no CSV files found in {SESNSP_CACHE_DIR}. "
+                f"Download the latest municipal crime CSV from "
+                f"https://www.gob.mx/sesnsp/acciones-y-programas/datos-abiertos-de-incidencia-delictiva "
+                f"and place it in {SESNSP_CACHE_DIR}/"
+            )
             return {}
         csv_path = csv_files[0]
         logger.info(f"{SOURCE_NAME}: using {csv_path.name}")
