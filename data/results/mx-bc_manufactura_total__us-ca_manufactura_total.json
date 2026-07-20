@@ -8,76 +8,76 @@
   },
   "series_a": {
     "id": "mx-bc_manufactura_total_itaee",
-    "source": "INEGI - ITAEE (mock)",
+    "source": "INEGI - ITAEE (clave 741177)",
     "region": "02",
     "proxy_type": "output_index",
     "seasonal_adjustment": "nsa"
   },
   "series_b": {
     "id": "us-ca_manufactura_total_bc_bls",
-    "source": "BLS - State and Area Employment (mock)",
+    "source": "BLS - CES SMU06000003000000001 (California)",
     "region": "06",
     "proxy_type": "labor_input",
     "seasonal_adjustment": "nsa"
   },
   "sample": {
     "frequency_used": "quarterly",
-    "start": "2010-03-31",
-    "end": "2026-06-30",
-    "n_obs": 66
+    "start": "2006-03-31",
+    "end": "2025-12-31",
+    "n_obs": 80
   },
-  "generated_at": "2026-07-17T21:21:32.439699+00:00",
-  "data_vintage": "2026-10-03",
+  "generated_at": "2026-07-20T17:36:53.195401+00:00",
+  "data_vintage": "2025-12-01",
   "data_vintage_detail": {
-    "a": "2026-10-03",
-    "b": "2026-07-21"
+    "a": "2025-12-01",
+    "b": "2025-12-01"
   },
   "insufficient_data": false,
   "stationarity": {
     "a": {
-      "adf_statistic": -8.236384537555336,
-      "adf_p_value": 5.874737772168669e-13,
-      "kpss_statistic": 0.1783141583727236,
+      "adf_statistic": -4.596588294092898,
+      "adf_p_value": 0.00013105292209368224,
+      "kpss_statistic": 0.15507051633201563,
       "kpss_p_value": 0.1,
       "is_stationary": true,
       "order_of_integration": 1,
       "log_transformed": true
     },
     "b": {
-      "adf_statistic": -6.541583209645064,
-      "adf_p_value": 9.317899823021718e-09,
-      "kpss_statistic": 0.39423930084422615,
-      "kpss_p_value": 0.07963823239473011,
+      "adf_statistic": -5.291023981758928,
+      "adf_p_value": 5.7150107157104535e-06,
+      "kpss_statistic": 0.09750544288067611,
+      "kpss_p_value": 0.1,
       "is_stationary": true,
-      "order_of_integration": 1,
+      "order_of_integration": 2,
       "log_transformed": true
     }
   },
   "granger": {
-    "optimal_lag": 1,
+    "optimal_lag": 4,
     "selection_criterion": "bic",
     "a_causes_b": {
-      "f_stat": 0.059995857225381644,
-      "p_value": 0.8069140050085832,
-      "p_value_fdr_adj": 0.8220615378096797,
-      "significant": false
+      "f_stat": 5.3408671318873235,
+      "p_value": 0.0005157566098879788,
+      "p_value_fdr_adj": 0.002664742484421224,
+      "significant": true
     },
     "b_causes_a": {
-      "f_stat": 2.6391373057441316,
-      "p_value": 0.1068409653995139,
-      "p_value_fdr_adj": 0.23657642338463794,
-      "significant": false
+      "f_stat": 8.296440048811823,
+      "p_value": 5.430320891686222e-06,
+      "p_value_fdr_adj": 4.208498691056822e-05,
+      "significant": true
     }
   },
   "cointegration_engle_granger": {
-    "statistic": -3.9571932081014904,
-    "p_value": 0.008256893930867098,
-    "cointegrated": true
+    "statistic": -0.8148547887591053,
+    "p_value": 0.9327235343144932,
+    "cointegrated": false
   },
   "cointegration_johansen": {
     "trace_statistic": [
-      15.554498353138541,
-      1.1745300237613785
+      11.850159267086678,
+      4.1132860010711365
     ],
     "critical_values": [
       [
@@ -91,17 +91,8 @@
         6.6349
       ]
     ],
-    "cointegration_rank": 1
+    "cointegration_rank": 0
   },
-  "vecm": {
-    "cointegration_vector": [
-      1.0,
-      -0.9168413419180723
-    ],
-    "adjustment_speed": [
-      -0.19046715872594386,
-      0.11509386059996608
-    ]
-  },
+  "vecm": null,
   "warnings": []
 }
