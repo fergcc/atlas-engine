@@ -366,6 +366,20 @@ def _data_quality_override(values: list[dict[str, Any]]) -> str:
     return "synthetic"
 
 
+def export_territorial_json(country: str = "MX") -> dict[str, Any]:
+    """Compute all territorial data for all states and return as JSON dict.
+    
+    Used at build time to generate static data for the Dashboard.
+    Caches result to avoid recomputation on subsequent calls.
+    """
+    adapter = get_adapter(country)
+    region_codes = [r.code for r in adapter.list_regions()] if adapter else [f"{i:02d}" for i in range(1, 33)]
+    
+    result = build_indicator_matrix(country=country, region_codes=region_codes)
+    result["generated_at"] = __import__("datetime").datetime.now().isoformat()
+    return result
+
+
 # ————————————————————————————————————————————
 # Censo 2020 data loading and indicator computation
 # ————————————————————————————————————————————

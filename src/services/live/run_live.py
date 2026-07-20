@@ -651,7 +651,47 @@ def run_live_pipeline() -> dict[str, Any]:
 
     results = run_all(pair_defs, series_lookup, sectors_by_id)
 
-    manifest = export_all(
+def _export_territorial() -> None:
+    """Export territorial indicators as static JSON for the Dashboard."""
+    import json
+
+    from src.config import DATA_DIR
+    from src.services.territorial import compute_indicator_values, load_indicators
+
+    logger.info("Exporting territorial indicators...")
+    try:
+        catalog = load_indicators()
+        region_codes = [f"{i:02d}" for i in range(1, 33)]
+        values = compute_indicator_values("MX", region_codes=region_codes)
+
+        territorial = {
+            "generated_at": pd.Timestamp.now(tz="UTC").isoformat(),
+            "country": "MX",
+            "total_indicators": len(catalog),
+            "total_regions": len(region_codes),
+            "data_quality": "mixed",
+            "by_region": [],
+            "raw_values": values,
+        }
+
+        # Build by_region matrix
+        by_region_map: dict[str, dict[str, object]] = {}
+        for v in values:
+            rc = v["region_code"]
+            if rc not in by_region_map:
+                by_region_map[rc] = {
+                    "region_code": rc,
+                    "region_name": v["region_name"],
+                }
+            by_region_map[rc][v["indicator_id"]] = v["value"]
+        territorial["by_region"] = list(by_region_map.values())
+
+        path = DATA_DIR / "territorial.json"
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(territorial, ensure_ascii=False, indent=2), encoding="utf-8")
+        logger.info(f"Territorial indicators exported to {path}")
+    except Exception as exc:
+        logger.warning(f"Failed to export territorial indicators: {exc}")
         sectors=sectors,
         series_lookup=series_lookup,
         series_labels=series_labels,
@@ -660,6 +700,8 @@ def run_live_pipeline() -> dict[str, Any]:
         mode=mode,
         refresh_cadence="trimestral",
     )
+
+    _export_territorial()
 
     logger.info(
         "=== Live pipeline complete: %d sectors, %d series, %d pairs, mode=%s ===",
