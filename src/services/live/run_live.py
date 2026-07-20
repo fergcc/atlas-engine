@@ -692,16 +692,6 @@ def _export_territorial() -> None:
         logger.info(f"Territorial indicators exported to {path}")
     except Exception as exc:
         logger.warning(f"Failed to export territorial indicators: {exc}")
-        sectors=sectors,
-        series_lookup=series_lookup,
-        series_labels=series_labels,
-        pair_defs=pair_defs,
-        results=results,
-        mode=mode,
-        refresh_cadence="trimestral",
-    )
-
-    _export_territorial()
 
     logger.info(
         "=== Live pipeline complete: %d sectors, %d series, %d pairs, mode=%s ===",

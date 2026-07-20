@@ -93,6 +93,7 @@ def compute_indicator_values(
     censo_data = _load_censo_if_needed(catalog, country)
     coneval_data = _load_coneval_if_needed(catalog, country)
     enoe_data = _load_enoe_if_needed(catalog, country)
+    denue_data = _load_denue_if_needed(catalog, country)
 
     rng = np.random.default_rng(42)
 
@@ -101,7 +102,7 @@ def compute_indicator_values(
         region_name = _get_region_name(country, region_code)
         for ind in catalog:
             value, data_quality, note = _compute_value(
-                ind, country, region_code, rng, crime_data, censo_data, coneval_data, enoe_data
+                ind, country, region_code, rng, crime_data, censo_data, coneval_data, enoe_data, denue_data
             )
 
             results.append({
@@ -137,6 +138,7 @@ def _compute_value(
     censo_data: dict[str, dict[str, float]] | None,
     coneval_data: dict[str, dict[str, float]] | None,
     enoe_data: dict[str, dict[str, float]] | None,
+    denue_data: dict[str, dict[str, int]] | None,
 ) -> tuple[float, str, str]:
     indicator_id = ind["id"]
 
@@ -172,6 +174,13 @@ def _compute_value(
     _enoe_ids = {"employed_population", "female_employment", "hours_worked", "remuneration_level"}
     if indicator_id in _enoe_ids and enoe_data:
         value, dq, note = _enoe_indicator_value(indicator_id, region_code, enoe_data)
+        if dq == "real":
+            return value, dq, note
+
+    # DENUE establishment indicators
+    _denue_ids = {"foreign_capital_presence", "daycare_services", "innovation_economic_units"}
+    if indicator_id in _denue_ids and denue_data:
+        value, dq, note = _denue_indicator_value(indicator_id, region_code, denue_data)
         if dq == "real":
             return value, dq, note
 
@@ -580,3 +589,68 @@ def _enoe_indicator_value(
         )
 
     return (0.0, "synthetic", f"Mock — ENOE sin datos para estado {region_code}")
+
+
+# ————————————————————————————————————————————
+# DENUE data loading and indicator computation
+# ————————————————————————————————————————————
+
+_DENUE_CACHE: dict[str, dict[str, int]] | None = None
+_DENUE_LOADED = False
+
+
+def _load_denue_if_needed(
+    catalog: list[dict[str, Any]], country: str
+) -> dict[str, dict[str, int]] | None:
+    global _DENUE_CACHE, _DENUE_LOADED
+    if _DENUE_LOADED:
+        return _DENUE_CACHE
+    _DENUE_LOADED = True
+
+    if country != "MX":
+        return None
+
+    denue_ids = {"foreign_capital_presence", "daycare_services", "innovation_economic_units"}
+    if not any(ind["id"] in denue_ids for ind in catalog):
+        return None
+
+    try:
+        from src.services.ingestion.denue import get_denue_counts
+        data = get_denue_counts()
+        if not data:
+            logger.info("DENUE: no data available")
+            return None
+        _DENUE_CACHE = data
+        states = len(data.get("foreign_capital_presence", {}))
+        logger.info(f"DENUE: loaded establishment counts for {states} states")
+        return _DENUE_CACHE
+    except Exception as exc:
+        logger.warning(f"DENUE: failed to load ({exc}), using mock values")
+        return None
+
+
+def _denue_indicator_value(
+    indicator_id: str,
+    region_code: str,
+    denue_data: dict[str, dict[str, int]],
+) -> tuple[float, str, str]:
+    from src.services.ingestion.denue import get_state_counts
+
+    counts = get_state_counts(denue_data, indicator_id)
+    value = counts.get(region_code)
+
+    if value is None:
+        return (0.0, "synthetic", f"Mock — DENUE sin datos para estado {region_code}")
+
+    indicator_meta = {
+        "foreign_capital_presence": ("Manufactura", "establecimientos (proxy)"),
+        "daycare_services": ("Guarderías", "establecimientos"),
+        "innovation_economic_units": ("Innovación", "establecimientos R&D+tech"),
+    }
+    name, unit = indicator_meta.get(indicator_id, (indicator_id, "establecimientos"))
+
+    return (
+        float(value),
+        "real",
+        f"{name} — DENUE INEGI, {unit}, total estatal",
+    )
