@@ -199,7 +199,8 @@ def _compute_value(
     _survey_ids = {"gov_paperwork_quantity", "gov_paperwork_costs", "tax_burden",
                    "corruption_perception", "public_safety", "credit_access",
                    "public_service_costs", "low_demand", "educated_personnel",
-                   "subcontracting_level", "continuous_training", "industrial_vacb_share"}
+                   "subcontracting_level", "continuous_training", "industrial_vacb_share",
+                   "land_tenure_vulnerability", "public_transport_usage", "avg_commute_time"}
     if indicator_id in _survey_ids and survey_data:
         value, dq, note = _survey_indicator_value(indicator_id, region_code, survey_data)
         if dq == "real":
@@ -763,6 +764,7 @@ def _load_surveys_if_needed(
         "corruption_perception", "public_safety", "credit_access",
         "public_service_costs", "low_demand", "educated_personnel",
         "subcontracting_level", "continuous_training", "industrial_vacb_share",
+        "land_tenure_vulnerability", "public_transport_usage", "avg_commute_time",
     }
     if not any(ind["id"] in survey_ids for ind in catalog):
         return None
@@ -799,6 +801,9 @@ def _survey_indicator_value(
             "subcontracting_level": "Subcontratación",
             "continuous_training": "Capacitación",
             "industrial_vacb_share": "VACB Industrial",
+            "land_tenure_vulnerability": "Tenencia vulnerable",
+            "public_transport_usage": "Transporte público",
+            "avg_commute_time": "Tiempo traslado",
         }
         names = {
             "gov_paperwork_quantity": "ENCIG 2023",
@@ -813,6 +818,9 @@ def _survey_indicator_value(
             "subcontracting_level": "ENOE 2026",
             "continuous_training": "ENOE 2026",
             "industrial_vacb_share": "ENOE 2026",
+            "land_tenure_vulnerability": "CONEVAL 2020",
+            "public_transport_usage": "ITER 2020",
+            "avg_commute_time": "Censo 2020",
         }
         name = indicator_names.get(indicator_id, indicator_id)
         src = names.get(indicator_id, "INEGI")

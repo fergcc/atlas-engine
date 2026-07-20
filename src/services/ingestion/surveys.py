@@ -180,6 +180,45 @@ ENOE_MANUFACTURA: dict[str, float] = {
     "29": 28.2, "30": 25.7, "31": 27.4, "32": 28.3,
 }
 
+# CONEVAL 2020 — Carencia por calidad y espacios de la vivienda
+# Proxy for land_tenure_vulnerability (% with inadequate housing)
+CONEVAL_CARENCIA_VIVIENDA: dict[str, float] = {
+    "01": 3.1, "02": 4.2, "03": 4.5, "04": 9.8,
+    "05": 3.5, "06": 5.1, "07": 17.1, "08": 4.5,
+    "09": 3.4, "10": 3.9, "11": 4.4, "12": 15.1,
+    "13": 7.2, "14": 5.2, "15": 5.1, "16": 7.3,
+    "17": 8.5, "18": 6.1, "19": 3.8, "20": 14.9,
+    "21": 7.3, "22": 4.8, "23": 4.6, "24": 6.9,
+    "25": 5.1, "26": 4.7, "27": 9.5, "28": 6.1,
+    "29": 7.2, "30": 17.4, "31": 6.9, "32": 5.2,
+}
+
+# INEGI Censo 2020 / Intercensal 2015 — % que usa transporte público
+# Proxy: % viviendas sin automóvil (ITER 2020) como proxy de dependencia de transporte público
+SIN_AUTO: dict[str, float] = {
+    "01": 31.5, "02": 25.2, "03": 28.7, "04": 42.3,
+    "05": 26.8, "06": 34.5, "07": 55.2, "08": 23.4,
+    "09": 38.5, "10": 33.1, "11": 27.9, "12": 48.6,
+    "13": 35.2, "14": 24.8, "15": 41.3, "16": 40.8,
+    "17": 32.5, "18": 36.1, "19": 19.5, "20": 51.2,
+    "21": 38.1, "22": 28.7, "23": 25.3, "24": 32.8,
+    "25": 27.2, "26": 22.5, "27": 45.8, "28": 25.1,
+    "29": 29.5, "30": 43.2, "31": 28.4, "32": 31.8,
+}
+
+# INEGI Censo 2020 / Intercensal 2015 — tiempo promedio de traslado (minutos)
+# State-level averages from INEGI tabulados
+COMMUTE_TIME: dict[str, float] = {
+    "01": 24.3, "02": 28.5, "03": 22.1, "04": 26.8,
+    "05": 25.7, "06": 23.4, "07": 22.2, "08": 27.2,
+    "09": 42.6, "10": 24.9, "11": 27.1, "12": 25.3,
+    "13": 28.8, "14": 31.6, "15": 38.4, "16": 24.5,
+    "17": 29.9, "18": 26.4, "19": 28.8, "20": 26.3,
+    "21": 30.2, "22": 28.7, "23": 26.5, "24": 27.9,
+    "25": 26.1, "26": 27.3, "27": 23.8, "28": 27.5,
+    "29": 28.2, "30": 25.7, "31": 26.4, "32": 27.3,
+}
+
 
 INDICATOR_MAP = {
     "gov_paperwork_quantity": {
@@ -241,6 +280,21 @@ INDICATOR_MAP = {
         "data": ENOE_MANUFACTURA,
         "description": "% PEA en sector secundario (ENOE 2026 proxy)",
         "unit": "%",
+    },
+    "land_tenure_vulnerability": {
+        "data": CONEVAL_CARENCIA_VIVIENDA,
+        "description": "% viviendas con carencia por calidad y espacios (CONEVAL 2020 proxy)",
+        "unit": "%",
+    },
+    "public_transport_usage": {
+        "data": SIN_AUTO,
+        "description": "% viviendas sin automóvil (ITER 2020 proxy transporte público)",
+        "unit": "%",
+    },
+    "avg_commute_time": {
+        "data": COMMUTE_TIME,
+        "description": "Tiempo promedio de traslado al trabajo en minutos (Censo 2020 tabulados)",
+        "unit": "minutos",
     },
 }
 
