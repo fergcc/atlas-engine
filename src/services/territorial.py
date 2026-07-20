@@ -6,11 +6,15 @@ at the subnational level. Uses adapter data where available;
 falls back to synthetic/mock values for indicators without real data.
 
 The indicator catalog is defined in reference/indicators.yaml.
+
+Results are cached in-memory with a 1-hour TTL since data sources
+are static (census, CONEVAL) or slow-changing (crime, employment).
 """
 
 from __future__ import annotations
 
 import logging
+import time
 from typing import Any
 
 import numpy as np
@@ -22,6 +26,10 @@ from src.adapters.registry import get_adapter
 logger = logging.getLogger(__name__)
 
 _indicators_catalog: list[dict[str, Any]] | None = None
+
+# Simple TTL cache for computed indicator values
+_cache: dict[str, tuple[float, list[dict[str, Any]]]] = {}
+_CACHE_TTL = 3600  # 1 hour
 
 
 def load_indicators() -> list[dict[str, Any]]:
@@ -60,6 +68,16 @@ def compute_indicator_values(
     indicator_ids: list[str] | None = None,
     sector_id: str | None = None,
 ) -> list[dict[str, Any]]:
+    cache_key = f"{country}_{sector_id or 'all'}_{','.join(sorted(indicator_ids or []))}_{','.join(sorted(region_codes or []))}"
+    now = time.time()
+    if cache_key in _cache:
+        cached_time, cached_data = _cache[cache_key]
+        if now - cached_time < _CACHE_TTL:
+            logger.info(f"Territorial cache hit ({now - cached_time:.0f}s old)")
+            return cached_data
+        else:
+            del _cache[cache_key]
+
     catalog = load_indicators()
     if indicator_ids:
         catalog = [ind for ind in catalog if ind["id"] in indicator_ids]
@@ -106,6 +124,7 @@ def compute_indicator_values(
                 "note": note,
             })
 
+    _cache[cache_key] = (now, results)
     return results
 
 
