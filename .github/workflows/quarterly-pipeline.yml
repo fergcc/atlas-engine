@@ -2,37 +2,30 @@ name: Quarterly Pipeline
 
 on:
   schedule:
-    # Run at 6am UTC on the 1st of Jan, Apr, Jul, Oct
     - cron: '0 6 1 1,4,7,10 *'
   workflow_dispatch:
     inputs:
       mode:
-        description: 'Pipeline mode (live, mock, mixed)'
+        description: 'Pipeline mode'
         required: false
         default: 'live'
         type: choice
-        options:
-          - live
-          - mock
-          - mixed
+        options: [live, mock, mixed]
 
 jobs:
   pipeline:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 25
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      - name: Install dependencies
-        run: |
-          pip install .
-          pip install openpyxl
+      - name: Install
+        run: pip install . openpyxl
 
       - name: Run pipeline
         env:
@@ -41,52 +34,33 @@ jobs:
           BLS_API_KEY: ${{ secrets.BLS_API_KEY }}
           BEA_API_KEY: ${{ secrets.BEA_API_KEY }}
           BANXICO_TOKEN: ${{ secrets.BANXICO_TOKEN }}
-          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
-          SEARCH_API_KEY: ${{ secrets.SEARCH_API_KEY }}
-          ENGINE_ENV: production
-          ENGINE_USE_MOCKS: 'false'
         run: |
           python -c "
           import logging, sys, traceback
           logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(name)s: %(message)s')
           from src.services.live.run_live import run_live_pipeline
           try:
-              manifest = run_live_pipeline()
-              if manifest is None:
-                  print('Pipeline returned None, continuing...')
+              m = run_live_pipeline()
+              if m:
+                  print(f'Pipeline: mode={m.get(\"mode\")}, sectors={len(m.get(\"sectors\",[]))}, pairs={len(m.get(\"pairs\",[]))}')
               else:
-                  mode = manifest.get('mode', 'unknown')
-                  pairs = len(manifest.get('pairs', []))
-                  sectors = len(manifest.get('sectors', []))
-                  print(f'Pipeline: mode={mode}, sectors={sectors}, pairs={pairs}')
-          except Exception as exc:
+                  print('Pipeline returned None')
+                  sys.exit(1)
+          except Exception:
               traceback.print_exc()
-              print(f'Pipeline failed: {exc}')
               sys.exit(1)
           "
 
-      - name: Export territorial indicators
-        env:
-          INEGI_TOKEN: ${{ secrets.INEGI_TOKEN }}
-        run: |
-          python -c "
-          import json
-          from src.services.territorial import export_territorial_json
-          from src.config import DATA_DIR
-          data = export_territorial_json('MX')
-          (DATA_DIR / 'territorial.json').write_text(json.dumps(data, ensure_ascii=False, indent=2))
-          real = sum(1 for v in data['raw_values'] if v['data_quality'] == 'real')
-          print(f'Territorial: {real}/{len(data[\"raw_values\"])} values real')
-          "
-
-      - name: Commit and push updated data
+      - name: Commit data
         run: |
           git config user.name "atlas-bot"
-          git config user.email "bot@atlas-prospectivo.local"
+          git config user.email "bot@atlas-project.local"
           git add data/
-          if git diff --staged --quiet; then
-            echo "No data changes to commit"
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
           else
-            git commit -m "data: quarterly pipeline run [skip ci]"
-            git push
+            echo "Committing pipeline data..."
+            git commit -m "data: auto pipeline run [skip ci]"
+            git pull --rebase origin main
+            git push origin main
           fi
