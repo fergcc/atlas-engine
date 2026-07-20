@@ -709,5 +709,31 @@ def _export_territorial() -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(territorial, ensure_ascii=False, indent=2), encoding="utf-8")
         logger.info(f"Territorial indicators exported to {path}")
+
+        _sync_to_dashboard()
     except Exception as exc:
         logger.warning(f"Failed to export territorial indicators: {exc}")
+
+
+def _sync_to_dashboard() -> None:
+    """Copy Engine data to Dashboard repo if available (local dev only)."""
+    import shutil
+
+    dashboard_data = DATA_DIR.parent.parent / "Dashboard" / "atlas-mexico-eeuu" / "data"
+    if not dashboard_data.exists():
+        return
+
+    for sub in ["series", "results"]:
+        src = DATA_DIR / sub
+        dst = dashboard_data / sub
+        if src.exists():
+            shutil.rmtree(dst, ignore_errors=True)
+            shutil.copytree(src, dst)
+
+    for fname in ["manifest.json", "territorial.json"]:
+        src = DATA_DIR / fname
+        dst = dashboard_data / fname
+        if src.exists():
+            shutil.copy2(src, dst)
+
+    logger.info(f"Synced to Dashboard: {dashboard_data}")
