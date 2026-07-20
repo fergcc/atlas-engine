@@ -74,6 +74,7 @@ def compute_indicator_values(
     crime_data = _load_sesnsp_if_needed(catalog, country)
     censo_data = _load_censo_if_needed(catalog, country)
     coneval_data = _load_coneval_if_needed(catalog, country)
+    enoe_data = _load_enoe_if_needed(catalog, country)
 
     rng = np.random.default_rng(42)
 
@@ -82,7 +83,7 @@ def compute_indicator_values(
         region_name = _get_region_name(country, region_code)
         for ind in catalog:
             value, data_quality, note = _compute_value(
-                ind, country, region_code, rng, crime_data, censo_data, coneval_data
+                ind, country, region_code, rng, crime_data, censo_data, coneval_data, enoe_data
             )
 
             results.append({
@@ -116,6 +117,7 @@ def _compute_value(
     crime_data: dict[str, Any] | None,
     censo_data: dict[str, dict[str, float]] | None,
     coneval_data: dict[str, dict[str, float]] | None,
+    enoe_data: dict[str, dict[str, float]] | None,
 ) -> tuple[float, str, str]:
     indicator_id = ind["id"]
 
@@ -144,6 +146,13 @@ def _compute_value(
     # CONEVAL indicators
     if indicator_id == "extreme_poverty" and coneval_data:
         value, dq, note = _coneval_indicator_value(indicator_id, region_code, coneval_data)
+        if dq == "real":
+            return value, dq, note
+
+    # ENOE employment indicators
+    _enoe_ids = {"employed_population", "female_employment", "hours_worked", "remuneration_level"}
+    if indicator_id in _enoe_ids and enoe_data:
+        value, dq, note = _enoe_indicator_value(indicator_id, region_code, enoe_data)
         if dq == "real":
             return value, dq, note
 
@@ -467,3 +476,74 @@ def _coneval_indicator_value(
         )
 
     return (0.0, "synthetic", f"Mock — CONEVAL sin datos para estado {region_code}")
+
+
+# ————————————————————————————————————————————
+# ENOE data loading and indicator computation
+# ————————————————————————————————————————————
+
+_ENOE_CACHE: dict[str, dict[str, float]] | None = None
+_ENOE_LOADED = False
+
+
+def _load_enoe_if_needed(
+    catalog: list[dict[str, Any]], country: str
+) -> dict[str, dict[str, float]] | None:
+    global _ENOE_CACHE, _ENOE_LOADED
+    if _ENOE_LOADED:
+        return _ENOE_CACHE
+    _ENOE_LOADED = True
+
+    if country != "MX":
+        return None
+
+    enoe_ids = {"employed_population", "female_employment", "hours_worked", "remuneration_level"}
+    if not any(ind["id"] in enoe_ids for ind in catalog):
+        return None
+
+    try:
+        from src.services.ingestion.enoe import parse_enoe_data
+        data = parse_enoe_data()
+        if not data or not data.get("employed_population"):
+            logger.info("ENOE: no data available")
+            return None
+        _ENOE_CACHE = data
+        logger.info(f"ENOE: loaded employment data for {len(data.get('employed_population', {}))} states")
+        return _ENOE_CACHE
+    except Exception as exc:
+        logger.warning(f"ENOE: failed to load ({exc}), using mock values")
+        return None
+
+
+def _enoe_indicator_value(
+    indicator_id: str,
+    region_code: str,
+    enoe_data: dict[str, dict[str, float]],
+) -> tuple[float, str, str]:
+    from src.services.ingestion.enoe import get_state_aggregates
+
+    indicator_names = {
+        "employed_population": "Población ocupada",
+        "female_employment": "Empleo femenino",
+        "hours_worked": "Horas trabajadas",
+        "remuneration_level": "Remuneración promedio",
+    }
+    units = {
+        "employed_population": "%",
+        "female_employment": "%",
+        "hours_worked": "horas/semana",
+        "remuneration_level": "MXN/mes",
+    }
+
+    state_vals = get_state_aggregates(enoe_data, indicator_id)
+    value = state_vals.get(region_code)
+    if value is not None:
+        name = indicator_names.get(indicator_id, indicator_id)
+        unit = units.get(indicator_id, "")
+        return (
+            round(value, 2),
+            "real",
+            f"{name} — ENOE INEGI, estatal, {unit}",
+        )
+
+    return (0.0, "synthetic", f"Mock — ENOE sin datos para estado {region_code}")
