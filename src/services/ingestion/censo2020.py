@@ -58,6 +58,14 @@ _COL_CANDIDATES = {
     "cuartos_2ymas": ["VPH_2CUART", "VIV_2CUART"],
     "ocupantes": ["PROM_OCUP", "PROM_OCCUP", "OCUPANTES_PROM"],
     "vivpart": ["VIVPAR_HAB", "TVIVPARHAB"],
+    # Education: population 15+ years by education level
+    "p15ym_total": ["P_15YMAS", "P15YM_AN", "P15YMAS", "POB15_64"],
+    "p15sec_co": ["P15SEC_CO", "P15SEC_COMP"],
+    "p15sup": ["P15SUP_CO", "P15SUP"],
+    # Employment: economically active population
+    "pea": ["PEA", "PEA_TOTAL"],
+    "pocupada": ["POCUPADA", "PEA_OCUPADA"],
+    "pdesocup": ["PDESOCUP", "PEA_DESOCUP"],
     # All basic services (water + drainage + electricity)
     "servicios": ["VPH_C_SERV", "VPH_SERV", "VIV_SERV_BAS"],
 }
@@ -93,6 +101,13 @@ INDICATOR_MAP = {
         "denominator": "vivhab",
         "description": "% viviendas con piso de tierra (proxy de autoconstrucción)",
         "unit": "%",
+    },
+    "talent_attraction": {
+        "numerator": "p15sec_co",
+        "denominator": None,  # denominator is p15ym_total, handled specially
+        "description": "% población 15+ con secundaria completa o más",
+        "unit": "%",
+        "special_denom": "p15ym_total",
     },
 }
 
@@ -251,8 +266,14 @@ def parse_iter_data(
 
         # Compute simple ratio indicators
         for ind_id, config in INDICATOR_MAP.items():
-            num = _get_number(row, cols.get(config["numerator"]))
+            num_key = config["numerator"]
+            num = _get_number(row, cols.get(num_key))
             denom = vivhab
+            if config.get("special_denom"):
+                special = config["special_denom"]
+                special_val = _get_number(row, cols.get(special))
+                if special_val > 0:
+                    denom = special_val
             if denom > 0:
                 result[ind_id][muni_code] = round((num / denom) * 100, 1)
 

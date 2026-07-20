@@ -651,6 +651,25 @@ def run_live_pipeline() -> dict[str, Any]:
 
     results = run_all(pair_defs, series_lookup, sectors_by_id)
 
+    manifest = export_all(
+        sectors=sectors,
+        series_lookup=series_lookup,
+        series_labels=series_labels,
+        pair_defs=pair_defs,
+        results=results,
+        mode=mode,
+        refresh_cadence="trimestral",
+    )
+
+    _export_territorial()
+
+    logger.info(
+        "=== Live pipeline complete: %d sectors, %d series, %d pairs, mode=%s ===",
+        len(sectors), len(series_lookup), len(pair_defs), mode,
+    )
+    return manifest
+
+
 def _export_territorial() -> None:
     """Export territorial indicators as static JSON for the Dashboard."""
     import json
@@ -674,7 +693,6 @@ def _export_territorial() -> None:
             "raw_values": values,
         }
 
-        # Build by_region matrix
         by_region_map: dict[str, dict[str, object]] = {}
         for v in values:
             rc = v["region_code"]
@@ -692,9 +710,3 @@ def _export_territorial() -> None:
         logger.info(f"Territorial indicators exported to {path}")
     except Exception as exc:
         logger.warning(f"Failed to export territorial indicators: {exc}")
-
-    logger.info(
-        "=== Live pipeline complete: %d sectors, %d series, %d pairs, mode=%s ===",
-        len(sectors), len(series_lookup), len(pair_defs), mode,
-    )
-    return manifest

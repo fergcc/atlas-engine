@@ -159,7 +159,7 @@ def _compute_value(
     # Censo 2020 indicators (land_tenure_vulnerability is NOT in ITER — stays mock)
     _censo_ids = {
         "potable_water_access", "drainage_access", "internet_access",
-        "overcrowding", "self_built_housing",
+        "overcrowding", "self_built_housing", "talent_attraction",
     }
     if indicator_id in _censo_ids and censo_data:
         value, dq, note = _censo_indicator_value(indicator_id, region_code, censo_data)
@@ -418,7 +418,7 @@ def _load_censo_if_needed(
         return None
 
     censo_ids = {"potable_water_access", "drainage_access", "internet_access",
-                 "overcrowding", "self_built_housing"}
+                 "overcrowding", "self_built_housing", "talent_attraction"}
     if not any(ind["id"] in censo_ids for ind in catalog):
         return None
 
@@ -450,14 +450,16 @@ def _censo_indicator_value(
         "overcrowding": "Hacinamiento",
         "land_tenure_vulnerability": "Tenencia vulnerable",
         "self_built_housing": "Autoconstrucción (piso tierra)",
+        "talent_attraction": "Atracción de talento",
     }
     units = {
-        "overcrowding": "ocupantes/cuarto",
+        "overcrowding": "%",
         "potable_water_access": "%",
         "drainage_access": "%",
         "internet_access": "%",
         "land_tenure_vulnerability": "%",
         "self_built_housing": "%",
+        "talent_attraction": "%",
     }
 
     state_vals = get_state_aggregates(censo_data, indicator_id)
