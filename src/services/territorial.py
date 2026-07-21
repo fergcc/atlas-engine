@@ -102,6 +102,7 @@ def compute_indicator_values(
     bls_state_data = _load_bls_state_if_needed(catalog, country)
     cbp_data = _load_cbp_if_needed(catalog, country)
     saipe_data = _load_saipe_if_needed(catalog, country)
+    statcan_data = _load_statcan_if_needed(catalog, country)
 
     rng = np.random.default_rng(42)
 
@@ -110,7 +111,7 @@ def compute_indicator_values(
         region_name = _get_region_name(country, region_code)
         for ind in catalog:
             value, data_quality, note = _compute_value(
-                ind, country, region_code, rng, crime_data, censo_data, coneval_data, enoe_data, denue_data, conagua_data, survey_data, acs_data, ucr_data, bls_state_data, cbp_data, saipe_data
+                ind, country, region_code, rng, crime_data, censo_data, coneval_data, enoe_data, denue_data, conagua_data, survey_data, acs_data, ucr_data, bls_state_data, cbp_data, saipe_data, statcan_data
             )
 
             results.append({
@@ -154,6 +155,7 @@ def _compute_value(
     bls_state_data: dict[str, dict[str, float]] | None = None,
     cbp_data: dict[str, dict[str, int]] | None = None,
     saipe_data: dict[str, dict[str, float]] | None = None,
+    statcan_data: dict[str, dict[str, float]] | None = None,
 ) -> tuple[float, str, str]:
     indicator_id = ind["id"]
 
@@ -264,6 +266,24 @@ def _compute_value(
                        "land_tenure_vulnerability", "public_transport_usage", "avg_commute_time"}
         if indicator_id in _survey_ids and survey_data:
             value, dq, note = _survey_indicator_value(indicator_id, region_code, survey_data)
+            if dq == "real":
+                return value, dq, note
+
+        return _mock()
+
+    # ——— Canada data sources ———
+    if country == "CA":
+        _ca_ids = {
+            "potable_water_access", "drainage_access", "overcrowding",
+            "self_built_housing", "talent_attraction", "educated_personnel",
+            "land_tenure_vulnerability", "homicide_rate", "robbery_rate",
+            "domestic_violence_rate", "extreme_poverty", "employed_population",
+            "female_employment", "hours_worked", "remuneration_level",
+            "foreign_capital_presence", "innovation_economic_units",
+            "daycare_services", "water_stress", "water_consumption_intensity",
+        }
+        if indicator_id in _ca_ids and statcan_data:
+            value, dq, note = _statcan_indicator_value(indicator_id, region_code, statcan_data)
             if dq == "real":
                 return value, dq, note
 
@@ -1197,3 +1217,80 @@ def _saipe_indicator_value(
             f"Poverty rate — Census SAIPE 2022, state-level, %",
         )
     return (0.0, "synthetic", f"Mock — SAIPE no data for state {region_code}")
+
+
+# ————————————————————————————————————————————
+# Statistics Canada data loading and indicator computation
+# ————————————————————————————————————————————
+
+_STATCAN_CACHE: dict[str, dict[str, float]] | None = None
+_STATCAN_LOADED = False
+
+
+def _load_statcan_if_needed(
+    catalog: list[dict[str, Any]], country: str
+) -> dict[str, dict[str, float]] | None:
+    global _STATCAN_CACHE, _STATCAN_LOADED
+    if _STATCAN_LOADED:
+        return _STATCAN_CACHE
+    _STATCAN_LOADED = True
+
+    if country != "CA":
+        return None
+
+    try:
+        from src.services.ingestion.statcan_territorial import parse_statcan_territorial_data
+        data = parse_statcan_territorial_data()
+        if not data:
+            logger.info("StatCan Territorial: no data available")
+            return None
+        _STATCAN_CACHE = data
+        logger.info(f"StatCan Territorial: loaded data for {len(data)} indicators")
+        return _STATCAN_CACHE
+    except Exception as exc:
+        logger.warning(f"StatCan Territorial: failed to load ({exc}), using mock values")
+        return None
+
+
+def _statcan_indicator_value(
+    indicator_id: str,
+    region_code: str,
+    statcan_data: dict[str, dict[str, float]],
+) -> tuple[float, str, str]:
+    indicator_names = {
+        "potable_water_access": "Acceptable housing",
+        "drainage_access": "Acceptable housing",
+        "overcrowding": "Suitable housing",
+        "self_built_housing": "Major repairs needed",
+        "talent_attraction": "Bachelor's degree+",
+        "educated_personnel": "Postsecondary cert/diploma",
+        "land_tenure_vulnerability": "Renter occupied",
+        "homicide_rate": "Crime severity",
+        "robbery_rate": "Crime severity",
+        "domestic_violence_rate": "Crime severity",
+        "extreme_poverty": "Low income (LIM)",
+        "employed_population": "Employment rate",
+        "female_employment": "Employment rate",
+        "hours_worked": "Avg weekly hours",
+        "remuneration_level": "Avg hourly wage",
+        "foreign_capital_presence": "Foreign enterprises",
+        "innovation_economic_units": "Patent applications",
+        "daycare_services": "Daycare centres",
+        "water_stress": "Water use",
+        "water_consumption_intensity": "Water use",
+    }
+    units = {
+        "hours_worked": "hours/week",
+        "remuneration_level": "CAD/hr",
+    }
+
+    value = statcan_data.get(indicator_id, {}).get(region_code)
+    if value is not None and value > 0:
+        name = indicator_names.get(indicator_id, indicator_id)
+        unit = units.get(indicator_id, "%")
+        return (
+            round(float(value), 2),
+            "real",
+            f"{name} — Statistics Canada, province-level, {unit}",
+        )
+    return (0.0, "synthetic", f"Mock — StatCan no data for province {region_code}")
