@@ -1,0 +1,107 @@
+{
+  "pair_id": "mx-son_farmaceutica__us-az_farmaceutica",
+  "sector": {
+    "id": "farmaceutica",
+    "scian": "325400",
+    "naics": "3254",
+    "label": "Farmacéutica"
+  },
+  "series_a": {
+    "id": "mx-son_farmaceutica_itaee",
+    "source": "INEGI - ITAEE (mock)",
+    "region": "26",
+    "proxy_type": "output_index",
+    "seasonal_adjustment": "nsa"
+  },
+  "series_b": {
+    "id": "us-az_farmaceutica_son_bls",
+    "source": "BLS - State and Area Employment (mock)",
+    "region": "04",
+    "proxy_type": "labor_input",
+    "seasonal_adjustment": "nsa"
+  },
+  "sample": {
+    "frequency_used": "quarterly",
+    "start": "2010-03-31",
+    "end": "2026-06-30",
+    "n_obs": 66
+  },
+  "generated_at": "2026-07-21T20:22:40.038796+00:00",
+  "data_vintage": "2026-10-03",
+  "data_vintage_detail": {
+    "a": "2026-10-03",
+    "b": "2026-07-21"
+  },
+  "insufficient_data": false,
+  "stationarity": {
+    "a": {
+      "adf_statistic": -8.801706501338895,
+      "adf_p_value": 2.1036757617822136e-14,
+      "kpss_statistic": 0.055001541276322584,
+      "kpss_p_value": 0.1,
+      "is_stationary": true,
+      "order_of_integration": 1,
+      "log_transformed": true
+    },
+    "b": {
+      "adf_statistic": -8.863924236792128,
+      "adf_p_value": 1.4576653664268996e-14,
+      "kpss_statistic": 0.045873238659666755,
+      "kpss_p_value": 0.1,
+      "is_stationary": true,
+      "order_of_integration": 1,
+      "log_transformed": true
+    }
+  },
+  "granger": {
+    "optimal_lag": 1,
+    "selection_criterion": "bic",
+    "a_causes_b": {
+      "f_stat": 4.838120380252011,
+      "p_value": 0.029721838623140453,
+      "p_value_fdr_adj": 0.1059648159607616,
+      "significant": false
+    },
+    "b_causes_a": {
+      "f_stat": 0.7661568770285357,
+      "p_value": 0.3831285970695326,
+      "p_value_fdr_adj": 0.5754051893873199,
+      "significant": false
+    }
+  },
+  "cointegration_engle_granger": {
+    "statistic": -5.381562077990022,
+    "p_value": 3.0843785498903866e-05,
+    "cointegrated": true
+  },
+  "cointegration_johansen": {
+    "trace_statistic": [
+      30.950400170155234,
+      0.23199723321835716
+    ],
+    "critical_values": [
+      [
+        13.4294,
+        15.4943,
+        19.9349
+      ],
+      [
+        2.7055,
+        3.8415,
+        6.6349
+      ]
+    ],
+    "cointegration_rank": 1
+  },
+  "vecm": {
+    "cointegration_vector": [
+      1.0,
+      -1.453066610768194
+    ],
+    "adjustment_speed": [
+      0.043872977986349815,
+      0.5038895236459736
+    ]
+  },
+  "warnings": []
+}

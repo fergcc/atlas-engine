@@ -1,0 +1,107 @@
+{
+  "pair_id": "mx-coa_petroquimica__us-tx_petroquimica",
+  "sector": {
+    "id": "petroquimica",
+    "scian": "324110",
+    "naics": "3241",
+    "label": "Petroquímica"
+  },
+  "series_a": {
+    "id": "mx-coa_petroquimica_itaee",
+    "source": "INEGI - ITAEE (mock)",
+    "region": "05",
+    "proxy_type": "output_index",
+    "seasonal_adjustment": "nsa"
+  },
+  "series_b": {
+    "id": "us-tx_petroquimica_coa_bls",
+    "source": "BLS - State and Area Employment (mock)",
+    "region": "48",
+    "proxy_type": "labor_input",
+    "seasonal_adjustment": "nsa"
+  },
+  "sample": {
+    "frequency_used": "quarterly",
+    "start": "2010-03-31",
+    "end": "2026-06-30",
+    "n_obs": 66
+  },
+  "generated_at": "2026-07-21T20:22:40.019693+00:00",
+  "data_vintage": "2026-10-03",
+  "data_vintage_detail": {
+    "a": "2026-10-03",
+    "b": "2026-07-21"
+  },
+  "insufficient_data": false,
+  "stationarity": {
+    "a": {
+      "adf_statistic": -9.683150076936519,
+      "adf_p_value": 1.1897532855620507e-16,
+      "kpss_statistic": 0.10802228380274455,
+      "kpss_p_value": 0.1,
+      "is_stationary": true,
+      "order_of_integration": 1,
+      "log_transformed": true
+    },
+    "b": {
+      "adf_statistic": -10.838600190092865,
+      "adf_p_value": 1.637733706374885e-19,
+      "kpss_statistic": 0.10121359450482433,
+      "kpss_p_value": 0.1,
+      "is_stationary": true,
+      "order_of_integration": 1,
+      "log_transformed": true
+    }
+  },
+  "granger": {
+    "optimal_lag": 1,
+    "selection_criterion": "bic",
+    "a_causes_b": {
+      "f_stat": 3.1714486550038794,
+      "p_value": 0.07742464414237071,
+      "p_value_fdr_adj": 0.19238850968710297,
+      "significant": false
+    },
+    "b_causes_a": {
+      "f_stat": 0.27810767688380394,
+      "p_value": 0.5989019152638191,
+      "p_value_fdr_adj": 0.7213389848043282,
+      "significant": false
+    }
+  },
+  "cointegration_engle_granger": {
+    "statistic": -5.959041335523457,
+    "p_value": 1.988794271979175e-06,
+    "cointegrated": true
+  },
+  "cointegration_johansen": {
+    "trace_statistic": [
+      27.489582383228154,
+      1.2113611397818105
+    ],
+    "critical_values": [
+      [
+        13.4294,
+        15.4943,
+        19.9349
+      ],
+      [
+        2.7055,
+        3.8415,
+        6.6349
+      ]
+    ],
+    "cointegration_rank": 1
+  },
+  "vecm": {
+    "cointegration_vector": [
+      1.0,
+      -1.5197380636658735
+    ],
+    "adjustment_speed": [
+      0.19736497849314327,
+      0.5007301670414794
+    ]
+  },
+  "warnings": []
+}

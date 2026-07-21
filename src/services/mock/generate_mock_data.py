@@ -196,6 +196,70 @@ ADDITIONAL_STATE_PAIRS: list[dict[str, Any]] = [
         "mx": {"code": "30", "abbr": "VER", "label": "Veracruz"},
         "us": {"code": "12", "abbr": "FL", "label": "Florida"},
     },
+    # --- Frontera: petroquimica (polo petroquímico de Tamaulipas) ---
+    {
+        "rng_index": 130,
+        "sector_id": "petroquimica",
+        "mx": {"code": "28", "abbr": "TAM", "label": "Tamaulipas"},
+        "us": {"code": "48", "abbr": "TX", "label": "Texas"},
+    },
+    {
+        "rng_index": 131,
+        "sector_id": "petroquimica",
+        "mx": {"code": "05", "abbr": "COA", "label": "Coahuila"},
+        "us": {"code": "48", "abbr": "TX", "label": "Texas"},
+    },
+    # --- Frontera: farmaceutica ---
+    {
+        "rng_index": 140,
+        "sector_id": "farmaceutica",
+        "mx": {"code": "02", "abbr": "BC", "label": "Baja California"},
+        "us": {"code": "06", "abbr": "CA", "label": "California"},
+    },
+    {
+        "rng_index": 141,
+        "sector_id": "farmaceutica",
+        "mx": {"code": "26", "abbr": "SON", "label": "Sonora"},
+        "us": {"code": "04", "abbr": "AZ", "label": "Arizona"},
+    },
+    # --- Frontera: eolica ---
+    {
+        "rng_index": 150,
+        "sector_id": "eolica",
+        "mx": {"code": "05", "abbr": "COA", "label": "Coahuila"},
+        "us": {"code": "48", "abbr": "TX", "label": "Texas"},
+    },
+    {
+        "rng_index": 151,
+        "sector_id": "eolica",
+        "mx": {"code": "26", "abbr": "SON", "label": "Sonora"},
+        "us": {"code": "04", "abbr": "AZ", "label": "Arizona"},
+    },
+    {
+        "rng_index": 152,
+        "sector_id": "eolica",
+        "mx": {"code": "28", "abbr": "TAM", "label": "Tamaulipas"},
+        "us": {"code": "48", "abbr": "TX", "label": "Texas"},
+    },
+    # --- Frontera: agroindustrial ---
+    {
+        "rng_index": 160,
+        "sector_id": "agroindustrial",
+        "mx": {"code": "05", "abbr": "COA", "label": "Coahuila"},
+        "us": {"code": "48", "abbr": "TX", "label": "Texas"},
+    },
+    {
+        "rng_index": 161,
+        "sector_id": "agroindustrial",
+        "mx": {"code": "26", "abbr": "SON", "label": "Sonora"},
+        "us": {"code": "04", "abbr": "AZ", "label": "Arizona"},
+    },
+    {
+        "rng_index": 162,
+        "sector_id": "agroindustrial",
+        "mx": {"code": "19", "abbr": "NL", "label": "Nuevo León"},
+        "us": {"code": "48", "abbr": "TX", "label": "Texas"},
+    },
 ]
 
 # --- Pares MX ↔ Canadá ---
