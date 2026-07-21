@@ -8,76 +8,76 @@
   },
   "series_a": {
     "id": "mx-nac_farmaceutica_emim",
-    "source": "INEGI - EMIM (mock)",
+    "source": "INEGI - IMAI (clave 736462)",
     "region": "NAC",
     "proxy_type": "output_index",
     "seasonal_adjustment": "nsa"
   },
   "series_b": {
     "id": "ca-nac_farmaceutica_sc",
-    "source": "Statistics Canada — Monthly GDP (mock)",
+    "source": "Statistics Canada — Monthly GDP (real)",
     "region": "NAC",
     "proxy_type": "output_index",
     "seasonal_adjustment": "nsa"
   },
   "sample": {
     "frequency_used": "monthly",
-    "start": "2010-01-31",
-    "end": "2026-06-30",
-    "n_obs": 198
+    "start": "2021-05-31",
+    "end": "2026-04-30",
+    "n_obs": 60
   },
-  "generated_at": "2026-07-21T20:22:40.118197+00:00",
-  "data_vintage": "2026-08-29",
+  "generated_at": "2026-07-21T20:26:41.540943+00:00",
+  "data_vintage": "2026-05-01",
   "data_vintage_detail": {
-    "a": "2026-08-14",
-    "b": "2026-08-29"
+    "a": "2026-05-01",
+    "b": "2026-04-01"
   },
   "insufficient_data": false,
   "stationarity": {
     "a": {
-      "adf_statistic": -3.9968598667539172,
-      "adf_p_value": 0.0014270434619208226,
-      "kpss_statistic": 0.16815714358318035,
+      "adf_statistic": -4.70127033129626,
+      "adf_p_value": 8.369159231132218e-05,
+      "kpss_statistic": 0.25463711578566445,
       "kpss_p_value": 0.1,
       "is_stationary": true,
-      "order_of_integration": 1,
+      "order_of_integration": 2,
       "log_transformed": true
     },
     "b": {
-      "adf_statistic": -3.3083378210767576,
-      "adf_p_value": 0.014509862653519121,
-      "kpss_statistic": 0.11675471772999084,
-      "kpss_p_value": 0.1,
-      "is_stationary": true,
-      "order_of_integration": 1,
+      "adf_statistic": -2.8171791930003494,
+      "adf_p_value": 0.055861434552023456,
+      "kpss_statistic": 0.4469346052327012,
+      "kpss_p_value": 0.05692473912383571,
+      "is_stationary": false,
+      "order_of_integration": 2,
       "log_transformed": true
     }
   },
   "granger": {
-    "optimal_lag": 1,
+    "optimal_lag": 2,
     "selection_criterion": "bic",
     "a_causes_b": {
-      "f_stat": 18.116101144698195,
-      "p_value": 2.612227812090853e-05,
-      "p_value_fdr_adj": 0.0004284053611828999,
-      "significant": true
+      "f_stat": 0.158340686396399,
+      "p_value": 0.853768335173706,
+      "p_value_fdr_adj": 0.928520075726978,
+      "significant": false
     },
     "b_causes_a": {
-      "f_stat": 0.344169855093412,
-      "p_value": 0.557775066894427,
-      "p_value_fdr_adj": 0.712701490789606,
+      "f_stat": 0.8795604899898464,
+      "p_value": 0.4180885586302972,
+      "p_value_fdr_adj": 0.7195012404335348,
       "significant": false
     }
   },
   "cointegration_engle_granger": {
-    "statistic": -9.281885152972498,
-    "p_value": 1.657242779800335e-14,
-    "cointegrated": true
+    "statistic": -1.4427504621289484,
+    "p_value": 0.782484423738685,
+    "cointegrated": false
   },
   "cointegration_johansen": {
     "trace_statistic": [
-      62.345605178595314,
-      1.1691750554815876
+      35.25583438800385,
+      7.820616782972615
     ],
     "critical_values": [
       [
@@ -91,17 +91,19 @@
         6.6349
       ]
     ],
-    "cointegration_rank": 1
+    "cointegration_rank": 2
   },
   "vecm": {
     "cointegration_vector": [
       1.0,
-      -1.2386002266728158
+      -9.450963668905698e-21
     ],
     "adjustment_speed": [
-      -0.24631116172533782,
-      0.33294707767413406
+      -0.7589781871144505,
+      -279.5766074926751
     ]
   },
-  "warnings": []
+  "warnings": [
+    "No se confirmó estacionariedad (ADF+KPSS) tras diferenciar 2 vez/veces (límite MAX_DIFF_ORDER=2); se usa este orden como mejor estimación disponible."
+  ]
 }

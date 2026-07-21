@@ -15,93 +15,30 @@
   },
   "series_b": {
     "id": "ca-ab_petroquimica_sc",
-    "source": "Statistics Canada — Manufacturing sales (mock)",
+    "source": "Statistics Canada — Manufacturing sales (Alberta, real)",
     "region": "48",
     "proxy_type": "output_index",
     "seasonal_adjustment": "nsa"
   },
   "sample": {
     "frequency_used": "quarterly",
-    "start": "2010-03-31",
+    "start": "2021-06-30",
     "end": "2026-06-30",
-    "n_obs": 66
+    "n_obs": 21
   },
-  "generated_at": "2026-07-21T20:22:40.219219+00:00",
+  "generated_at": "2026-07-21T20:26:41.609239+00:00",
   "data_vintage": "2026-10-03",
   "data_vintage_detail": {
     "a": "2026-10-03",
-    "b": "2026-08-29"
+    "b": "2026-05-01"
   },
-  "insufficient_data": false,
-  "stationarity": {
-    "a": {
-      "adf_statistic": -7.061875109096655,
-      "adf_p_value": 5.198400626166382e-10,
-      "kpss_statistic": 0.08036608000647644,
-      "kpss_p_value": 0.1,
-      "is_stationary": true,
-      "order_of_integration": 1,
-      "log_transformed": true
-    },
-    "b": {
-      "adf_statistic": -10.419023149542866,
-      "adf_p_value": 1.7240226869091577e-18,
-      "kpss_statistic": 0.04613616993703057,
-      "kpss_p_value": 0.1,
-      "is_stationary": true,
-      "order_of_integration": 1,
-      "log_transformed": true
-    }
-  },
-  "granger": {
-    "optimal_lag": 1,
-    "selection_criterion": "bic",
-    "a_causes_b": {
-      "f_stat": 9.025295044508429,
-      "p_value": 0.0032319632177183664,
-      "p_value_fdr_adj": 0.017668065590193738,
-      "significant": true
-    },
-    "b_causes_a": {
-      "f_stat": 0.7571123885386183,
-      "p_value": 0.3859425050768609,
-      "p_value_fdr_adj": 0.5754051893873199,
-      "significant": false
-    }
-  },
-  "cointegration_engle_granger": {
-    "statistic": -2.4866078818557953,
-    "p_value": 0.2850070897678913,
-    "cointegrated": false
-  },
-  "cointegration_johansen": {
-    "trace_statistic": [
-      18.989226663802878,
-      2.698173539046194
-    ],
-    "critical_values": [
-      [
-        13.4294,
-        15.4943,
-        19.9349
-      ],
-      [
-        2.7055,
-        3.8415,
-        6.6349
-      ]
-    ],
-    "cointegration_rank": 1
-  },
-  "vecm": {
-    "cointegration_vector": [
-      1.0,
-      -1.4152160431383436
-    ],
-    "adjustment_speed": [
-      -0.09398555449657582,
-      0.32837010204857314
-    ]
-  },
-  "warnings": []
+  "insufficient_data": true,
+  "warnings": [
+    "n_obs=21 < mínimo requerido=30 para frecuencia 'quarterly'; no se corrió el motor econométrico sobre este par (resultado se omite para evitar un estadístico espurio)."
+  ],
+  "stationarity": null,
+  "granger": null,
+  "cointegration_engle_granger": null,
+  "cointegration_johansen": null,
+  "vecm": null
 }

@@ -8,76 +8,76 @@
   },
   "series_a": {
     "id": "mx-nac_eolica_emim",
-    "source": "INEGI - EMIM (mock)",
+    "source": "INEGI - IMAI (clave 736491) [APROXIMACIÓN: SCIAN/NAICS 333611 (turbinas eólicas) no está desagregado en el catálogo IMAI ni en FRED; se usa el subsector 333 completo ('Fabricación de maquinaria y equipo') en ambos lados.]",
     "region": "NAC",
     "proxy_type": "output_index",
     "seasonal_adjustment": "nsa"
   },
   "series_b": {
     "id": "us-nac_eolica_ip",
-    "source": "FRED - Industrial Production (mock)",
+    "source": "FRED - IPG333N (Industrial Production)",
     "region": "NAC",
     "proxy_type": "output_index",
     "seasonal_adjustment": "nsa"
   },
   "sample": {
     "frequency_used": "monthly",
-    "start": "2010-01-31",
-    "end": "2026-06-30",
-    "n_obs": 198
+    "start": "1993-01-31",
+    "end": "2026-05-31",
+    "n_obs": 401
   },
-  "generated_at": "2026-07-21T20:22:39.769076+00:00",
-  "data_vintage": "2026-08-14",
+  "generated_at": "2026-07-21T20:26:41.102456+00:00",
+  "data_vintage": "2026-06-01",
   "data_vintage_detail": {
-    "a": "2026-08-14",
-    "b": "2026-07-15"
+    "a": "2026-05-01",
+    "b": "2026-06-01"
   },
   "insufficient_data": false,
   "stationarity": {
     "a": {
-      "adf_statistic": -7.719897009275167,
-      "adf_p_value": 1.2003881725073658e-11,
-      "kpss_statistic": 0.03503882842023476,
+      "adf_statistic": -5.9263352482114255,
+      "adf_p_value": 2.438729571794988e-07,
+      "kpss_statistic": 0.20063406562539327,
       "kpss_p_value": 0.1,
       "is_stationary": true,
       "order_of_integration": 1,
       "log_transformed": true
     },
     "b": {
-      "adf_statistic": -6.847347398129261,
-      "adf_p_value": 1.7292210102557155e-09,
-      "kpss_statistic": 0.026756951356896163,
+      "adf_statistic": -3.8940831896457784,
+      "adf_p_value": 0.002078825662485931,
+      "kpss_statistic": 0.29517794779671913,
       "kpss_p_value": 0.1,
       "is_stationary": true,
-      "order_of_integration": 1,
+      "order_of_integration": 0,
       "log_transformed": true
     }
   },
   "granger": {
-    "optimal_lag": 1,
+    "optimal_lag": 8,
     "selection_criterion": "bic",
     "a_causes_b": {
-      "f_stat": 6.5581889955270665,
-      "p_value": 0.010819695062054298,
-      "p_value_fdr_adj": 0.05080011170675888,
-      "significant": false
+      "f_stat": 26.3032296973265,
+      "p_value": 5.119390259896354e-36,
+      "p_value_fdr_adj": 3.788348792323302e-34,
+      "significant": true
     },
     "b_causes_a": {
-      "f_stat": 1.7797592407346772,
-      "p_value": 0.1829654336279335,
-      "p_value_fdr_adj": 0.3505866544846024,
-      "significant": false
+      "f_stat": 24.29415816014218,
+      "p_value": 2.3835342798186794e-33,
+      "p_value_fdr_adj": 8.819076835329114e-32,
+      "significant": true
     }
   },
   "cointegration_engle_granger": {
-    "statistic": -3.5850546968187014,
-    "p_value": 0.02556415009153609,
-    "cointegrated": true
+    "statistic": -2.4049478469641232,
+    "p_value": 0.32251515075170467,
+    "cointegrated": false
   },
   "cointegration_johansen": {
     "trace_statistic": [
-      10.698000768241304,
-      0.09519693009575377
+      79.36720851967749,
+      14.486507844549754
     ],
     "critical_values": [
       [
@@ -91,8 +91,17 @@
         6.6349
       ]
     ],
-    "cointegration_rank": 0
+    "cointegration_rank": 2
   },
-  "vecm": null,
+  "vecm": {
+    "cointegration_vector": [
+      1.0,
+      1.9717020129749078e-17
+    ],
+    "adjustment_speed": [
+      -0.36137602503464034,
+      -0.021667779465687115
+    ]
+  },
   "warnings": []
 }

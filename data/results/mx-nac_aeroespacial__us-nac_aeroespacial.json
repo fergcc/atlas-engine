@@ -8,45 +8,45 @@
   },
   "series_a": {
     "id": "mx-nac_aeroespacial_emim",
-    "source": "INEGI - EMIM (mock)",
+    "source": "INEGI - IMAI (clave 736515)",
     "region": "NAC",
     "proxy_type": "output_index",
     "seasonal_adjustment": "nsa"
   },
   "series_b": {
     "id": "us-nac_aeroespacial_ip",
-    "source": "FRED - Industrial Production (mock)",
+    "source": "FRED - IPG3364N (Industrial Production)",
     "region": "NAC",
     "proxy_type": "output_index",
     "seasonal_adjustment": "nsa"
   },
   "sample": {
     "frequency_used": "monthly",
-    "start": "2010-01-31",
-    "end": "2026-06-30",
-    "n_obs": 198
+    "start": "1993-01-31",
+    "end": "2026-05-31",
+    "n_obs": 401
   },
-  "generated_at": "2026-07-21T20:22:39.815390+00:00",
-  "data_vintage": "2026-08-14",
+  "generated_at": "2026-07-21T20:26:41.169465+00:00",
+  "data_vintage": "2026-06-01",
   "data_vintage_detail": {
-    "a": "2026-08-14",
-    "b": "2026-07-15"
+    "a": "2026-05-01",
+    "b": "2026-06-01"
   },
   "insufficient_data": false,
   "stationarity": {
     "a": {
-      "adf_statistic": -9.104087732584867,
-      "adf_p_value": 3.541018243386684e-15,
-      "kpss_statistic": 0.20993022638680545,
+      "adf_statistic": -7.28854396858259,
+      "adf_p_value": 1.4373424479214501e-10,
+      "kpss_statistic": 0.04148461522449975,
       "kpss_p_value": 0.1,
       "is_stationary": true,
       "order_of_integration": 1,
       "log_transformed": true
     },
     "b": {
-      "adf_statistic": -19.462265042625162,
-      "adf_p_value": 0.0,
-      "kpss_statistic": 0.1728798039124919,
+      "adf_statistic": -10.640098120227497,
+      "adf_p_value": 4.955401168827737e-19,
+      "kpss_statistic": 0.05438678679952856,
       "kpss_p_value": 0.1,
       "is_stationary": true,
       "order_of_integration": 1,
@@ -54,30 +54,30 @@
     }
   },
   "granger": {
-    "optimal_lag": 1,
+    "optimal_lag": 2,
     "selection_criterion": "bic",
     "a_causes_b": {
-      "f_stat": 1.344187320117806,
-      "p_value": 0.24701355581673143,
-      "p_value_fdr_adj": 0.44032851254286903,
+      "f_stat": 4.102930299564515,
+      "p_value": 0.016879408072098295,
+      "p_value_fdr_adj": 0.0734750704314867,
       "significant": false
     },
     "b_causes_a": {
-      "f_stat": 0.13867702509326862,
-      "p_value": 0.7098041600230103,
-      "p_value_fdr_adj": 0.7828586798644761,
+      "f_stat": 0.18169578767456032,
+      "p_value": 0.8338899840894864,
+      "p_value_fdr_adj": 0.9210128182480896,
       "significant": false
     }
   },
   "cointegration_engle_granger": {
-    "statistic": -2.6004139315196335,
-    "p_value": 0.23666324087188007,
+    "statistic": -1.2004102604578692,
+    "p_value": 0.8577934944583712,
     "cointegrated": false
   },
   "cointegration_johansen": {
     "trace_statistic": [
-      11.264663390616331,
-      1.0719689860429131
+      11.827791814859054,
+      0.33126051839372156
     ],
     "critical_values": [
       [

@@ -280,6 +280,10 @@ def _fetch_state_pair(
             if year and month and value:
                 us_pairs.append((f"{year}-{month:02d}-01", value))
 
+    if not us_pairs:
+        logger.info("BLS %s: no observations for state %s — skipping", bls_series_id, us_state_label)
+        return None
+
     us_meta = SeriesMeta(
         series_id=us_series_id,
         source=f"BLS - CES {bls_series_id} ({us_state_label})",
@@ -566,13 +570,17 @@ def run_live_pipeline() -> dict[str, Any]:
             logger.info("  %s: mock (INEGI no data for state %s)", pair_label, sp["mx_code"])
             continue
 
-        result = _fetch_state_pair(
-            sector,
-            mx_area_code=sp["mx_code"], mx_abbr=sp["mx_abbr"], mx_state_label=sp["mx_label"],
-            us_region_code=sp["us_code"], us_abbr=sp["us_abbr"], us_state_label=sp["us_label"],
-            us_disambiguator=sp.get("us_disambiguator"),
-            itaee_fallback=sp.get("itaee_fallback", False),
-        )
+        try:
+            result = _fetch_state_pair(
+                sector,
+                mx_area_code=sp["mx_code"], mx_abbr=sp["mx_abbr"], mx_state_label=sp["mx_label"],
+                us_region_code=sp["us_code"], us_abbr=sp["us_abbr"], us_state_label=sp["us_label"],
+                us_disambiguator=sp.get("us_disambiguator"),
+                itaee_fallback=sp.get("itaee_fallback", False),
+            )
+        except Exception as exc:
+            logger.warning("  %s: error fetching (%s), keeping mock", pair_label, exc)
+            result = None
         if result is not None:
             frames, labels = result
             series_lookup.update(frames)

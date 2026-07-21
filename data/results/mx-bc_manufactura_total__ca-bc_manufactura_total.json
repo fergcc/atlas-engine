@@ -8,100 +8,37 @@
   },
   "series_a": {
     "id": "mx-bc_manufactura_total_itaee",
-    "source": "INEGI - ITAEE (mock)",
+    "source": "INEGI - ITAEE (clave 741177)",
     "region": "02",
     "proxy_type": "output_index",
     "seasonal_adjustment": "nsa"
   },
   "series_b": {
     "id": "ca-bc_manufactura_total_sc",
-    "source": "Statistics Canada — Manufacturing sales (mock)",
+    "source": "Statistics Canada — Manufacturing sales (British Columbia, real)",
     "region": "59",
     "proxy_type": "output_index",
     "seasonal_adjustment": "nsa"
   },
   "sample": {
     "frequency_used": "quarterly",
-    "start": "2010-03-31",
-    "end": "2026-06-30",
-    "n_obs": 66
+    "start": "2021-06-30",
+    "end": "2025-12-31",
+    "n_obs": 19
   },
-  "generated_at": "2026-07-21T20:22:40.210394+00:00",
-  "data_vintage": "2026-10-03",
+  "generated_at": "2026-07-21T20:26:41.607864+00:00",
+  "data_vintage": "2026-04-01",
   "data_vintage_detail": {
-    "a": "2026-10-03",
-    "b": "2026-08-29"
+    "a": "2025-12-01",
+    "b": "2026-04-01"
   },
-  "insufficient_data": false,
-  "stationarity": {
-    "a": {
-      "adf_statistic": -8.236384537555336,
-      "adf_p_value": 5.874737772168669e-13,
-      "kpss_statistic": 0.1783141583727236,
-      "kpss_p_value": 0.1,
-      "is_stationary": true,
-      "order_of_integration": 1,
-      "log_transformed": true
-    },
-    "b": {
-      "adf_statistic": -8.393535414758297,
-      "adf_p_value": 2.331813498224967e-13,
-      "kpss_statistic": 0.15203324166216645,
-      "kpss_p_value": 0.1,
-      "is_stationary": true,
-      "order_of_integration": 1,
-      "log_transformed": true
-    }
-  },
-  "granger": {
-    "optimal_lag": 1,
-    "selection_criterion": "bic",
-    "a_causes_b": {
-      "f_stat": 1.6296516196507926,
-      "p_value": 0.2041758648195947,
-      "p_value_fdr_adj": 0.3805095662546992,
-      "significant": false
-    },
-    "b_causes_a": {
-      "f_stat": 0.4557082671597162,
-      "p_value": 0.5009139653366953,
-      "p_value_fdr_adj": 0.6845824192934836,
-      "significant": false
-    }
-  },
-  "cointegration_engle_granger": {
-    "statistic": -6.410273447372532,
-    "p_value": 2.011978117206948e-07,
-    "cointegrated": true
-  },
-  "cointegration_johansen": {
-    "trace_statistic": [
-      25.58092100983764,
-      0.015653909031571732
-    ],
-    "critical_values": [
-      [
-        13.4294,
-        15.4943,
-        19.9349
-      ],
-      [
-        2.7055,
-        3.8415,
-        6.6349
-      ]
-    ],
-    "cointegration_rank": 1
-  },
-  "vecm": {
-    "cointegration_vector": [
-      1.0,
-      -1.5033616836362846
-    ],
-    "adjustment_speed": [
-      -0.03311634120646956,
-      0.514891748668484
-    ]
-  },
-  "warnings": []
+  "insufficient_data": true,
+  "warnings": [
+    "n_obs=19 < mínimo requerido=30 para frecuencia 'quarterly'; no se corrió el motor econométrico sobre este par (resultado se omite para evitar un estadístico espurio)."
+  ],
+  "stationarity": null,
+  "granger": null,
+  "cointegration_engle_granger": null,
+  "cointegration_johansen": null,
+  "vecm": null
 }

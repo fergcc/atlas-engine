@@ -8,100 +8,37 @@
   },
   "series_a": {
     "id": "mx-chh_aeroespacial_itaee",
-    "source": "INEGI - ITAEE (mock)",
+    "source": "INEGI - ITAEE (clave 741651) [APROXIMACIÓN: ITAEE específico de este sector no existe en el catálogo estatal público de INEGI (la granularidad máxima es manufactura 31-33 total); se usa 741651 (ITAEE manufactura total) como mejor proxy disponible del lado MX.]",
     "region": "08",
     "proxy_type": "output_index",
     "seasonal_adjustment": "nsa"
   },
   "series_b": {
     "id": "ca-qc_aeroespacial_sc",
-    "source": "Statistics Canada — Manufacturing sales (mock)",
+    "source": "Statistics Canada — Manufacturing sales (Quebec, real)",
     "region": "24",
     "proxy_type": "output_index",
     "seasonal_adjustment": "nsa"
   },
   "sample": {
     "frequency_used": "quarterly",
-    "start": "2010-03-31",
-    "end": "2026-06-30",
-    "n_obs": 66
+    "start": "2021-06-30",
+    "end": "2025-12-31",
+    "n_obs": 19
   },
-  "generated_at": "2026-07-21T20:22:40.193162+00:00",
-  "data_vintage": "2026-10-03",
+  "generated_at": "2026-07-21T20:26:41.604692+00:00",
+  "data_vintage": "2026-05-01",
   "data_vintage_detail": {
-    "a": "2026-10-03",
-    "b": "2026-08-29"
+    "a": "2025-12-01",
+    "b": "2026-05-01"
   },
-  "insufficient_data": false,
-  "stationarity": {
-    "a": {
-      "adf_statistic": -7.975950555428721,
-      "adf_p_value": 2.702208861875871e-12,
-      "kpss_statistic": 0.14803666106141414,
-      "kpss_p_value": 0.1,
-      "is_stationary": true,
-      "order_of_integration": 1,
-      "log_transformed": true
-    },
-    "b": {
-      "adf_statistic": -10.067529296142695,
-      "adf_p_value": 1.284470562348797e-17,
-      "kpss_statistic": 0.16054294739348346,
-      "kpss_p_value": 0.1,
-      "is_stationary": true,
-      "order_of_integration": 1,
-      "log_transformed": true
-    }
-  },
-  "granger": {
-    "optimal_lag": 1,
-    "selection_criterion": "bic",
-    "a_causes_b": {
-      "f_stat": 6.194802881966247,
-      "p_value": 0.01416033813642266,
-      "p_value_fdr_adj": 0.058057386359332906,
-      "significant": false
-    },
-    "b_causes_a": {
-      "f_stat": 3.2353748504285744,
-      "p_value": 0.07453620636616244,
-      "p_value_fdr_adj": 0.19099902881329126,
-      "significant": false
-    }
-  },
-  "cointegration_engle_granger": {
-    "statistic": -5.338579033599861,
-    "p_value": 3.7463602188331816e-05,
-    "cointegrated": true
-  },
-  "cointegration_johansen": {
-    "trace_statistic": [
-      23.546110074612503,
-      0.028988929660206074
-    ],
-    "critical_values": [
-      [
-        13.4294,
-        15.4943,
-        19.9349
-      ],
-      [
-        2.7055,
-        3.8415,
-        6.6349
-      ]
-    ],
-    "cointegration_rank": 1
-  },
-  "vecm": {
-    "cointegration_vector": [
-      1.0,
-      -1.4908678264697524
-    ],
-    "adjustment_speed": [
-      -0.3174121078510829,
-      0.2867796021202188
-    ]
-  },
-  "warnings": []
+  "insufficient_data": true,
+  "warnings": [
+    "n_obs=19 < mínimo requerido=30 para frecuencia 'quarterly'; no se corrió el motor econométrico sobre este par (resultado se omite para evitar un estadístico espurio)."
+  ],
+  "stationarity": null,
+  "granger": null,
+  "cointegration_engle_granger": null,
+  "cointegration_johansen": null,
+  "vecm": null
 }
