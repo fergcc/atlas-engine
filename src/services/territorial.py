@@ -97,6 +97,11 @@ def compute_indicator_values(
     conagua_data = _load_conagua_if_needed(catalog, country)
     survey_data = _load_surveys_if_needed(catalog, country)
 
+    acs_data = _load_acs_if_needed(catalog, country)
+    ucr_data = _load_ucr_if_needed(catalog, country)
+    bls_state_data = _load_bls_state_if_needed(catalog, country)
+    cbp_data = _load_cbp_if_needed(catalog, country)
+
     rng = np.random.default_rng(42)
 
     results: list[dict[str, Any]] = []
@@ -104,7 +109,7 @@ def compute_indicator_values(
         region_name = _get_region_name(country, region_code)
         for ind in catalog:
             value, data_quality, note = _compute_value(
-                ind, country, region_code, rng, crime_data, censo_data, coneval_data, enoe_data, denue_data, conagua_data, survey_data
+                ind, country, region_code, rng, crime_data, censo_data, coneval_data, enoe_data, denue_data, conagua_data, survey_data, acs_data, ucr_data, bls_state_data, cbp_data
             )
 
             results.append({
@@ -143,72 +148,119 @@ def _compute_value(
     denue_data: dict[str, dict[str, int]] | None,
     conagua_data: dict[str, dict[str, float]] | None,
     survey_data: dict[str, dict[str, float]] | None,
+    acs_data: dict[str, dict[str, float]] | None = None,
+    ucr_data: dict[str, Any] | None = None,
+    bls_state_data: dict[str, dict[str, float]] | None = None,
+    cbp_data: dict[str, dict[str, int]] | None = None,
 ) -> tuple[float, str, str]:
     indicator_id = ind["id"]
 
-    if country != "MX":
+    def _mock() -> tuple[float, str, str]:
         value = rng.normal(50, 15)
         value = max(0, min(100, value))
-        return value, "synthetic", "Mock — only MX data sources wired"
+        return value, "synthetic", "Mock — no data source wired for this country/indicator"
 
-    # SESNSP crime indicators
-    if indicator_id in ("homicide_rate", "robbery_rate", "domestic_violence_rate"):
-        if crime_data:
-            value, dq, note = _crime_indicator_value(indicator_id, region_code, crime_data)
+    # ——— United States data sources ———
+    if country == "US":
+        # ACS census indicators
+        _acs_ids = {
+            "potable_water_access", "drainage_access", "internet_access",
+            "overcrowding", "self_built_housing", "talent_attraction",
+        }
+        if indicator_id in _acs_ids and acs_data:
+            value, dq, note = _acs_indicator_value(indicator_id, region_code, acs_data)
             if dq == "real":
                 return value, dq, note
 
-    # Censo 2020 indicators (land_tenure_vulnerability is NOT in ITER — stays mock)
-    _censo_ids = {
-        "potable_water_access", "drainage_access", "internet_access",
-        "overcrowding", "self_built_housing", "talent_attraction",
-    }
-    if indicator_id in _censo_ids and censo_data:
-        value, dq, note = _censo_indicator_value(indicator_id, region_code, censo_data)
-        if dq == "real":
-            return value, dq, note
+        # FBI UCR crime indicators
+        if indicator_id in ("homicide_rate", "robbery_rate", "domestic_violence_rate"):
+            if ucr_data:
+                value, dq, note = _ucr_indicator_value(indicator_id, region_code, ucr_data)
+                if dq == "real":
+                    return value, dq, note
 
-    # CONEVAL indicators
-    if indicator_id == "extreme_poverty" and coneval_data:
-        value, dq, note = _coneval_indicator_value(indicator_id, region_code, coneval_data)
-        if dq == "real":
-            return value, dq, note
+        # BLS state employment indicators
+        _bls_ids = {"employed_population", "female_employment", "hours_worked", "remuneration_level"}
+        if indicator_id in _bls_ids and bls_state_data:
+            value, dq, note = _bls_state_indicator_value(indicator_id, region_code, bls_state_data)
+            if dq == "real":
+                return value, dq, note
 
-    # ENOE employment indicators
-    _enoe_ids = {"employed_population", "female_employment", "hours_worked", "remuneration_level"}
-    if indicator_id in _enoe_ids and enoe_data:
-        value, dq, note = _enoe_indicator_value(indicator_id, region_code, enoe_data)
-        if dq == "real":
-            return value, dq, note
+        # Census CBP establishment indicators
+        _cbp_ids = {"foreign_capital_presence", "daycare_services", "innovation_economic_units"}
+        if indicator_id in _cbp_ids and cbp_data:
+            value, dq, note = _cbp_indicator_value(indicator_id, region_code, cbp_data)
+            if dq == "real":
+                return value, dq, note
 
-    # DENUE establishment indicators
-    _denue_ids = {"foreign_capital_presence", "daycare_services", "innovation_economic_units"}
-    if indicator_id in _denue_ids and denue_data:
-        value, dq, note = _denue_indicator_value(indicator_id, region_code, denue_data)
-        if dq == "real":
-            return value, dq, note
+        # Water: no US equivalent of CONAGUA wired yet — stays mock
+        # Surveys: no US equivalent wired yet — stays mock
+        # Poverty: no US equivalent wired yet — stays mock
 
-    # CONAGUA water indicators
-    _conagua_ids = {"water_stress", "water_consumption_intensity"}
-    if indicator_id in _conagua_ids and conagua_data:
-        value, dq, note = _conagua_indicator_value(indicator_id, region_code, conagua_data)
-        if dq == "real":
-            return value, dq, note
+        # Report mock for US indicators without real data
+        return _mock()
 
-    # Survey-based indicators (ENCIG, ENVE, ENAFIN, ENIGH)
-    _survey_ids = {"gov_paperwork_quantity", "gov_paperwork_costs", "tax_burden",
-                   "corruption_perception", "public_safety", "credit_access",
-                   "public_service_costs", "low_demand", "educated_personnel",
-                   "subcontracting_level", "continuous_training", "industrial_vacb_share",
-                   "land_tenure_vulnerability", "public_transport_usage", "avg_commute_time"}
-    if indicator_id in _survey_ids and survey_data:
-        value, dq, note = _survey_indicator_value(indicator_id, region_code, survey_data)
-        if dq == "real":
-            return value, dq, note
+    # ——— Mexico data sources ———
+    if country == "MX":
+        # SESNSP crime indicators
+        if indicator_id in ("homicide_rate", "robbery_rate", "domestic_violence_rate"):
+            if crime_data:
+                value, dq, note = _crime_indicator_value(indicator_id, region_code, crime_data)
+                if dq == "real":
+                    return value, dq, note
 
-    value = rng.normal(50, 15)
-    value = max(0, min(100, value))
-    return value, "synthetic", "Mock value — real data requires census/DENUE microdata access"
+        # Censo 2020 indicators
+        _censo_ids = {
+            "potable_water_access", "drainage_access", "internet_access",
+            "overcrowding", "self_built_housing", "talent_attraction",
+        }
+        if indicator_id in _censo_ids and censo_data:
+            value, dq, note = _censo_indicator_value(indicator_id, region_code, censo_data)
+            if dq == "real":
+                return value, dq, note
+
+        # CONEVAL indicators
+        if indicator_id == "extreme_poverty" and coneval_data:
+            value, dq, note = _coneval_indicator_value(indicator_id, region_code, coneval_data)
+            if dq == "real":
+                return value, dq, note
+
+        # ENOE employment indicators
+        _enoe_ids = {"employed_population", "female_employment", "hours_worked", "remuneration_level"}
+        if indicator_id in _enoe_ids and enoe_data:
+            value, dq, note = _enoe_indicator_value(indicator_id, region_code, enoe_data)
+            if dq == "real":
+                return value, dq, note
+
+        # DENUE establishment indicators
+        _denue_ids = {"foreign_capital_presence", "daycare_services", "innovation_economic_units"}
+        if indicator_id in _denue_ids and denue_data:
+            value, dq, note = _denue_indicator_value(indicator_id, region_code, denue_data)
+            if dq == "real":
+                return value, dq, note
+
+        # CONAGUA water indicators
+        _conagua_ids = {"water_stress", "water_consumption_intensity"}
+        if indicator_id in _conagua_ids and conagua_data:
+            value, dq, note = _conagua_indicator_value(indicator_id, region_code, conagua_data)
+            if dq == "real":
+                return value, dq, note
+
+        # Survey-based indicators
+        _survey_ids = {"gov_paperwork_quantity", "gov_paperwork_costs", "tax_burden",
+                       "corruption_perception", "public_safety", "credit_access",
+                       "public_service_costs", "low_demand", "educated_personnel",
+                       "subcontracting_level", "continuous_training", "industrial_vacb_share",
+                       "land_tenure_vulnerability", "public_transport_usage", "avg_commute_time"}
+        if indicator_id in _survey_ids and survey_data:
+            value, dq, note = _survey_indicator_value(indicator_id, region_code, survey_data)
+            if dq == "real":
+                return value, dq, note
+
+        return _mock()
+
+    # Other countries: all mock
+    return _mock()
 
 
 _SESNSP_CACHE: dict[str, Any] | None = None
@@ -830,3 +882,257 @@ def _survey_indicator_value(
             f"{name} — {src}, estatal, %",
         )
     return (0.0, "synthetic", f"Mock — sin datos para estado {region_code}")
+
+
+# ————————————————————————————————————————————
+# US Census ACS data loading and indicator computation
+# ————————————————————————————————————————————
+
+_ACS_CACHE: dict[str, dict[str, float]] | None = None
+_ACS_LOADED = False
+
+
+def _load_acs_if_needed(
+    catalog: list[dict[str, Any]], country: str
+) -> dict[str, dict[str, float]] | None:
+    global _ACS_CACHE, _ACS_LOADED
+    if _ACS_LOADED:
+        return _ACS_CACHE
+    _ACS_LOADED = True
+
+    if country != "US":
+        return None
+
+    acs_ids = {"potable_water_access", "drainage_access", "internet_access",
+               "overcrowding", "self_built_housing", "talent_attraction"}
+    if not any(ind["id"] in acs_ids for ind in catalog):
+        return None
+
+    try:
+        from src.services.ingestion.census_acs import parse_acs_data
+        data = parse_acs_data()
+        if not data:
+            logger.info("CensusACS: no data available")
+            return None
+        _ACS_CACHE = data
+        logger.info(f"CensusACS: loaded data for {len(data)} indicators")
+        return _ACS_CACHE
+    except Exception as exc:
+        logger.warning(f"CensusACS: failed to load ({exc}), using mock values")
+        return None
+
+
+def _acs_indicator_value(
+    indicator_id: str,
+    region_code: str,
+    acs_data: dict[str, dict[str, float]],
+) -> tuple[float, str, str]:
+    indicator_names = {
+        "potable_water_access": "Complete plumbing",
+        "drainage_access": "Sewer access",
+        "internet_access": "Broadband internet",
+        "overcrowding": "Overcrowding (>1.0/room)",
+        "self_built_housing": "Pre-1950 housing stock",
+        "talent_attraction": "Bachelor's degree+",
+    }
+
+    value = acs_data.get(indicator_id, {}).get(region_code)
+    if value is not None:
+        name = indicator_names.get(indicator_id, indicator_id)
+        return (
+            round(value, 2),
+            "real",
+            f"{name} — Census ACS 2022 5-year, state-level, %",
+        )
+    return (0.0, "synthetic", f"Mock — ACS no data for state {region_code}")
+
+
+# ————————————————————————————————————————————
+# FBI UCR data loading and indicator computation
+# ————————————————————————————————————————————
+
+_UCR_CACHE: dict[str, Any] | None = None
+_UCR_LOADED = False
+
+
+def _load_ucr_if_needed(
+    catalog: list[dict[str, Any]], country: str
+) -> dict[str, Any] | None:
+    global _UCR_CACHE, _UCR_LOADED
+    if _UCR_LOADED:
+        return _UCR_CACHE
+    _UCR_LOADED = True
+
+    if country != "US":
+        return None
+
+    crime_ids = {"homicide_rate", "robbery_rate", "domestic_violence_rate"}
+    if not any(ind["id"] in crime_ids for ind in catalog):
+        return None
+
+    try:
+        from src.services.ingestion.fbi_ucr import parse_ucr_data
+        data = parse_ucr_data()
+        if not data:
+            logger.info("FBI UCR: no data available, crime indicators will use mock values")
+            return None
+        _UCR_CACHE = {"data": data}
+        logger.info(f"FBI UCR: loaded crime data for {len(data)} indicators, "
+                    f"{len(data.get('homicide_rate', {}))} states")
+        return _UCR_CACHE
+    except Exception as exc:
+        logger.warning(f"FBI UCR: failed to load ({exc}), using mock values")
+        return None
+
+
+def _ucr_indicator_value(
+    indicator_id: str,
+    region_code: str,
+    ucr_data: dict[str, Any],
+) -> tuple[float, str, str]:
+    data = ucr_data.get("data", {})
+    indicator_data = data.get(indicator_id, {})
+    value = indicator_data.get(region_code)
+    if value is not None:
+        indicator_names = {
+            "homicide_rate": "Homicides",
+            "robbery_rate": "Robberies",
+            "domestic_violence_rate": "Aggravated assault",
+        }
+        name = indicator_names.get(indicator_id, indicator_id)
+        return (
+            round(float(value), 2),
+            "real",
+            f"{name} — FBI UCR, rate per 100k, state-level",
+        )
+    return (0.0, "synthetic", f"Mock — FBI UCR no data for state {region_code}")
+
+
+# ————————————————————————————————————————————
+# BLS state employment data loading and indicator computation
+# ————————————————————————————————————————————
+
+_BLS_STATE_CACHE: dict[str, dict[str, float]] | None = None
+_BLS_STATE_LOADED = False
+
+
+def _load_bls_state_if_needed(
+    catalog: list[dict[str, Any]], country: str
+) -> dict[str, dict[str, float]] | None:
+    global _BLS_STATE_CACHE, _BLS_STATE_LOADED
+    if _BLS_STATE_LOADED:
+        return _BLS_STATE_CACHE
+    _BLS_STATE_LOADED = True
+
+    if country != "US":
+        return None
+
+    bls_ids = {"employed_population", "female_employment", "hours_worked", "remuneration_level"}
+    if not any(ind["id"] in bls_ids for ind in catalog):
+        return None
+
+    try:
+        from src.services.ingestion.bls_state import parse_bls_state_data
+        data = parse_bls_state_data()
+        if not data:
+            logger.info("BLS State: no data available")
+            return None
+        _BLS_STATE_CACHE = data
+        logger.info(f"BLS State: loaded employment data for {len(data.get('employed_population', {}))} states")
+        return _BLS_STATE_CACHE
+    except Exception as exc:
+        logger.warning(f"BLS State: failed to load ({exc}), using mock values")
+        return None
+
+
+def _bls_state_indicator_value(
+    indicator_id: str,
+    region_code: str,
+    bls_state_data: dict[str, dict[str, float]],
+) -> tuple[float, str, str]:
+    indicator_names = {
+        "employed_population": "Employment rate",
+        "female_employment": "Labor force participation",
+        "hours_worked": "Avg weekly hours (mfg)",
+        "remuneration_level": "Avg hourly earnings (mfg)",
+    }
+    units = {
+        "employed_population": "%",
+        "female_employment": "%",
+        "hours_worked": "hours/week",
+        "remuneration_level": "USD/hr",
+    }
+
+    value = bls_state_data.get(indicator_id, {}).get(region_code)
+    if value is not None:
+        name = indicator_names.get(indicator_id, indicator_id)
+        unit = units.get(indicator_id, "")
+        return (
+            round(value, 2),
+            "real",
+            f"{name} — BLS LAUS/CES, state-level, {unit}",
+        )
+    return (0.0, "synthetic", f"Mock — BLS no data for state {region_code}")
+
+
+# ————————————————————————————————————————————
+# Census CBP data loading and indicator computation
+# ————————————————————————————————————————————
+
+_CBP_CACHE: dict[str, dict[str, int]] | None = None
+_CBP_LOADED = False
+
+
+def _load_cbp_if_needed(
+    catalog: list[dict[str, Any]], country: str
+) -> dict[str, dict[str, int]] | None:
+    global _CBP_CACHE, _CBP_LOADED
+    if _CBP_LOADED:
+        return _CBP_CACHE
+    _CBP_LOADED = True
+
+    if country != "US":
+        return None
+
+    cbp_ids = {"foreign_capital_presence", "daycare_services", "innovation_economic_units"}
+    if not any(ind["id"] in cbp_ids for ind in catalog):
+        return None
+
+    try:
+        from src.services.ingestion.census_cbp import get_cbp_counts
+        data = get_cbp_counts()
+        if not data:
+            logger.info("CensusCBP: no data available")
+            return None
+        _CBP_CACHE = data
+        states = len(data.get("foreign_capital_presence", {}))
+        logger.info(f"CensusCBP: loaded establishment counts for {states} states")
+        return _CBP_CACHE
+    except Exception as exc:
+        logger.warning(f"CensusCBP: failed to load ({exc}), using mock values")
+        return None
+
+
+def _cbp_indicator_value(
+    indicator_id: str,
+    region_code: str,
+    cbp_data: dict[str, dict[str, int]],
+) -> tuple[float, str, str]:
+    counts = cbp_data.get(indicator_id, {})
+    value = counts.get(region_code)
+
+    if value is None:
+        return (0.0, "synthetic", f"Mock — CBP no data for state {region_code}")
+
+    indicator_meta = {
+        "foreign_capital_presence": ("Manufacturing", "establishments (NAICS 31-33)"),
+        "daycare_services": ("Child day care", "establishments (NAICS 624410)"),
+        "innovation_economic_units": ("R&D + CSD", "establishments (NAICS 5417+5415)"),
+    }
+    name, unit = indicator_meta.get(indicator_id, (indicator_id, "establishments"))
+
+    return (
+        float(value),
+        "real",
+        f"{name} — Census CBP 2022, {unit}, total state",
+    )
