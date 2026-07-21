@@ -223,6 +223,7 @@ def _compute_value(
         _censo_ids = {
             "potable_water_access", "drainage_access", "internet_access",
             "overcrowding", "self_built_housing", "talent_attraction",
+            "public_transport_usage", "avg_commute_time",
         }
         if indicator_id in _censo_ids and censo_data:
             value, dq, note = _censo_indicator_value(indicator_id, region_code, censo_data)
@@ -230,13 +231,13 @@ def _compute_value(
                 return value, dq, note
 
         # CONEVAL indicators
-        if indicator_id == "extreme_poverty" and coneval_data:
+        if indicator_id in ("extreme_poverty", "land_tenure_vulnerability") and coneval_data:
             value, dq, note = _coneval_indicator_value(indicator_id, region_code, coneval_data)
             if dq == "real":
                 return value, dq, note
 
         # ENOE employment indicators
-        _enoe_ids = {"employed_population", "female_employment", "hours_worked", "remuneration_level"}
+        _enoe_ids = {"employed_population", "female_employment", "hours_worked", "remuneration_level", "educated_personnel"}
         if indicator_id in _enoe_ids and enoe_data:
             value, dq, note = _enoe_indicator_value(indicator_id, region_code, enoe_data)
             if dq == "real":
@@ -534,6 +535,8 @@ def _censo_indicator_value(
         "land_tenure_vulnerability": "Tenencia vulnerable",
         "self_built_housing": "Autoconstrucción (piso tierra)",
         "talent_attraction": "Atracción de talento",
+        "public_transport_usage": "Transporte público",
+        "avg_commute_time": "Tiempo traslado",
     }
     units = {
         "overcrowding": "%",
@@ -543,6 +546,8 @@ def _censo_indicator_value(
         "land_tenure_vulnerability": "%",
         "self_built_housing": "%",
         "talent_attraction": "%",
+        "public_transport_usage": "%",
+        "avg_commute_time": "min",
     }
 
     state_vals = get_state_aggregates(censo_data, indicator_id)
@@ -602,15 +607,20 @@ def _coneval_indicator_value(
 ) -> tuple[float, str, str]:
     from src.services.ingestion.coneval import get_state_aggregates
 
+    indicator_names = {
+        "extreme_poverty": "Pobreza extrema",
+        "land_tenure_vulnerability": "Tenencia vulnerable",
+    }
+
     state_vals = get_state_aggregates(coneval_data, indicator_id)
     value = state_vals.get(region_code)
     if value is not None:
+        name = indicator_names.get(indicator_id, indicator_id)
         return (
-            round(value, 2),
+            round(float(value), 2),
             "real",
-            f"Pobreza extrema — CONEVAL 2020, promedio municipal estatal, %",
+            f"{name} — CONEVAL 2020, promedio municipal estatal, %",
         )
-
     return (0.0, "synthetic", f"Mock — CONEVAL sin datos para estado {region_code}")
 
 
@@ -663,12 +673,14 @@ def _enoe_indicator_value(
         "female_employment": "Empleo femenino",
         "hours_worked": "Horas trabajadas",
         "remuneration_level": "Remuneración promedio",
+        "educated_personnel": "Personal educado",
     }
     units = {
         "employed_population": "%",
         "female_employment": "%",
         "hours_worked": "horas/semana",
         "remuneration_level": "MXN/mes",
+        "educated_personnel": "%",
     }
 
     state_vals = get_state_aggregates(enoe_data, indicator_id)

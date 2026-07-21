@@ -260,6 +260,44 @@ ADDITIONAL_STATE_PAIRS: list[dict[str, Any]] = [
         "mx": {"code": "19", "abbr": "NL", "label": "Nuevo León"},
         "us": {"code": "48", "abbr": "TX", "label": "Texas"},
     },
+    # --- Manufactura: corredores no fronterizos adicionales ---
+    {
+        "rng_index": 170,
+        "sector_id": "manufactura_total",
+        "mx": {"code": "08", "abbr": "CHH", "label": "Chihuahua"},
+        "us": {"code": "35", "abbr": "NM", "label": "New Mexico"},
+    },
+    {
+        "rng_index": 171,
+        "sector_id": "manufactura_total",
+        "mx": {"code": "19", "abbr": "NL", "label": "Nuevo León"},
+        "us": {"code": "26", "abbr": "MI", "label": "Michigan"},
+    },
+    {
+        "rng_index": 172,
+        "sector_id": "manufactura_total",
+        "mx": {"code": "11", "abbr": "GUA", "label": "Guanajuato"},
+        "us": {"code": "17", "abbr": "IL", "label": "Illinois"},
+    },
+    {
+        "rng_index": 173,
+        "sector_id": "manufactura_total",
+        "mx": {"code": "14", "abbr": "JAL", "label": "Jalisco"},
+        "us": {"code": "06", "abbr": "CA", "label": "California"},
+    },
+    # --- Agroindustrial: corredores adicionales ---
+    {
+        "rng_index": 180,
+        "sector_id": "agroindustrial",
+        "mx": {"code": "08", "abbr": "CHH", "label": "Chihuahua"},
+        "us": {"code": "35", "abbr": "NM", "label": "New Mexico"},
+    },
+    {
+        "rng_index": 181,
+        "sector_id": "agroindustrial",
+        "mx": {"code": "14", "abbr": "JAL", "label": "Jalisco"},
+        "us": {"code": "06", "abbr": "CA", "label": "California"},
+    },
 ]
 
 # --- Pares MX ↔ Canadá ---

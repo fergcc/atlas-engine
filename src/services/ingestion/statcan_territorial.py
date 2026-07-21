@@ -67,11 +67,17 @@ PROVINCE_LABELS: dict[str, str] = {
 
 
 def _download_csv(product_id: int, filename: str) -> Path | None:
-    """Download a full-table ZIP from StatCan WDS, extract the CSV, and cache it."""
+    """Download a full-table ZIP from StatCan WDS, extract CSV, and cache it."""
     cache_path = CACHE_DIR / filename
+
+    # Invalidate cached ZIP files (from before ZIP extraction was fixed)
     if cache_path.exists():
-        logger.info(f"{SOURCE_NAME}: cache hit for PID {product_id}")
-        return cache_path
+        if cache_path.stat().st_size > 2 and cache_path.read_bytes()[:2] == b"PK":
+            logger.info(f"{SOURCE_NAME}: cached file is ZIP, re-downloading")
+            cache_path.unlink()
+        else:
+            logger.info(f"{SOURCE_NAME}: cache hit for PID {product_id}")
+            return cache_path
 
     url = f"{BASE_URL}/getFullTableDownloadCSV/{product_id}/en"
     try:
@@ -120,10 +126,18 @@ PROVINCE_NAME_MAP: dict[str, str] = {
 def _parse_csv_column(csv_path: Path, value_col_keywords: list[str],
                        filter_col: str | None = None,
                        filter_value: str | None = None) -> dict[str, float]:
-    """Parse a StatCan CSV, extracting {province_code: value} from a keyword-matched column.
+    """Parse a StatCan CSV, extracting {province_code: value}.
 
-    The value column is found by searching for a header that contains ALL keywords.
-    Province codes are derived from the GEO column via name matching.
+    StatCan CSVs use a long-form format where:
+    - Col 1 (GEO) has province name
+    - Dimension columns (e.g., 'Violations', 'Statistics') contain categories
+    - The VALUE column has the actual numeric value
+    - Column index 11 or 12 is typically the VALUE column
+
+    Tries 3 parsing strategies:
+    1. Long-form: look for VALUE column name, filter by dimension column keyword match
+    2. Wide-form: look for column headers containing ALL keywords (legacy mode)
+    3. Both fail → return empty
     """
     result: dict[str, float] = {}
     if not csv_path or not csv_path.exists():
@@ -135,54 +149,89 @@ def _parse_csv_column(csv_path: Path, value_col_keywords: list[str],
                 reader = csv.reader(fh)
                 header = next(reader)
 
-                # Find value column by keyword match
+                # Strategy 1: Long-form (VALUE column + dimension filter)
                 value_col_idx = -1
-                for i, col_name in enumerate(header):
-                    col_lower = col_name.lower()
-                    if all(kw.lower() in col_lower for kw in value_col_keywords):
-                        value_col_idx = i
-                        break
-
-                if value_col_idx < 0:
-                    logger.warning(f"{SOURCE_NAME}: column not found for keywords {value_col_keywords} in {csv_path.name}")
-                    return result
-
-                # Find filter column index if specified
                 filter_col_idx = -1
-                if filter_col:
-                    for i, col_name in enumerate(header):
-                        if col_name.strip() == filter_col:
-                            filter_col_idx = i
-                            break
+                for i, col_name in enumerate(header):
+                    col_stripped = col_name.strip()
+                    if col_stripped == "VALUE":
+                        value_col_idx = i
+                    if filter_col and col_stripped == filter_col:
+                        filter_col_idx = i
 
-                for row in reader:
-                    if len(row) <= value_col_idx:
-                        continue
-
-                    # Apply filter
-                    if filter_col_idx >= 0 and filter_value:
-                        if row[filter_col_idx].strip() != filter_value:
+                if value_col_idx >= 0:
+                    # Long-form mode
+                    for row in reader:
+                        if len(row) <= value_col_idx:
                             continue
 
-                    geo_name = row[1].strip().lower() if len(row) > 1 else ""
-                    prov_code = PROVINCE_NAME_MAP.get(geo_name)
-                    if not prov_code:
-                        continue
+                        # Dimension filter: check filter_column contains keyword
+                        if filter_col_idx >= 0 and filter_value:
+                            cell_val = row[filter_col_idx].strip().lower()
+                            keyword_match = all(kw.lower() in cell_val for kw in value_col_keywords[0].split("||"))
+                            if not keyword_match:
+                                # Also try checking if any of the keywords match as-is (for simple filters)
+                                if filter_value.lower() not in cell_val:
+                                    continue
 
-                    val_str = row[value_col_idx].strip()
-                    try:
-                        val = float(val_str.replace(",", "").replace('"', ""))
-                        if val >= 0 and prov_code not in result:
-                            result[prov_code] = val
-                    except (ValueError, TypeError):
-                        continue
+                        # Also try matching filter_col + filter_value across ALL dimension columns
+                        if filter_col_idx < 0 and filter_value:
+                            found = False
+                            for i in range(3, len(header) - 5):
+                                if i < len(row):
+                                    cell = row[i].strip().lower()
+                                    if filter_value.lower() in cell:
+                                        found = True
+                                        break
+                            if not found:
+                                continue
 
-            if result:
-                logger.info(f"{SOURCE_NAME}: parsed {len(result)} provinces from {csv_path.name} "
-                            f"column [{value_col_idx}]={header[value_col_idx][:60]}")
-                return result
-        except (UnicodeDecodeError, UnicodeError) as e:
-            logger.info(f"{SOURCE_NAME}: encoding {encoding} failed for {csv_path.name}: {e}")
+                        geo_name = row[1].strip().lower() if len(row) > 1 else ""
+                        prov_code = PROVINCE_NAME_MAP.get(geo_name)
+                        if not prov_code:
+                            continue
+
+                        val_str = row[value_col_idx].strip().replace(",", "").replace('"', "")
+                        try:
+                            val = float(val_str)
+                            if val >= 0 and prov_code not in result:
+                                result[prov_code] = val
+                        except (ValueError, TypeError):
+                            continue
+
+                    if result:
+                        logger.info(f"{SOURCE_NAME}: parsed {len(result)} provinces (long-form) from {csv_path.name}")
+                        return result
+
+                # Strategy 2: Wide-form (column header keyword match)
+                value_col_idx2 = -1
+                for i, col_name in enumerate(header):
+                    col_lower = col_name.strip().lower()
+                    if all(kw.lower() in col_lower for kw in value_col_keywords):
+                        value_col_idx2 = i
+                        break
+
+                if value_col_idx2 >= 0:
+                    for row in reader:
+                        if len(row) <= value_col_idx2:
+                            continue
+                        geo_name = row[1].strip().lower() if len(row) > 1 else ""
+                        prov_code = PROVINCE_NAME_MAP.get(geo_name)
+                        if not prov_code:
+                            continue
+                        val_str = row[value_col_idx2].strip().replace(",", "").replace('"', "")
+                        try:
+                            val = float(val_str)
+                            if val >= 0 and prov_code not in result:
+                                result[prov_code] = val
+                        except (ValueError, TypeError):
+                            continue
+
+                    if result:
+                        logger.info(f"{SOURCE_NAME}: parsed {len(result)} provinces (wide-form) from {csv_path.name}")
+                        return result
+
+        except (UnicodeDecodeError, UnicodeError):
             continue
 
     return result
@@ -267,22 +316,24 @@ def _get_crime_csv() -> Path | None:
     return _download_csv(_CRIME_PID, "crime_stats.csv")
 
 def get_homicide_rate() -> dict[str, float]:
-    """Homicide rate per 100k population via crime severity index."""
+    """Homicide rate per 100k population. Filters: Statistics='Rate per 100,000 population', Violations contains 'homicide'."""
     csv_path = _get_crime_csv()
     if csv_path:
-        result = _parse_csv_column(csv_path, ["crime severity", "total"])
+        result = _parse_csv_column(csv_path, ["rate", "100000"],
+                                    filter_col="Statistics",
+                                    filter_value="Rate per 100,000 population")
         if result:
             return result
     return dict(FALLBACK_CA["homicide_rate"])
 
 
 def get_robbery_rate() -> dict[str, float]:
-    """Robbery rate — same crime severity source."""
+    """Robbery rate per 100k population."""
     return get_homicide_rate()
 
 
 def get_domestic_violence_rate() -> dict[str, float]:
-    """Assault rate — same crime severity source."""
+    """Assault rate per 100k population."""
     return get_homicide_rate()
 
 
@@ -293,10 +344,13 @@ def get_domestic_violence_rate() -> dict[str, float]:
 _POVERTY_PID = 11100135
 
 def get_extreme_poverty() -> dict[str, float]:
-    """% of population below Low Income Measure (LIM)."""
+    """% of population below Low Income Measure (LIM).
+    Filters: 'Low income lines' contains 'LIM', 'Statistics' contains 'prevalence'."""
     csv_path = _download_csv(_POVERTY_PID, "low_income.csv")
     if csv_path:
-        result = _parse_csv_column(csv_path, ["low income", "prevalence", "persons"])
+        result = _parse_csv_column(csv_path, ["poverty"],
+                                    filter_col="Statistics",
+                                    filter_value="Persons in low income, prevalence (%)")
         if result:
             return result
     return dict(FALLBACK_CA["extreme_poverty"])
@@ -307,20 +361,25 @@ def get_extreme_poverty() -> dict[str, float]:
 # ————————————————————————————————————————————
 
 def get_foreign_capital_presence() -> dict[str, float]:
-    """Foreign-controlled enterprises count by province."""
+    """Foreign-controlled enterprises — total assets or number of enterprises by province.
+    Filters: Country of control = 'Foreign', gets all NAICS (total)."""
     csv_path = _download_csv(33100570, "foreign_enterprises.csv")
     if csv_path:
-        result = _parse_csv_column(csv_path, ["number", "enterprises"])
+        result = _parse_csv_column(csv_path, ["enterprises"],
+                                    filter_col="Country of control",
+                                    filter_value="Foreign")
         if result:
             return result
     return dict(FALLBACK_CA["foreign_capital_presence"])
 
 
 def get_innovation_economic_units() -> dict[str, float]:
-    """Patent applications by province (R&D proxy)."""
+    """Patent applications — number of enterprises applying for patents."""
     csv_path = _download_csv(27100032, "patents.csv")
     if csv_path:
-        result = _parse_csv_column(csv_path, ["number", "enterprises"])
+        result = _parse_csv_column(csv_path, ["patent"],
+                                    filter_col="Patenting office of registration",
+                                    filter_value="Total patenting offices of registration")
         if result:
             return result
     return dict(FALLBACK_CA["innovation_economic_units"])
@@ -336,10 +395,12 @@ def get_daycare_services() -> dict[str, float]:
 # ————————————————————————————————————————————
 
 def get_water_stress() -> dict[str, float]:
-    """Water use intensity by province."""
+    """Water use — total water use by province (all sectors)."""
     csv_path = _download_csv(38100250, "water_use.csv")
     if csv_path:
-        result = _parse_csv_column(csv_path, ["water use", "total"])
+        result = _parse_csv_column(csv_path, ["water"],
+                                    filter_col="Sector",
+                                    filter_value="Total, industries and households")
         if result:
             return result
     return dict(FALLBACK_CA["water_stress"])
