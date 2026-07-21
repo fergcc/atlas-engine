@@ -1,586 +1,380 @@
-# Catálogo de los 34 indicadores territoriales del Atlas Prospectivo
-# Territorial-Industrial (metodología ONU-Habitat/Scientika 2021).
-#
-# Cada indicador sigue la plantilla estandarizada del PDF:
-#   justificación → definición → unidad → metodología → fuente → variables
-#
-# Fase A: Atributos Urbanos (14 indicadores, 3 temas)
-# Fase B: Diagnóstico Socioambiental (20 indicadores, 6 temas)
-
 indicators:
-  # ========================================================================
-  # FASE A: ATRIBUTOS URBANOS
-  # ========================================================================
-
-  # --- Tema 1: Concentración industrial y capital extranjero ---
-
-  - id: industrial_vacb_share
-    name: "VACB Industrial"
-    name_en: "Industrial Gross Value Added (Census)"
-    phase: A
-    theme: industrial_concentration
-    subtheme: industrial_concentration_foreign_capital
-    unit: "%"
-    methodology: "Porcentaje del VACB del sector 31-33 respecto al VACB total municipal"
-    source: "Censo Económico, INEGI"
-    source_variables:
-      - "VACB total municipal"
-      - "VACB manufactura (SCIAN 31-33)"
-    standardization: z_score
-    polarity: positive
-    notes: "Requiere microdatos del Censo Económico a nivel municipal. Actualización quinquenal."
-
-  - id: foreign_capital_presence
-    name: "Presencia de capital extranjero"
-    name_en: "Foreign capital presence"
-    phase: A
-    theme: industrial_concentration
-    subtheme: industrial_concentration_foreign_capital
-    unit: "%"
-    methodology: "Porcentaje de unidades económicas con participación de capital extranjero (IMMEX, ALTEX, ECEX) respecto al total de unidades manufactureras del municipio"
-    source: "DENUE + IMMEX/ALTEX/ECEX, INEGI / Secretaría de Economía"
-    source_variables:
-      - "Total de unidades económicas manufactureras en el municipio"
-      - "Unidades IMMEX + ALTEX + ECEX en el municipio"
-    standardization: z_score
-    polarity: positive
-    notes: "DENUE se actualiza mensualmente. IMMEX es programa de la SE."
-
-  # --- Tema 2: Innovación, capital humano y personal especializado ---
-
-  - id: talent_attraction
-    name: "Atracción de talento"
-    name_en: "Talent attraction"
-    phase: A
-    theme: innovation_human_capital
-    subtheme: innovation_human_capital_personnel
-    unit: "%"
-    methodology: "Porcentaje de la PEA ocupada con educación superior (licenciatura o posgrado) en el municipio respecto al total de la PEA ocupada municipal"
-    source: "Censo de Población y Vivienda / Encuesta Intercensal, INEGI"
-    source_variables:
-      - "PEA ocupada total municipal"
-      - "PEA ocupada con nivel licenciatura o posgrado"
-    standardization: z_score
-    polarity: positive
-    notes: "Actualización decenal (censo) o quinquenal (intercensal)."
-
-  - id: innovation_economic_units
-    name: "Innovación en unidades económicas"
-    name_en: "Innovation in economic units"
-    phase: A
-    theme: innovation_human_capital
-    subtheme: innovation_human_capital_personnel
-    unit: "%"
-    methodology: "Porcentaje de unidades económicas registradas en RENIECYT respecto al total de unidades del sector 31-33 en el municipio"
-    source: "RENIECYT, CONAHCYT / DENUE, INEGI"
-    source_variables:
-      - "Unidades RENIECYT en el municipio"
-      - "Total de unidades económicas SCIAN 31-33"
-    standardization: z_score
-    polarity: positive
-    notes: "RENIECYT = Registro Nacional de Instituciones y Empresas Científicas y Tecnológicas."
-
-  - id: educated_personnel
-    name: "Personal con educación superior"
-    name_en: "Personnel with higher education"
-    phase: A
-    theme: innovation_human_capital
-    subtheme: innovation_human_capital_personnel
-    unit: "%"
-    methodology: "Porcentaje del personal ocupado en el sector manufacturero (31-33) con estudios de licenciatura o posgrado"
-    source: "Censo Económico, INEGI"
-    source_variables:
-      - "Personal ocupado total en manufactura (31-33)"
-      - "Personal ocupado con educación superior en manufactura"
-    standardization: z_score
-    polarity: positive
-    notes: "Requiere tabulados del Censo Económico con cruce sector-educación."
-
-  - id: continuous_training
-    name: "Capacitación continua"
-    name_en: "Continuous training"
-    phase: A
-    theme: innovation_human_capital
-    subtheme: innovation_human_capital_personnel
-    unit: "%"
-    methodology: "Porcentaje de unidades económicas manufactureras que reportan haber proporcionado capacitación a su personal en el último año"
-    source: "Censo Económico, INEGI"
-    source_variables:
-      - "Unidades manufactureras que capacitaron personal"
-      - "Total de unidades manufactureras"
-    standardization: z_score
-    polarity: positive
-    notes: "Pregunta específica del cuestionario ampliado del Censo Económico."
-
-  # --- Tema 3: Capacidad gubernamental y problemas de la industria ---
-
-  - id: gov_paperwork_quantity
-    name: "Trámites gubernamentales (cantidad)"
-    name_en: "Government paperwork (quantity)"
-    phase: A
-    theme: government_capacity
-    subtheme: local_government_capacity_industry_problems
-    unit: "promedio"
-    methodology: "Promedio de trámites que las unidades económicas reportan realizar ante los tres niveles de gobierno"
-    source: "Encuesta Nacional de Calidad e Impacto Gubernamental (ENCIG), INEGI"
-    source_variables:
-      - "Número de trámites realizados por unidad económica"
-    standardization: z_score
-    polarity: negative
-    notes: "ENCIG tiene representatividad nacional y por entidad federativa."
-
-  - id: gov_paperwork_costs
-    name: "Costos de trámites gubernamentales"
-    name_en: "Government paperwork (costs)"
-    phase: A
-    theme: government_capacity
-    subtheme: local_government_capacity_industry_problems
-    unit: "promedio (MXN)"
-    methodology: "Percepción del costo de los trámites como proporción de los ingresos de la unidad económica (escala Likert o promedio monetario)"
-    source: "ENCIG, INEGI"
-    source_variables:
-      - "Costo percibido de trámites (escala)"
-    standardization: z_score
-    polarity: negative
-    notes: "Costos incluyen tanto pagos oficiales como tiempos muertos."
-
-  - id: tax_burden
-    name: "Carga tributaria"
-    name_en: "Taxes"
-    phase: A
-    theme: government_capacity
-    subtheme: local_government_capacity_industry_problems
-    unit: "%"
-    methodology: "Porcentaje de unidades económicas que reportan los impuestos como un obstáculo alto o muy alto para su operación"
-    source: "ENCIG / Encuesta Nacional de Competitividad, INEGI-IMCO"
-    source_variables:
-      - "Unidades que reportan impuestos como obstáculo alto/muy alto"
-    standardization: z_score
-    polarity: negative
-    notes: "Se usa la percepción como proxy de presión fiscal efectiva."
-
-  - id: public_service_costs
-    name: "Costos de servicios públicos"
-    name_en: "Public service costs"
-    phase: A
-    theme: government_capacity
-    subtheme: local_government_capacity_industry_problems
-    unit: "%"
-    methodology: "Porcentaje de unidades económicas que reportan el costo de energía eléctrica, agua y gas como un obstáculo alto para su operación"
-    source: "ENOE / Censo Económico, INEGI"
-    source_variables:
-      - "Unidades que reportan altos costos de servicios"
-    standardization: z_score
-    polarity: negative
-    notes: "Incluye energía eléctrica, agua, gas y telecomunicaciones."
-
-  - id: corruption_perception
-    name: "Percepción de corrupción"
-    name_en: "Corruption"
-    phase: A
-    theme: government_capacity
-    subtheme: local_government_capacity_industry_problems
-    unit: "%"
-    methodology: "Tasa de prevalencia de corrupción: porcentaje de unidades económicas que experimentaron al menos un acto de corrupción en trámites durante el último año"
-    source: "ENCIG, INEGI"
-    source_variables:
-      - "Unidades que experimentaron corrupción"
-      - "Total de unidades que realizaron trámites"
-    standardization: z_score
-    polarity: negative
-    notes: "Indicador oficial de la ENCIG; metodología documentada por INEGI."
-
-  - id: public_safety
-    name: "Seguridad pública"
-    name_en: "Public safety"
-    phase: A
-    theme: government_capacity
-    subtheme: local_government_capacity_industry_problems
-    unit: "%"
-    methodology: "Porcentaje de unidades económicas que reportan la inseguridad como el principal obstáculo para su operación"
-    source: "Encuesta Nacional de Victimización de Empresas (ENVE), INEGI"
-    source_variables:
-      - "Unidades que reportan inseguridad como principal obstáculo"
-      - "Total de unidades encuestadas"
-    standardization: z_score
-    polarity: negative
-    notes: "ENVE tiene cobertura nacional con representatividad por entidad."
-
-  - id: credit_access
-    name: "Acceso al crédito"
-    name_en: "Lack of credit"
-    phase: A
-    theme: government_capacity
-    subtheme: local_government_capacity_industry_problems
-    unit: "%"
-    methodology: "Porcentaje de unidades económicas que identifican la falta de acceso al crédito como un obstáculo alto o muy alto"
-    source: "Encuesta Nacional de Financiamiento de las Empresas (ENAFIN), INEGI"
-    source_variables:
-      - "Unidades que reportan falta de crédito como obstáculo"
-    standardization: z_score
-    polarity: negative
-    notes: "ENAFIN se levanta cada 3-4 años con representatividad por tamaño de empresa y sector."
-
-  - id: low_demand
-    name: "Baja demanda"
-    name_en: "Low demand"
-    phase: A
-    theme: government_capacity
-    subtheme: local_government_capacity_industry_problems
-    unit: "%"
-    methodology: "Porcentaje de unidades económicas que reportan la baja demanda de sus productos como el principal obstáculo para su crecimiento"
-    source: "Censo Económico / Encuesta de Coyuntura, INEGI"
-    source_variables:
-      - "Unidades que reportan baja demanda como obstáculo principal"
-    standardization: z_score
-    polarity: negative
-    notes: "Proxy del dinamismo del mercado local."
-
-  # ========================================================================
-  # FASE B: DIAGNÓSTICO SOCIOAMBIENTAL
-  # ========================================================================
-
-  # --- Tema 4: Caracterización del empleo ---
-
-  - id: employed_population
-    name: "Población ocupada"
-    name_en: "Employed population"
-    phase: B
-    theme: employment
-    subtheme: employment_characterization
-    unit: "%"
-    methodology: "Tasa de ocupación: porcentaje de la PEA que se encuentra ocupada"
-    source: "ENOE, INEGI"
-    source_variables:
-      - "PEA ocupada"
-      - "PEA total"
-    standardization: z_score
-    polarity: positive
-    notes: "ENOE tiene representatividad por entidad federativa y ciudad."
-
-  - id: female_employment
-    name: "Empleo femenino (edad reproductiva)"
-    name_en: "Female employment (reproductive age)"
-    phase: B
-    theme: employment
-    subtheme: employment_characterization
-    unit: "%"
-    methodology: "Porcentaje de mujeres de 15 a 49 años que están ocupadas respecto al total de mujeres en ese rango de edad"
-    source: "ENOE / Censo de Población, INEGI"
-    source_variables:
-      - "Mujeres ocupadas de 15 a 49 años"
-      - "Total de mujeres de 15 a 49 años"
-    standardization: z_score
-    polarity: positive
-    notes: "Indicador de inclusión laboral femenina y disponibilidad de fuerza de trabajo."
-
-  - id: subcontracting_level
-    name: "Nivel de subcontratación"
-    name_en: "Subcontracting level"
-    phase: B
-    theme: employment
-    subtheme: employment_characterization
-    unit: "%"
-    methodology: "Porcentaje del personal ocupado en manufactura que está contratado vía outsourcing o servicios de personal respecto al total"
-    source: "Censo Económico, INEGI"
-    source_variables:
-      - "Personal subcontratado en manufactura"
-      - "Personal ocupado total en manufactura"
-    standardization: z_score
-    polarity: neutral
-    notes: "La reforma de subcontratación de 2021 limitó el outsourcing; es relevante rastrear el cumplimiento."
-
-  - id: daycare_services
-    name: "Servicios de guardería"
-    name_en: "Daycare services"
-    phase: B
-    theme: employment
-    subtheme: employment_characterization
-    unit: "tasa por cada 1,000"
-    methodology: "Número de establecimientos de guardería y cuidado infantil por cada 1,000 niños de 0 a 4 años en el municipio"
-    source: "DENUE, INEGI / Censo de Población"
-    source_variables:
-      - "Establecimientos de guardería (SCIAN 624410)"
-      - "Población de 0 a 4 años"
-    standardization: z_score
-    polarity: positive
-    notes: "Facilita la inserción laboral femenina en la industria."
-
-  - id: remuneration_level
-    name: "Nivel de remuneración"
-    name_en: "Remuneration"
-    phase: B
-    theme: employment
-    subtheme: employment_characterization
-    unit: "MXN promedio mensual"
-    methodology: "Remuneración promedio mensual del personal ocupado en el sector manufacturero (31-33) en el municipio"
-    source: "Censo Económico, INEGI"
-    source_variables:
-      - "Remuneraciones totales en manufactura"
-      - "Personal ocupado total en manufactura"
-    standardization: z_score
-    polarity: positive
-    notes: "Altas remuneraciones indican mayor productividad, pero también mayores costos laborales."
-
-  - id: hours_worked
-    name: "Horas trabajadas"
-    name_en: "Hours worked"
-    phase: B
-    theme: employment
-    subtheme: employment_characterization
-    unit: "horas promedio semanales"
-    methodology: "Promedio de horas trabajadas por semana por la PEA ocupada en el municipio"
-    source: "ENOE, INEGI"
-    source_variables:
-      - "Horas trabajadas semanalmente (promedio)"
-    standardization: z_score
-    polarity: neutral
-    notes: "Más horas pueden indicar mayor disponibilidad laboral o condiciones precarias."
-
-  # --- Tema 5: Movilidad ---
-
-  - id: public_transport_usage
-    name: "Uso de transporte público"
-    name_en: "Public transport usage"
-    phase: B
-    theme: mobility
-    subtheme: mobility
-    unit: "%"
-    methodology: "Porcentaje de la población ocupada que utiliza transporte público como principal medio de traslado al trabajo"
-    source: "Censo de Población / Encuesta Origen-Destino, INEGI"
-    source_variables:
-      - "Población ocupada que usa transporte público"
-      - "Total de población ocupada que se traslada al trabajo"
-    standardization: z_score
-    polarity: positive
-    notes: "Mayor uso de transporte público indica mejor conectividad urbana y menor congestión."
-
-  - id: avg_commute_time
-    name: "Tiempo promedio de traslado"
-    name_en: "Average commute time"
-    phase: B
-    theme: mobility
-    subtheme: mobility
-    unit: "minutos"
-    methodology: "Tiempo promedio (en minutos) de traslado de la vivienda al lugar de trabajo para la población ocupada del municipio"
-    source: "Censo de Población / Encuesta Intercensal, INEGI"
-    source_variables:
-      - "Tiempo de traslado al trabajo (minutos, promedio o mediana)"
-    standardization: z_score
-    polarity: negative
-    notes: "Tiempos largos indican problemas de conectividad urbana o dispersión."
-
-  # --- Tema 6: Condiciones de vivienda ---
-
-  - id: land_tenure_vulnerability
-    name: "Vulnerabilidad por tenencia de la tierra"
-    name_en: "Land tenure vulnerability"
-    phase: B
-    theme: housing
-    subtheme: housing_conditions
-    unit: "%"
-    methodology: "Porcentaje de viviendas en situación irregular (sin escrituras, en terrenos no regularizados, o en zonas de riesgo) respecto al total de viviendas"
-    source: "Censo de Población y Vivienda, INEGI"
-    source_variables:
-      - "Viviendas sin escrituras o en tenencia irregular"
-      - "Total de viviendas habitadas"
-    standardization: z_score
-    polarity: negative
-    notes: "Afecta la certidumbre de la inversión en suelo industrial y residencial."
-
-  - id: self_built_housing
-    name: "Autoconstrucción de vivienda"
-    name_en: "Self-built housing"
-    phase: B
-    theme: housing
-    subtheme: housing_conditions
-    unit: "%"
-    methodology: "Porcentaje de viviendas autoconstruidas sin supervisión técnica profesional respecto al total de viviendas"
-    source: "Censo de Población y Vivienda, INEGI"
-    source_variables:
-      - "Viviendas autoconstruidas"
-      - "Total de viviendas"
-    standardization: z_score
-    polarity: negative
-    notes: "Indicador de informalidad en el desarrollo urbano."
-
-  - id: overcrowding
-    name: "Hacinamiento"
-    name_en: "Overcrowding"
-    phase: B
-    theme: housing
-    subtheme: housing_conditions
-    unit: "%"
-    methodology: "Porcentaje de viviendas con más de 2.5 habitantes por cuarto (criterio CONEVAL de hacinamiento)"
-    source: "Censo de Población y Vivienda / CONEVAL, INEGI"
-    source_variables:
-      - "Viviendas con más de 2.5 hab/cuarto"
-      - "Total de viviendas"
-    standardization: z_score
-    polarity: negative
-    notes: "Indicador oficial de carencia por calidad y espacios de la vivienda."
-
-  # --- Tema 7: Servicios básicos y pobreza extrema ---
-
-  - id: potable_water_access
-    name: "Acceso a agua potable"
-    name_en: "Potable water access"
-    phase: B
-    theme: basic_services
-    subtheme: basic_services_extreme_poverty
-    unit: "%"
-    methodology: "Porcentaje de viviendas con acceso a agua entubada dentro de la vivienda o el terreno"
-    source: "Censo de Población y Vivienda, INEGI"
-    source_variables:
-      - "Viviendas con agua entubada dentro de la vivienda o terreno"
-      - "Total de viviendas"
-    standardization: z_score
-    polarity: positive
-    notes: "Indicador básico de infraestructura urbana."
-
-  - id: drainage_access
-    name: "Acceso a drenaje"
-    name_en: "Drainage access"
-    phase: B
-    theme: basic_services
-    subtheme: basic_services_extreme_poverty
-    unit: "%"
-    methodology: "Porcentaje de viviendas con conexión a la red pública de drenaje"
-    source: "Censo de Población y Vivienda, INEGI"
-    source_variables:
-      - "Viviendas conectadas a red pública de drenaje"
-      - "Total de viviendas"
-    standardization: z_score
-    polarity: positive
-    notes: "La falta de drenaje indica déficit de infraestructura sanitaria."
-
-  - id: internet_access
-    name: "Acceso a internet"
-    name_en: "Internet access"
-    phase: B
-    theme: basic_services
-    subtheme: basic_services_extreme_poverty
-    unit: "%"
-    methodology: "Porcentaje de viviendas con acceso a internet (fijo o móvil)"
-    source: "Censo de Población y Vivienda / ENDUTIH, INEGI"
-    source_variables:
-      - "Viviendas con acceso a internet"
-      - "Total de viviendas"
-    standardization: z_score
-    polarity: positive
-    notes: "Conectividad digital es prerequisito para industrias 4.0."
-
-  - id: extreme_poverty
-    name: "Pobreza extrema"
-    name_en: "Extreme poverty"
-    phase: B
-    theme: basic_services
-    subtheme: basic_services_extreme_poverty
-    unit: "%"
-    methodology: "Porcentaje de la población en situación de pobreza extrema (ingreso inferior a la línea de bienestar mínimo) según medición CONEVAL"
-    source: "CONEVAL, con base en el Censo de Población y la ENIGH"
-    source_variables:
-      - "Población en pobreza extrema"
-      - "Población total municipal"
-    standardization: z_score
-    polarity: negative
-    notes: "CONEVAL publica este indicador cada 5 años a nivel municipal."
-
-  # --- Tema 8: Problemas sociales ---
-
-  - id: homicide_rate
-    name: "Homicidios"
-    name_en: "Homicides"
-    phase: B
-    theme: social_problems
-    subtheme: social_problems
-    unit: "tasa por cada 100,000 hab"
-    methodology: "Tasa de homicidios dolosos por cada 100,000 habitantes (promedio móvil de 3 años para estabilidad estadística en municipios pequeños)"
-    source: "SESNSP / INEGI (defunciones por homicidio, estadísticas vitales)"
-    source_variables:
-      - "Número de homicidios dolosos"
-      - "Población total"
-    standardization: z_score
-    polarity: negative
-    notes: "Se usa promedio de 3 años para suavizar fluctuaciones en municipios pequeños."
-
-  - id: robbery_rate
-    name: "Robos"
-    name_en: "Robbery"
-    phase: B
-    theme: social_problems
-    subtheme: social_problems
-    unit: "tasa por cada 100,000 hab"
-    methodology: "Tasa de robos (total: vehículo, casa-habitación, negocio, transeúnte) por cada 100,000 habitantes"
-    source: "SESNSP (Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública)"
-    source_variables:
-      - "Número total de robos denunciados"
-      - "Población total"
-    standardization: z_score
-    polarity: negative
-    notes: "SESNSP publica cifras mensuales por municipio."
-
-  - id: domestic_violence_rate
-    name: "Violencia doméstica"
-    name_en: "Domestic violence"
-    phase: B
-    theme: social_problems
-    subtheme: social_problems
-    unit: "tasa por cada 100,000 hab"
-    methodology: "Tasa de llamadas de emergencia al 911 por incidentes de violencia familiar por cada 100,000 habitantes"
-    source: "SESNSP (llamadas 911) / ENDIREH, INEGI"
-    source_variables:
-      - "Llamadas al 911 por violencia familiar"
-      - "Población total"
-    standardization: z_score
-    polarity: negative
-    notes: "Las llamadas al 911 son el proxy más actualizado a nivel municipal."
-
-  # --- Tema 9: Perspectivas ambientales ---
-
-  - id: water_stress
-    name: "Estrés hídrico"
-    name_en: "Water stress"
-    phase: B
-    theme: environment
-    subtheme: environmental_perspectives
-    unit: "%"
-    methodology: "Grado de presión sobre el recurso hídrico: cociente entre el volumen concesionado de agua y el volumen de disponibilidad natural media en la cuenca o acuífero del municipio"
-    source: "CONAGUA (Registro Público de Derechos de Agua, REPDA) / Aqueduct (WRI)"
-    source_variables:
-      - "Volumen de agua concesionado"
-      - "Disponibilidad natural media de agua"
-    standardization: z_score
-    polarity: negative
-    notes: "WRI Aqueduct tiene datos globales gratuitos (registro requerido)."
-
-  - id: water_consumption_intensity
-    name: "Intensidad de consumo de agua"
-    name_en: "Water consumption"
-    phase: B
-    theme: environment
-    subtheme: environmental_perspectives
-    unit: "m³ por millón de MXN de producción"
-    methodology: "Consumo de agua en el sector manufacturero (31-33) por unidad de valor agregado producido en el municipio"
-    source: "Censo Económico / CONAGUA, INEGI"
-    source_variables:
-      - "Volumen de agua consumido en manufactura"
-      - "VACB manufactura (31-33)"
-    standardization: z_score
-    polarity: negative
-    notes: "Mayor intensidad = mayor presión ambiental. Relevante para zonas con estrés hídrico."
-
-# Metadatos del catálogo
+- id: foreign_capital_presence
+  name: Presencia de capital extranjero
+  name_en: Foreign capital presence
+  phase: A
+  theme: industrial_concentration
+  subtheme: industrial_concentration_foreign_capital
+  unit: '%'
+  methodology: Porcentaje de unidades económicas con participación de capital extranjero
+    (IMMEX, ALTEX, ECEX) respecto al total de unidades manufactureras del municipio
+  source: DENUE + IMMEX/ALTEX/ECEX, INEGI / Secretaría de Economía
+  source_variables:
+  - Total de unidades económicas manufactureras en el municipio
+  - Unidades IMMEX + ALTEX + ECEX en el municipio
+  standardization: z_score
+  polarity: positive
+  notes: DENUE se actualiza mensualmente. IMMEX es programa de la SE.
+- id: talent_attraction
+  name: Atracción de talento
+  name_en: Talent attraction
+  phase: A
+  theme: innovation_human_capital
+  subtheme: innovation_human_capital_personnel
+  unit: '%'
+  methodology: Porcentaje de la PEA ocupada con educación superior (licenciatura o
+    posgrado) en el municipio respecto al total de la PEA ocupada municipal
+  source: Censo de Población y Vivienda / Encuesta Intercensal, INEGI
+  source_variables:
+  - PEA ocupada total municipal
+  - PEA ocupada con nivel licenciatura o posgrado
+  standardization: z_score
+  polarity: positive
+  notes: Actualización decenal (censo) o quinquenal (intercensal).
+- id: innovation_economic_units
+  name: Innovación en unidades económicas
+  name_en: Innovation in economic units
+  phase: A
+  theme: innovation_human_capital
+  subtheme: innovation_human_capital_personnel
+  unit: '%'
+  methodology: Porcentaje de unidades económicas registradas en RENIECYT respecto
+    al total de unidades del sector 31-33 en el municipio
+  source: RENIECYT, CONAHCYT / DENUE, INEGI
+  source_variables:
+  - Unidades RENIECYT en el municipio
+  - Total de unidades económicas SCIAN 31-33
+  standardization: z_score
+  polarity: positive
+  notes: RENIECYT = Registro Nacional de Instituciones y Empresas Científicas y Tecnológicas.
+- id: educated_personnel
+  name: Personal con educación superior
+  name_en: Personnel with higher education
+  phase: A
+  theme: innovation_human_capital
+  subtheme: innovation_human_capital_personnel
+  unit: '%'
+  methodology: Porcentaje del personal ocupado en el sector manufacturero (31-33)
+    con estudios de licenciatura o posgrado
+  source: Censo Económico, INEGI
+  source_variables:
+  - Personal ocupado total en manufactura (31-33)
+  - Personal ocupado con educación superior en manufactura
+  standardization: z_score
+  polarity: positive
+  notes: Requiere tabulados del Censo Económico con cruce sector-educación.
+- id: employed_population
+  name: Población ocupada
+  name_en: Employed population
+  phase: B
+  theme: employment
+  subtheme: employment_characterization
+  unit: '%'
+  methodology: 'Tasa de ocupación: porcentaje de la PEA que se encuentra ocupada'
+  source: ENOE, INEGI
+  source_variables:
+  - PEA ocupada
+  - PEA total
+  standardization: z_score
+  polarity: positive
+  notes: ENOE tiene representatividad por entidad federativa y ciudad.
+- id: female_employment
+  name: Empleo femenino (edad reproductiva)
+  name_en: Female employment (reproductive age)
+  phase: B
+  theme: employment
+  subtheme: employment_characterization
+  unit: '%'
+  methodology: Porcentaje de mujeres de 15 a 49 años que están ocupadas respecto al
+    total de mujeres en ese rango de edad
+  source: ENOE / Censo de Población, INEGI
+  source_variables:
+  - Mujeres ocupadas de 15 a 49 años
+  - Total de mujeres de 15 a 49 años
+  standardization: z_score
+  polarity: positive
+  notes: Indicador de inclusión laboral femenina y disponibilidad de fuerza de trabajo.
+- id: daycare_services
+  name: Servicios de guardería
+  name_en: Daycare services
+  phase: B
+  theme: employment
+  subtheme: employment_characterization
+  unit: tasa por cada 1,000
+  methodology: Número de establecimientos de guardería y cuidado infantil por cada
+    1,000 niños de 0 a 4 años en el municipio
+  source: DENUE, INEGI / Censo de Población
+  source_variables:
+  - Establecimientos de guardería (SCIAN 624410)
+  - Población de 0 a 4 años
+  standardization: z_score
+  polarity: positive
+  notes: Facilita la inserción laboral femenina en la industria.
+- id: remuneration_level
+  name: Nivel de remuneración
+  name_en: Remuneration
+  phase: B
+  theme: employment
+  subtheme: employment_characterization
+  unit: MXN promedio mensual
+  methodology: Remuneración promedio mensual del personal ocupado en el sector manufacturero
+    (31-33) en el municipio
+  source: Censo Económico, INEGI
+  source_variables:
+  - Remuneraciones totales en manufactura
+  - Personal ocupado total en manufactura
+  standardization: z_score
+  polarity: positive
+  notes: Altas remuneraciones indican mayor productividad, pero también mayores costos
+    laborales.
+- id: hours_worked
+  name: Horas trabajadas
+  name_en: Hours worked
+  phase: B
+  theme: employment
+  subtheme: employment_characterization
+  unit: horas promedio semanales
+  methodology: Promedio de horas trabajadas por semana por la PEA ocupada en el municipio
+  source: ENOE, INEGI
+  source_variables:
+  - Horas trabajadas semanalmente (promedio)
+  standardization: z_score
+  polarity: neutral
+  notes: Más horas pueden indicar mayor disponibilidad laboral o condiciones precarias.
+- id: public_transport_usage
+  name: Uso de transporte público
+  name_en: Public transport usage
+  phase: B
+  theme: mobility
+  subtheme: mobility
+  unit: '%'
+  methodology: Porcentaje de la población ocupada que utiliza transporte público como
+    principal medio de traslado al trabajo
+  source: Censo de Población / Encuesta Origen-Destino, INEGI
+  source_variables:
+  - Población ocupada que usa transporte público
+  - Total de población ocupada que se traslada al trabajo
+  standardization: z_score
+  polarity: positive
+  notes: Mayor uso de transporte público indica mejor conectividad urbana y menor
+    congestión.
+- id: avg_commute_time
+  name: Tiempo promedio de traslado
+  name_en: Average commute time
+  phase: B
+  theme: mobility
+  subtheme: mobility
+  unit: minutos
+  methodology: Tiempo promedio (en minutos) de traslado de la vivienda al lugar de
+    trabajo para la población ocupada del municipio
+  source: Censo de Población / Encuesta Intercensal, INEGI
+  source_variables:
+  - Tiempo de traslado al trabajo (minutos, promedio o mediana)
+  standardization: z_score
+  polarity: negative
+  notes: Tiempos largos indican problemas de conectividad urbana o dispersión.
+- id: land_tenure_vulnerability
+  name: Vulnerabilidad por tenencia de la tierra
+  name_en: Land tenure vulnerability
+  phase: B
+  theme: housing
+  subtheme: housing_conditions
+  unit: '%'
+  methodology: Porcentaje de viviendas en situación irregular (sin escrituras, en
+    terrenos no regularizados, o en zonas de riesgo) respecto al total de viviendas
+  source: Censo de Población y Vivienda, INEGI
+  source_variables:
+  - Viviendas sin escrituras o en tenencia irregular
+  - Total de viviendas habitadas
+  standardization: z_score
+  polarity: negative
+  notes: Afecta la certidumbre de la inversión en suelo industrial y residencial.
+- id: self_built_housing
+  name: Autoconstrucción de vivienda
+  name_en: Self-built housing
+  phase: B
+  theme: housing
+  subtheme: housing_conditions
+  unit: '%'
+  methodology: Porcentaje de viviendas autoconstruidas sin supervisión técnica profesional
+    respecto al total de viviendas
+  source: Censo de Población y Vivienda, INEGI
+  source_variables:
+  - Viviendas autoconstruidas
+  - Total de viviendas
+  standardization: z_score
+  polarity: negative
+  notes: Indicador de informalidad en el desarrollo urbano.
+- id: overcrowding
+  name: Hacinamiento
+  name_en: Overcrowding
+  phase: B
+  theme: housing
+  subtheme: housing_conditions
+  unit: '%'
+  methodology: Porcentaje de viviendas con más de 2.5 habitantes por cuarto (criterio
+    CONEVAL de hacinamiento)
+  source: Censo de Población y Vivienda / CONEVAL, INEGI
+  source_variables:
+  - Viviendas con más de 2.5 hab/cuarto
+  - Total de viviendas
+  standardization: z_score
+  polarity: negative
+  notes: Indicador oficial de carencia por calidad y espacios de la vivienda.
+- id: potable_water_access
+  name: Acceso a agua potable
+  name_en: Potable water access
+  phase: B
+  theme: basic_services
+  subtheme: basic_services_extreme_poverty
+  unit: '%'
+  methodology: Porcentaje de viviendas con acceso a agua entubada dentro de la vivienda
+    o el terreno
+  source: Censo de Población y Vivienda, INEGI
+  source_variables:
+  - Viviendas con agua entubada dentro de la vivienda o terreno
+  - Total de viviendas
+  standardization: z_score
+  polarity: positive
+  notes: Indicador básico de infraestructura urbana.
+- id: drainage_access
+  name: Acceso a drenaje
+  name_en: Drainage access
+  phase: B
+  theme: basic_services
+  subtheme: basic_services_extreme_poverty
+  unit: '%'
+  methodology: Porcentaje de viviendas con conexión a la red pública de drenaje
+  source: Censo de Población y Vivienda, INEGI
+  source_variables:
+  - Viviendas conectadas a red pública de drenaje
+  - Total de viviendas
+  standardization: z_score
+  polarity: positive
+  notes: La falta de drenaje indica déficit de infraestructura sanitaria.
+- id: internet_access
+  name: Acceso a internet
+  name_en: Internet access
+  phase: B
+  theme: basic_services
+  subtheme: basic_services_extreme_poverty
+  unit: '%'
+  methodology: Porcentaje de viviendas con acceso a internet (fijo o móvil)
+  source: Censo de Población y Vivienda / ENDUTIH, INEGI
+  source_variables:
+  - Viviendas con acceso a internet
+  - Total de viviendas
+  standardization: z_score
+  polarity: positive
+  notes: Conectividad digital es prerequisito para industrias 4.0.
+- id: extreme_poverty
+  name: Pobreza extrema
+  name_en: Extreme poverty
+  phase: B
+  theme: basic_services
+  subtheme: basic_services_extreme_poverty
+  unit: '%'
+  methodology: Porcentaje de la población en situación de pobreza extrema (ingreso
+    inferior a la línea de bienestar mínimo) según medición CONEVAL
+  source: CONEVAL, con base en el Censo de Población y la ENIGH
+  source_variables:
+  - Población en pobreza extrema
+  - Población total municipal
+  standardization: z_score
+  polarity: negative
+  notes: CONEVAL publica este indicador cada 5 años a nivel municipal.
+- id: homicide_rate
+  name: Homicidios
+  name_en: Homicides
+  phase: B
+  theme: social_problems
+  subtheme: social_problems
+  unit: tasa por cada 100,000 hab
+  methodology: Tasa de homicidios dolosos por cada 100,000 habitantes (promedio móvil
+    de 3 años para estabilidad estadística en municipios pequeños)
+  source: SESNSP / INEGI (defunciones por homicidio, estadísticas vitales)
+  source_variables:
+  - Número de homicidios dolosos
+  - Población total
+  standardization: z_score
+  polarity: negative
+  notes: Se usa promedio de 3 años para suavizar fluctuaciones en municipios pequeños.
+- id: robbery_rate
+  name: Robos
+  name_en: Robbery
+  phase: B
+  theme: social_problems
+  subtheme: social_problems
+  unit: tasa por cada 100,000 hab
+  methodology: 'Tasa de robos (total: vehículo, casa-habitación, negocio, transeúnte)
+    por cada 100,000 habitantes'
+  source: SESNSP (Secretariado Ejecutivo del Sistema Nacional de Seguridad Pública)
+  source_variables:
+  - Número total de robos denunciados
+  - Población total
+  standardization: z_score
+  polarity: negative
+  notes: SESNSP publica cifras mensuales por municipio.
+- id: domestic_violence_rate
+  name: Violencia doméstica
+  name_en: Domestic violence
+  phase: B
+  theme: social_problems
+  subtheme: social_problems
+  unit: tasa por cada 100,000 hab
+  methodology: Tasa de llamadas de emergencia al 911 por incidentes de violencia familiar
+    por cada 100,000 habitantes
+  source: SESNSP (llamadas 911) / ENDIREH, INEGI
+  source_variables:
+  - Llamadas al 911 por violencia familiar
+  - Población total
+  standardization: z_score
+  polarity: negative
+  notes: Las llamadas al 911 son el proxy más actualizado a nivel municipal.
+- id: water_stress
+  name: Estrés hídrico
+  name_en: Water stress
+  phase: B
+  theme: environment
+  subtheme: environmental_perspectives
+  unit: '%'
+  methodology: 'Grado de presión sobre el recurso hídrico: cociente entre el volumen
+    concesionado de agua y el volumen de disponibilidad natural media en la cuenca
+    o acuífero del municipio'
+  source: CONAGUA (Registro Público de Derechos de Agua, REPDA) / Aqueduct (WRI)
+  source_variables:
+  - Volumen de agua concesionado
+  - Disponibilidad natural media de agua
+  standardization: z_score
+  polarity: negative
+  notes: WRI Aqueduct tiene datos globales gratuitos (registro requerido).
+- id: water_consumption_intensity
+  name: Intensidad de consumo de agua
+  name_en: Water consumption
+  phase: B
+  theme: environment
+  subtheme: environmental_perspectives
+  unit: m³ por millón de MXN de producción
+  methodology: Consumo de agua en el sector manufacturero (31-33) por unidad de valor
+    agregado producido en el municipio
+  source: Censo Económico / CONAGUA, INEGI
+  source_variables:
+  - Volumen de agua consumido en manufactura
+  - VACB manufactura (31-33)
+  standardization: z_score
+  polarity: negative
+  notes: Mayor intensidad = mayor presión ambiental. Relevante para zonas con estrés
+    hídrico.
 meta:
   total_indicators: 34
   phase_a_count: 14
   phase_b_count: 20
   themes_count: 9
-  source_document: "2021 Atlas Prospectivo Metodologia.pdf"
-  methodology_version: "2021-11"
+  source_document: 2021 Atlas Prospectivo Metodologia.pdf
+  methodology_version: 2021-11
   selection_criteria:
-    - "Datos a escala municipal (2,457 municipios)"
-    - "Cobertura >= 90% de municipios"
-    - "Vínculo directo o indirecto con actividad industrial"
-    - "No se permiten índices compuestos como entrada"
-    - "No se permiten variables categóricas"
+  - Datos a escala municipal (2,457 municipios)
+  - Cobertura >= 90% de municipios
+  - Vínculo directo o indirecto con actividad industrial
+  - No se permiten índices compuestos como entrada
+  - No se permiten variables categóricas

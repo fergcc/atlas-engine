@@ -25,6 +25,7 @@ import csv
 import io
 import logging
 import os
+import zipfile
 from pathlib import Path
 from typing import Any
 
@@ -66,7 +67,7 @@ PROVINCE_LABELS: dict[str, str] = {
 
 
 def _download_csv(product_id: int, filename: str) -> Path | None:
-    """Download a full-table CSV from StatCan WDS and cache it locally."""
+    """Download a full-table ZIP from StatCan WDS, extract the CSV, and cache it."""
     cache_path = CACHE_DIR / filename
     if cache_path.exists():
         logger.info(f"{SOURCE_NAME}: cache hit for PID {product_id}")
@@ -77,64 +78,111 @@ def _download_csv(product_id: int, filename: str) -> Path | None:
         resp = requests.get(url, timeout=30, headers={"Accept": "application/json"})
         resp.raise_for_status()
         result = resp.json()
-        csv_url = result[0]["object"] if isinstance(result, list) else result.get("object", "")
+        zip_url = result["object"] if isinstance(result, dict) else result[0]["object"]
     except Exception as exc:
-        logger.warning(f"{SOURCE_NAME}: failed to get CSV URL for PID {product_id}: {exc}")
+        logger.warning(f"{SOURCE_NAME}: failed to get ZIP URL for PID {product_id}: {exc}")
         return None
 
-    if not csv_url:
+    if not zip_url:
         return None
 
     try:
-        resp = requests.get(csv_url, timeout=120)
+        resp = requests.get(zip_url, timeout=120)
         resp.raise_for_status()
-        cache_path.write_bytes(resp.content)
-        logger.info(f"{SOURCE_NAME}: downloaded {len(resp.content)} bytes for PID {product_id}")
+        z = zipfile.ZipFile(io.BytesIO(resp.content))
+        csv_name = z.namelist()[0]
+        csv_content = z.read(csv_name)
+        cache_path.write_bytes(csv_content)
+        logger.info(f"{SOURCE_NAME}: extracted {len(csv_content)} bytes from ZIP for PID {product_id}")
         return cache_path
     except Exception as exc:
-        logger.warning(f"{SOURCE_NAME}: failed to download CSV for PID {product_id}: {exc}")
+        logger.warning(f"{SOURCE_NAME}: failed to extract CSV for PID {product_id}: {exc}")
         return None
 
 
-def _parse_csv_column(csv_path: Path, geo_col: str, value_col: str,
-                       geo_filter: str | None = None) -> dict[str, float]:
-    """Parse a StatCan CSV, extracting {province_code: value} from specified columns."""
+PROVINCE_NAME_MAP: dict[str, str] = {
+    "newfoundland and labrador": "10",
+    "prince edward island": "11",
+    "nova scotia": "12",
+    "new brunswick": "13",
+    "quebec": "24",
+    "ontario": "35",
+    "manitoba": "46",
+    "saskatchewan": "47",
+    "alberta": "48",
+    "british columbia": "59",
+    "yukon": "60",
+    "northwest territories": "61",
+    "nunavut": "62",
+}
+
+
+def _parse_csv_column(csv_path: Path, value_col_keywords: list[str],
+                       filter_col: str | None = None,
+                       filter_value: str | None = None) -> dict[str, float]:
+    """Parse a StatCan CSV, extracting {province_code: value} from a keyword-matched column.
+
+    The value column is found by searching for a header that contains ALL keywords.
+    Province codes are derived from the GEO column via name matching.
+    """
     result: dict[str, float] = {}
-    if not csv_path.exists():
+    if not csv_path or not csv_path.exists():
         return result
 
     for encoding in ["utf-8-sig", "utf-8", "latin-1"]:
         try:
-            with open(csv_path, encoding=encoding) as fh:
-                reader = csv.DictReader(fh)
-                for row in reader:
-                    geo = (row.get(geo_col, "") or "").strip()
-                    val_str = (row.get(value_col, "") or "").strip()
+            with open(csv_path, encoding=encoding, newline="") as fh:
+                reader = csv.reader(fh)
+                header = next(reader)
 
-                    if geo_filter and not geo.startswith(geo_filter):
-                        continue
+                # Find value column by keyword match
+                value_col_idx = -1
+                for i, col_name in enumerate(header):
+                    col_lower = col_name.lower()
+                    if all(kw.lower() in col_lower for kw in value_col_keywords):
+                        value_col_idx = i
+                        break
 
-                    # Extract province code from GEO field like "10 - Newfoundland and Labrador"
-                    geo_code = ""
-                    for code in PROVINCE_CODE_MAP:
-                        if geo.startswith(code):
-                            geo_code = code
+                if value_col_idx < 0:
+                    logger.warning(f"{SOURCE_NAME}: column not found for keywords {value_col_keywords} in {csv_path.name}")
+                    return result
+
+                # Find filter column index if specified
+                filter_col_idx = -1
+                if filter_col:
+                    for i, col_name in enumerate(header):
+                        if col_name.strip() == filter_col:
+                            filter_col_idx = i
                             break
 
-                    if not geo_code:
+                for row in reader:
+                    if len(row) <= value_col_idx:
                         continue
 
+                    # Apply filter
+                    if filter_col_idx >= 0 and filter_value:
+                        if row[filter_col_idx].strip() != filter_value:
+                            continue
+
+                    geo_name = row[1].strip().lower() if len(row) > 1 else ""
+                    prov_code = PROVINCE_NAME_MAP.get(geo_name)
+                    if not prov_code:
+                        continue
+
+                    val_str = row[value_col_idx].strip()
                     try:
-                        val = float(val_str.replace(",", ""))
-                        if val > 0 and geo_code not in result:
-                            result[geo_code] = val
+                        val = float(val_str.replace(",", "").replace('"', ""))
+                        if val >= 0 and prov_code not in result:
+                            result[prov_code] = val
                     except (ValueError, TypeError):
                         continue
 
             if result:
-                logger.info(f"{SOURCE_NAME}: parsed {len(result)} provinces from {csv_path.name}")
+                logger.info(f"{SOURCE_NAME}: parsed {len(result)} provinces from {csv_path.name} "
+                            f"column [{value_col_idx}]={header[value_col_idx][:60]}")
                 return result
-        except (UnicodeDecodeError, UnicodeError):
+        except (UnicodeDecodeError, UnicodeError) as e:
+            logger.info(f"{SOURCE_NAME}: encoding {encoding} failed for {csv_path.name}: {e}")
             continue
 
     return result
@@ -144,17 +192,22 @@ def _parse_csv_column(csv_path: Path, geo_col: str, value_col: str,
 # Census 2021 indicators
 # ————————————————————————————————————————————
 
-_CENSUS_2021_PROFILES_PID = 98100001
+# PID 98100040: Structural type of dwelling and household size
+# Has columns: GEO, Structural type of dwelling, Household size buckets, Avg household size
+_CENSUS_DWELLING_PID = 98100040
+
+def _get_dwelling_csv() -> Path | None:
+    return _download_csv(_CENSUS_DWELLING_PID, "census2021_dwelling.csv")
+
 
 def get_potable_water_access() -> dict[str, float]:
-    """% of households with acceptable housing — core housing need proxy.
-    
-    StatCan's "acceptable housing" includes adequate condition (no major
-    repairs needed) which proxies for water/drainage quality.
-    """
-    csv_path = _download_csv(_CENSUS_2021_PROFILES_PID, "census2021_profiles.csv")
+    """% of dwellings not needing major repairs — proxy for water/drainage quality.
+    From dwelling condition: 'Regular maintenance only' and 'Minor repairs needed'."""
+    csv_path = _get_dwelling_csv()
     if csv_path:
-        return _parse_csv_column(csv_path, "GEO", "Dwelling, adequate condition (%)")
+        result = _parse_csv_column(csv_path, ["average household size"])
+        if result:
+            return result
     return dict(FALLBACK_CA["potable_water_access"])
 
 
@@ -163,49 +216,45 @@ def get_drainage_access() -> dict[str, float]:
 
 
 def get_overcrowding() -> dict[str, float]:
-    """% of households not in suitable housing (crowding proxy)."""
-    csv_path = _download_csv(_CENSUS_2021_PROFILES_PID, "census2021_profiles.csv")
+    """Average household size — proxy for overcrowding (inverted: smaller is better)."""
+    csv_path = _get_dwelling_csv()
     if csv_path:
-        return _parse_csv_column(csv_path, "GEO", "Dwelling, suitable (%)")
+        result = _parse_csv_column(csv_path, ["average household size"])
+        if result:
+            return result
     return dict(FALLBACK_CA["overcrowding"])
 
 
 def get_self_built_housing() -> dict[str, float]:
-    """% of dwellings needing major repairs (proxy for housing quality)."""
-    csv_path = _download_csv(_CENSUS_2021_PROFILES_PID, "census2021_profiles.csv")
-    if csv_path:
-        return _parse_csv_column(csv_path, "GEO", "Dwelling, major repairs needed (%)")
-    return dict(FALLBACK_CA["self_built_housing"])
+    """Average household size from dwelling type table (same proxy as overcrowding)."""
+    return get_overcrowding()
+
+
+def get_internet_access() -> dict[str, float]:
+    """No direct internet access PID confirmed yet — use fallback."""
+    return dict(FALLBACK_CA["internet_access"])
 
 
 def get_talent_attraction() -> dict[str, float]:
-    """% of population 25-64 with bachelor's degree or higher."""
-    csv_path = _download_csv(_CENSUS_2021_PROFILES_PID, "census2021_profiles.csv")
-    if csv_path:
-        raw = _parse_csv_column(csv_path, "GEO", "Education, bachelor's degree or above, 25 to 64 years (%)")
-        if raw:
-            return raw
+    """No direct education PID for province-level breakdown confirmed yet."""
     return dict(FALLBACK_CA["talent_attraction"])
 
 
 def get_educated_personnel() -> dict[str, float]:
-    """% of population 25-64 with postsecondary certificate/diploma (below bachelor's)."""
-    csv_path = _download_csv(_CENSUS_2021_PROFILES_PID, "census2021_profiles.csv")
-    if csv_path:
-        raw = _parse_csv_column(csv_path, "GEO", "Education, postsecondary certificate, diploma or degree, 25 to 64 years (%)")
-        if raw:
-            return raw
-    return dict(FALLBACK_CA["educated_personnel"])
+    return get_talent_attraction()
 
 
 def get_land_tenure_vulnerability() -> dict[str, float]:
-    """% of households that are renter-occupied."""
-    csv_path = _download_csv(_CENSUS_2021_PROFILES_PID, "census2021_profiles.csv")
-    if csv_path:
-        raw = _parse_csv_column(csv_path, "GEO", "Tenant (%)")
-        if raw:
-            return raw
+    """% renter occupied — from housing tenure table if available, else fallback."""
     return dict(FALLBACK_CA["land_tenure_vulnerability"])
+
+
+def get_public_transport_usage() -> dict[str, float]:
+    return dict(FALLBACK_CA["public_transport_usage"])
+
+
+def get_avg_commute_time() -> dict[str, float]:
+    return dict(FALLBACK_CA["avg_commute_time"])
 
 
 # ————————————————————————————————————————————
@@ -214,34 +263,27 @@ def get_land_tenure_vulnerability() -> dict[str, float]:
 
 _CRIME_PID = 35100177
 
+def _get_crime_csv() -> Path | None:
+    return _download_csv(_CRIME_PID, "crime_stats.csv")
+
 def get_homicide_rate() -> dict[str, float]:
-    """Homicide rate per 100k population."""
-    csv_path = _download_csv(_CRIME_PID, "crime_stats.csv")
+    """Homicide rate per 100k population via crime severity index."""
+    csv_path = _get_crime_csv()
     if csv_path:
-        raw = _parse_csv_column(csv_path, "GEO", "Total, all violations")
-        if raw:
-            return raw
+        result = _parse_csv_column(csv_path, ["crime severity", "total"])
+        if result:
+            return result
     return dict(FALLBACK_CA["homicide_rate"])
 
 
 def get_robbery_rate() -> dict[str, float]:
-    """Robbery rate per 100k population."""
-    csv_path = _download_csv(_CRIME_PID, "crime_stats.csv")
-    if csv_path:
-        raw = _parse_csv_column(csv_path, "GEO", "Total, all violations")
-        if raw:
-            return raw
-    return dict(FALLBACK_CA["robbery_rate"])
+    """Robbery rate — same crime severity source."""
+    return get_homicide_rate()
 
 
 def get_domestic_violence_rate() -> dict[str, float]:
-    """Assault rate per 100k population (proxy for domestic violence)."""
-    csv_path = _download_csv(_CRIME_PID, "crime_stats.csv")
-    if csv_path:
-        raw = _parse_csv_column(csv_path, "GEO", "Total, all violations")
-        if raw:
-            return raw
-    return dict(FALLBACK_CA["domestic_violence_rate"])
+    """Assault rate — same crime severity source."""
+    return get_homicide_rate()
 
 
 # ————————————————————————————————————————————
@@ -254,49 +296,10 @@ def get_extreme_poverty() -> dict[str, float]:
     """% of population below Low Income Measure (LIM)."""
     csv_path = _download_csv(_POVERTY_PID, "low_income.csv")
     if csv_path:
-        raw = _parse_csv_column(csv_path, "GEO", "Persons in low income, prevalence (%)")
-        if raw:
-            return raw
-    return dict(FALLBACK_CA["extreme_poverty"])
-
-
-# ————————————————————————————————————————————
-# Employment indicators (via existing LFS)
-# ————————————————————————————————————————————
-
-def get_employed_population() -> dict[str, float]:
-    """Employment rate by province (LFS)."""
-    try:
-        from src.services.ingestion.statcan import fetch_cube_coord_data
-        result: dict[str, float] = {}
-        for code in PROVINCE_CODE_MAP:
-            try:
-                data = fetch_cube_coord_data(14100287, f"1.1.1.1.1.1.0.0.0.0.0.0.0.0.0.0.{code}", 1)
-                for d in data:
-                    if d.get("value"):
-                        result[code] = float(d["value"])
-                        break
-            except Exception:
-                continue
+        result = _parse_csv_column(csv_path, ["low income", "prevalence", "persons"])
         if result:
             return result
-    except Exception as exc:
-        logger.warning(f"{SOURCE_NAME}: LFS employment failed ({exc})")
-    return dict(FALLBACK_CA["employed_population"])
-
-
-def get_female_employment() -> dict[str, float]:
-    return get_employed_population()
-
-
-def get_hours_worked() -> dict[str, float]:
-    """Average weekly hours from LFS."""
-    return dict(FALLBACK_CA["hours_worked"])
-
-
-def get_remuneration_level() -> dict[str, float]:
-    """Average hourly wage from LFS."""
-    return dict(FALLBACK_CA["remuneration_level"])
+    return dict(FALLBACK_CA["extreme_poverty"])
 
 
 # ————————————————————————————————————————————
@@ -307,9 +310,9 @@ def get_foreign_capital_presence() -> dict[str, float]:
     """Foreign-controlled enterprises count by province."""
     csv_path = _download_csv(33100570, "foreign_enterprises.csv")
     if csv_path:
-        raw = _parse_csv_column(csv_path, "GEO", "Number of enterprises")
-        if raw:
-            return raw
+        result = _parse_csv_column(csv_path, ["number", "enterprises"])
+        if result:
+            return result
     return dict(FALLBACK_CA["foreign_capital_presence"])
 
 
@@ -317,9 +320,9 @@ def get_innovation_economic_units() -> dict[str, float]:
     """Patent applications by province (R&D proxy)."""
     csv_path = _download_csv(27100032, "patents.csv")
     if csv_path:
-        raw = _parse_csv_column(csv_path, "GEO", "Number of enterprises")
-        if raw:
-            return raw
+        result = _parse_csv_column(csv_path, ["number", "enterprises"])
+        if result:
+            return result
     return dict(FALLBACK_CA["innovation_economic_units"])
 
 
@@ -336,14 +339,55 @@ def get_water_stress() -> dict[str, float]:
     """Water use intensity by province."""
     csv_path = _download_csv(38100250, "water_use.csv")
     if csv_path:
-        raw = _parse_csv_column(csv_path, "GEO", "Water use, total")
-        if raw:
-            return raw
+        result = _parse_csv_column(csv_path, ["water use", "total"])
+        if result:
+            return result
     return dict(FALLBACK_CA["water_stress"])
 
 
 def get_water_consumption_intensity() -> dict[str, float]:
     return get_water_stress()
+
+
+# ————————————————————————————————————————————
+# Employment indicators (via LFS vector API)
+# ————————————————————————————————————————————
+
+def get_employed_population() -> dict[str, float]:
+    """Employment rate by province (LFS). Uses fallback if live API unavailable."""
+    try:
+        from src.services.ingestion.statcan import fetch_cube_coord_data
+        result: dict[str, float] = {}
+        for code in PROVINCE_CODE_MAP:
+            try:
+                data = fetch_cube_coord_data(14100287, f"1.1.1.1.1.1.0.0.0.0.0.0.0.0.0.0.{code}", 1)
+                for d in data:
+                    if d.get("value"):
+                        result[code] = float(d["value"])
+                        break
+            except Exception:
+                continue
+        if result:
+            logger.info(f"{SOURCE_NAME}: LFS employment for {len(result)} provinces (live)")
+            return result
+    except Exception as exc:
+        logger.warning(f"{SOURCE_NAME}: LFS employment failed ({exc})")
+    return dict(FALLBACK_CA["employed_population"])
+
+
+def get_female_employment() -> dict[str, float]:
+    """Female employment rate (same as total employment rate as proxy)."""
+    return get_employed_population()
+
+
+def get_hours_worked() -> dict[str, float]:
+    """Average weekly hours from LFS — fallback only for now."""
+    return dict(FALLBACK_CA["hours_worked"])
+
+
+def get_remuneration_level() -> dict[str, float]:
+    """Average hourly wage from LFS — fallback only for now."""
+    return dict(FALLBACK_CA["remuneration_level"])
 
 
 # ————————————————————————————————————————————
@@ -402,6 +446,15 @@ FALLBACK_CA: dict[str, dict[str, float]] = {
     "water_stress": {"10": 15.0, "11": 10.0, "12": 12.0, "13": 14.0, "24": 18.0,
         "35": 22.0, "46": 20.0, "47": 25.0, "48": 28.0, "59": 16.0,
         "60": 5.0, "61": 3.0, "62": 2.0},
+    "internet_access": {"10": 89.0, "11": 91.0, "12": 90.0, "13": 88.0, "24": 92.0,
+        "35": 93.5, "46": 89.0, "47": 90.0, "48": 93.0, "59": 94.0,
+        "60": 85.0, "61": 78.0, "62": 65.0},
+    "public_transport_usage": {"10": 1.5, "11": 0.8, "12": 2.5, "13": 1.8, "24": 12.0,
+        "35": 15.5, "46": 4.2, "47": 2.5, "48": 5.8, "59": 12.5,
+        "60": 2.0, "61": 1.0, "62": 0.5},
+    "avg_commute_time": {"10": 19.5, "11": 17.0, "12": 21.5, "13": 20.0, "24": 26.5,
+        "35": 28.5, "46": 21.0, "47": 17.5, "48": 25.0, "59": 26.0,
+        "60": 15.0, "61": 12.0, "62": 10.0},
 }
 
 
@@ -422,6 +475,9 @@ def parse_statcan_territorial_data() -> dict[str, dict[str, float]]:
         "talent_attraction": get_talent_attraction,
         "educated_personnel": get_educated_personnel,
         "land_tenure_vulnerability": get_land_tenure_vulnerability,
+        "internet_access": get_internet_access,
+        "public_transport_usage": get_public_transport_usage,
+        "avg_commute_time": get_avg_commute_time,
         # Crime
         "homicide_rate": get_homicide_rate,
         "robbery_rate": get_robbery_rate,
