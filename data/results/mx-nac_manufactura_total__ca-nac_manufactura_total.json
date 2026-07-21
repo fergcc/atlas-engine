@@ -8,76 +8,76 @@
   },
   "series_a": {
     "id": "mx-nac_manufactura_total_emim",
-    "source": "INEGI - IMAI (clave 736407)",
+    "source": "INEGI - EMIM (mock)",
     "region": "NAC",
     "proxy_type": "output_index",
     "seasonal_adjustment": "nsa"
   },
   "series_b": {
     "id": "ca-nac_manufactura_total_sc",
-    "source": "Statistics Canada — Monthly GDP (real)",
+    "source": "Statistics Canada — Monthly GDP (mock)",
     "region": "NAC",
     "proxy_type": "output_index",
     "seasonal_adjustment": "nsa"
   },
   "sample": {
     "frequency_used": "monthly",
-    "start": "2021-05-31",
-    "end": "2026-04-30",
-    "n_obs": 60
+    "start": "2010-01-31",
+    "end": "2026-06-30",
+    "n_obs": 198
   },
-  "generated_at": "2026-07-21T20:26:41.592677+00:00",
-  "data_vintage": "2026-05-01",
+  "generated_at": "2026-07-21T21:23:33.401653+00:00",
+  "data_vintage": "2026-08-29",
   "data_vintage_detail": {
-    "a": "2026-05-01",
-    "b": "2026-04-01"
+    "a": "2026-08-14",
+    "b": "2026-08-29"
   },
   "insufficient_data": false,
   "stationarity": {
     "a": {
-      "adf_statistic": -5.7620800254594915,
-      "adf_p_value": 5.641830222140531e-07,
-      "kpss_statistic": 0.07094451088330848,
+      "adf_statistic": -15.62649799110568,
+      "adf_p_value": 1.7062308474089615e-28,
+      "kpss_statistic": 0.04914054115299422,
       "kpss_p_value": 0.1,
       "is_stationary": true,
-      "order_of_integration": 2,
+      "order_of_integration": 1,
       "log_transformed": true
     },
     "b": {
-      "adf_statistic": -2.8171791930003494,
-      "adf_p_value": 0.055861434552023456,
-      "kpss_statistic": 0.4469346052327012,
-      "kpss_p_value": 0.05692473912383571,
-      "is_stationary": false,
-      "order_of_integration": 2,
+      "adf_statistic": -3.969663323168665,
+      "adf_p_value": 0.0015779645016031243,
+      "kpss_statistic": 0.04470347129587269,
+      "kpss_p_value": 0.1,
+      "is_stationary": true,
+      "order_of_integration": 1,
       "log_transformed": true
     }
   },
   "granger": {
-    "optimal_lag": 2,
+    "optimal_lag": 1,
     "selection_criterion": "bic",
     "a_causes_b": {
-      "f_stat": 0.7493127527727086,
-      "p_value": 0.47527510277608237,
-      "p_value_fdr_adj": 0.7483962458262434,
-      "significant": false
+      "f_stat": 26.38105781665453,
+      "p_value": 4.456550302609272e-07,
+      "p_value_fdr_adj": 5.5261223752354974e-05,
+      "significant": true
     },
     "b_causes_a": {
-      "f_stat": 1.866336537622527,
-      "p_value": 0.15993331934687946,
-      "p_value_fdr_adj": 0.3586383524748206,
+      "f_stat": 0.05863040314599429,
+      "p_value": 0.8088024807482332,
+      "p_value_fdr_adj": 0.8797500667787801,
       "significant": false
     }
   },
   "cointegration_engle_granger": {
-    "statistic": -0.6375612116934569,
-    "p_value": 0.952966810144775,
-    "cointegrated": false
+    "statistic": -8.333519090505394,
+    "p_value": 4.3492148962177205e-12,
+    "cointegrated": true
   },
   "cointegration_johansen": {
     "trace_statistic": [
-      27.895994638291924,
-      7.3894049547564515
+      58.11846563662836,
+      0.245791443133013
     ],
     "critical_values": [
       [
@@ -91,19 +91,17 @@
         6.6349
       ]
     ],
-    "cointegration_rank": 2
+    "cointegration_rank": 1
   },
   "vecm": {
     "cointegration_vector": [
       1.0,
-      4.007027757235377e-21
+      -1.2258205992683981
     ],
     "adjustment_speed": [
-      -0.5135639133821501,
-      -652.0964722466218
+      -0.1943432525422507,
+      0.3547539266116633
     ]
   },
-  "warnings": [
-    "No se confirmó estacionariedad (ADF+KPSS) tras diferenciar 2 vez/veces (límite MAX_DIFF_ORDER=2); se usa este orden como mejor estimación disponible."
-  ]
+  "warnings": []
 }

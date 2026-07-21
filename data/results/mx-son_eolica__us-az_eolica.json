@@ -8,76 +8,76 @@
   },
   "series_a": {
     "id": "mx-son_eolica_itaee",
-    "source": "INEGI - ITAEE (clave 741651) [APROXIMACIÓN: ITAEE específico de este sector no existe en el catálogo estatal público de INEGI (la granularidad máxima es manufactura 31-33 total); se usa 741651 (ITAEE manufactura total) como mejor proxy disponible del lado MX.]",
+    "source": "INEGI - ITAEE (mock)",
     "region": "26",
     "proxy_type": "output_index",
     "seasonal_adjustment": "nsa"
   },
   "series_b": {
     "id": "us-az_eolica_son_bls",
-    "source": "BLS - CES SMU04000003000000001 (Arizona)",
+    "source": "BLS - State and Area Employment (mock)",
     "region": "04",
     "proxy_type": "labor_input",
     "seasonal_adjustment": "nsa"
   },
   "sample": {
     "frequency_used": "quarterly",
-    "start": "2006-03-31",
-    "end": "2025-12-31",
-    "n_obs": 80
+    "start": "2010-03-31",
+    "end": "2026-06-30",
+    "n_obs": 66
   },
-  "generated_at": "2026-07-21T20:26:41.477124+00:00",
-  "data_vintage": "2025-12-01",
+  "generated_at": "2026-07-21T21:23:33.062167+00:00",
+  "data_vintage": "2026-10-03",
   "data_vintage_detail": {
-    "a": "2025-12-01",
-    "b": "2025-12-01"
+    "a": "2026-10-03",
+    "b": "2026-07-21"
   },
   "insufficient_data": false,
   "stationarity": {
     "a": {
-      "adf_statistic": -8.554247831342666,
-      "adf_p_value": 9.049119453955629e-14,
-      "kpss_statistic": 0.09078126560497378,
-      "kpss_p_value": 0.1,
-      "is_stationary": true,
-      "order_of_integration": 1,
-      "log_transformed": true
-    },
-    "b": {
-      "adf_statistic": -9.549368371647518,
-      "adf_p_value": 2.5967436355790654e-16,
-      "kpss_statistic": 0.1966479481241919,
+      "adf_statistic": -5.666374253369905,
+      "adf_p_value": 9.131819243888593e-07,
+      "kpss_statistic": 0.14477900324175,
       "kpss_p_value": 0.1,
       "is_stationary": true,
       "order_of_integration": 2,
       "log_transformed": true
+    },
+    "b": {
+      "adf_statistic": -9.984450680093705,
+      "adf_p_value": 2.073214462550473e-17,
+      "kpss_statistic": 0.2137517278150088,
+      "kpss_p_value": 0.1,
+      "is_stationary": true,
+      "order_of_integration": 1,
+      "log_transformed": true
     }
   },
   "granger": {
-    "optimal_lag": 3,
+    "optimal_lag": 2,
     "selection_criterion": "bic",
     "a_causes_b": {
-      "f_stat": 1.3310647927286086,
-      "p_value": 0.2669048387682245,
-      "p_value_fdr_adj": 0.533809677536449,
-      "significant": false
+      "f_stat": 7.3892289400912725,
+      "p_value": 0.0009605345247385357,
+      "p_value_fdr_adj": 0.011910628106757843,
+      "significant": true
     },
     "b_causes_a": {
-      "f_stat": 0.5784392075930868,
-      "p_value": 0.6301405093786456,
-      "p_value_fdr_adj": 0.8180771525266627,
+      "f_stat": 1.7190799211515477,
+      "p_value": 0.18384422125412078,
+      "p_value_fdr_adj": 0.3999418146580873,
       "significant": false
     }
   },
   "cointegration_engle_granger": {
-    "statistic": -1.3891785829413814,
-    "p_value": 0.8011984506393699,
-    "cointegrated": false
+    "statistic": -5.668670203727139,
+    "p_value": 8.125522824019559e-06,
+    "cointegrated": true
   },
   "cointegration_johansen": {
     "trace_statistic": [
-      9.938711219133724,
-      0.6127642995467324
+      17.226732124005686,
+      0.036264193181028116
     ],
     "critical_values": [
       [
@@ -91,8 +91,17 @@
         6.6349
       ]
     ],
-    "cointegration_rank": 0
+    "cointegration_rank": 1
   },
-  "vecm": null,
+  "vecm": {
+    "cointegration_vector": [
+      1.0,
+      -1.3337931807295134
+    ],
+    "adjustment_speed": [
+      0.16392904082751386,
+      0.4502620707712512
+    ]
+  },
   "warnings": []
 }

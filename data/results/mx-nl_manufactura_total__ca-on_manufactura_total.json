@@ -15,30 +15,84 @@
   },
   "series_b": {
     "id": "ca-on_manufactura_total_sc",
-    "source": "Statistics Canada — Manufacturing sales (Ontario, real)",
+    "source": "Statistics Canada — Manufacturing sales (mock)",
     "region": "35",
     "proxy_type": "output_index",
     "seasonal_adjustment": "nsa"
   },
   "sample": {
     "frequency_used": "quarterly",
-    "start": "2021-06-30",
+    "start": "2010-03-31",
     "end": "2026-06-30",
-    "n_obs": 21
+    "n_obs": 66
   },
-  "generated_at": "2026-07-21T20:26:41.606103+00:00",
+  "generated_at": "2026-07-21T21:23:33.426824+00:00",
   "data_vintage": "2026-10-03",
   "data_vintage_detail": {
     "a": "2026-10-03",
-    "b": "2026-05-01"
+    "b": "2026-08-29"
   },
-  "insufficient_data": true,
-  "warnings": [
-    "n_obs=21 < mínimo requerido=30 para frecuencia 'quarterly'; no se corrió el motor econométrico sobre este par (resultado se omite para evitar un estadístico espurio)."
-  ],
-  "stationarity": null,
-  "granger": null,
-  "cointegration_engle_granger": null,
-  "cointegration_johansen": null,
-  "vecm": null
+  "insufficient_data": false,
+  "stationarity": {
+    "a": {
+      "adf_statistic": -9.669683882872182,
+      "adf_p_value": 1.286844069325947e-16,
+      "kpss_statistic": 0.10155572902484857,
+      "kpss_p_value": 0.1,
+      "is_stationary": true,
+      "order_of_integration": 1,
+      "log_transformed": true
+    },
+    "b": {
+      "adf_statistic": -10.35498772106935,
+      "adf_p_value": 2.480050016646149e-18,
+      "kpss_statistic": 0.05951680348745812,
+      "kpss_p_value": 0.1,
+      "is_stationary": true,
+      "order_of_integration": 1,
+      "log_transformed": true
+    }
+  },
+  "granger": {
+    "optimal_lag": 1,
+    "selection_criterion": "bic",
+    "a_causes_b": {
+      "f_stat": 22.838194420987747,
+      "p_value": 4.96604581983234e-06,
+      "p_value_fdr_adj": 0.0003078948408296051,
+      "significant": true
+    },
+    "b_causes_a": {
+      "f_stat": 0.14678910559000266,
+      "p_value": 0.7022896458240535,
+      "p_value_fdr_adj": 0.8333681145578542,
+      "significant": false
+    }
+  },
+  "cointegration_engle_granger": {
+    "statistic": -6.280741611843072,
+    "p_value": 3.930480103218295e-07,
+    "cointegrated": true
+  },
+  "cointegration_johansen": {
+    "trace_statistic": [
+      14.71291033049833,
+      0.5107338754138607
+    ],
+    "critical_values": [
+      [
+        13.4294,
+        15.4943,
+        19.9349
+      ],
+      [
+        2.7055,
+        3.8415,
+        6.6349
+      ]
+    ],
+    "cointegration_rank": 0
+  },
+  "vecm": null,
+  "warnings": []
 }

@@ -8,76 +8,76 @@
   },
   "series_a": {
     "id": "mx-bc_farmaceutica_itaee",
-    "source": "INEGI - ITAEE (clave 741651) [APROXIMACIÓN: ITAEE específico de este sector no existe en el catálogo estatal público de INEGI (la granularidad máxima es manufactura 31-33 total); se usa 741651 (ITAEE manufactura total) como mejor proxy disponible del lado MX.]",
+    "source": "INEGI - ITAEE (mock)",
     "region": "02",
     "proxy_type": "output_index",
     "seasonal_adjustment": "nsa"
   },
   "series_b": {
     "id": "us-ca_farmaceutica_bc_bls",
-    "source": "BLS - CES SMU06000003232540001 (California)",
+    "source": "BLS - State and Area Employment (mock)",
     "region": "06",
     "proxy_type": "labor_input",
     "seasonal_adjustment": "nsa"
   },
   "sample": {
     "frequency_used": "quarterly",
-    "start": "2006-03-31",
-    "end": "2025-12-31",
-    "n_obs": 80
+    "start": "2010-03-31",
+    "end": "2026-06-30",
+    "n_obs": 66
   },
-  "generated_at": "2026-07-21T20:26:41.445730+00:00",
-  "data_vintage": "2025-12-01",
+  "generated_at": "2026-07-21T21:23:33.031746+00:00",
+  "data_vintage": "2026-10-03",
   "data_vintage_detail": {
-    "a": "2025-12-01",
-    "b": "2025-12-01"
+    "a": "2026-10-03",
+    "b": "2026-07-21"
   },
   "insufficient_data": false,
   "stationarity": {
     "a": {
-      "adf_statistic": -7.59517005595848,
-      "adf_p_value": 2.4713729897234948e-11,
-      "kpss_statistic": 0.1536102411032818,
-      "kpss_p_value": 0.1,
-      "is_stationary": true,
-      "order_of_integration": 1,
-      "log_transformed": true
-    },
-    "b": {
-      "adf_statistic": -10.102450481999139,
-      "adf_p_value": 1.0507886710400478e-17,
-      "kpss_statistic": 0.13277597277964134,
+      "adf_statistic": -8.085266372988196,
+      "adf_p_value": 1.4254701242137106e-12,
+      "kpss_statistic": 0.2662158134008499,
       "kpss_p_value": 0.1,
       "is_stationary": true,
       "order_of_integration": 2,
       "log_transformed": true
+    },
+    "b": {
+      "adf_statistic": -6.433622074839627,
+      "adf_p_value": 1.6736664233324978e-08,
+      "kpss_statistic": 0.1520365415841359,
+      "kpss_p_value": 0.1,
+      "is_stationary": true,
+      "order_of_integration": 1,
+      "log_transformed": true
     }
   },
   "granger": {
-    "optimal_lag": 3,
+    "optimal_lag": 4,
     "selection_criterion": "bic",
     "a_causes_b": {
-      "f_stat": 0.5337184038378632,
-      "p_value": 0.6599269060629067,
-      "p_value_fdr_adj": 0.8380626067428268,
+      "f_stat": 2.1029729452554733,
+      "p_value": 0.08584405776051598,
+      "p_value_fdr_adj": 0.23982054395863645,
       "significant": false
     },
     "b_causes_a": {
-      "f_stat": 6.918856390173893,
-      "p_value": 0.00022734272553346093,
-      "p_value_fdr_adj": 0.0016823361689476107,
-      "significant": true
+      "f_stat": 1.1489479536431375,
+      "p_value": 0.33795279599995254,
+      "p_value_fdr_adj": 0.5902274183661143,
+      "significant": false
     }
   },
   "cointegration_engle_granger": {
-    "statistic": -1.5646971116393473,
-    "p_value": 0.7355576970426076,
-    "cointegrated": false
+    "statistic": -6.100699617476194,
+    "p_value": 9.813792551762568e-07,
+    "cointegrated": true
   },
   "cointegration_johansen": {
     "trace_statistic": [
-      16.124577120349937,
-      2.938100644663789
+      31.590734616170103,
+      3.11896403768332
     ],
     "critical_values": [
       [
@@ -95,12 +95,12 @@
   },
   "vecm": {
     "cointegration_vector": [
-      0.9999999999999999,
-      -2.1517631135617656
+      1.0,
+      -1.4386446280243528
     ],
     "adjustment_speed": [
-      -0.19210400020677035,
-      -0.0156593350479181
+      -0.07685540714651995,
+      0.5818788558178833
     ]
   },
   "warnings": []

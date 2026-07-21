@@ -1,0 +1,107 @@
+{
+  "pair_id": "mx-chh_agroindustrial__us-nm_agroindustrial",
+  "sector": {
+    "id": "agroindustrial",
+    "scian": "311800",
+    "naics": "3118",
+    "label": "Agroindustrial (cacao y vainilla)"
+  },
+  "series_a": {
+    "id": "mx-chh_agroindustrial_itaee",
+    "source": "INEGI - ITAEE (mock)",
+    "region": "08",
+    "proxy_type": "output_index",
+    "seasonal_adjustment": "nsa"
+  },
+  "series_b": {
+    "id": "us-nm_agroindustrial_chh_bls",
+    "source": "BLS - State and Area Employment (mock)",
+    "region": "35",
+    "proxy_type": "labor_input",
+    "seasonal_adjustment": "nsa"
+  },
+  "sample": {
+    "frequency_used": "quarterly",
+    "start": "2010-03-31",
+    "end": "2026-06-30",
+    "n_obs": 66
+  },
+  "generated_at": "2026-07-21T21:23:33.150601+00:00",
+  "data_vintage": "2026-10-03",
+  "data_vintage_detail": {
+    "a": "2026-10-03",
+    "b": "2026-07-21"
+  },
+  "insufficient_data": false,
+  "stationarity": {
+    "a": {
+      "adf_statistic": -5.929575877636463,
+      "adf_p_value": 2.3983449002206805e-07,
+      "kpss_statistic": 0.24508520030823255,
+      "kpss_p_value": 0.1,
+      "is_stationary": true,
+      "order_of_integration": 1,
+      "log_transformed": true
+    },
+    "b": {
+      "adf_statistic": -3.5532468232495797,
+      "adf_p_value": 0.006720388104144723,
+      "kpss_statistic": 0.42748899849941235,
+      "kpss_p_value": 0.06530646616404641,
+      "is_stationary": true,
+      "order_of_integration": 1,
+      "log_transformed": true
+    }
+  },
+  "granger": {
+    "optimal_lag": 1,
+    "selection_criterion": "bic",
+    "a_causes_b": {
+      "f_stat": 5.920256901533449,
+      "p_value": 0.016417994216322257,
+      "p_value_fdr_adj": 0.08482630345099833,
+      "significant": false
+    },
+    "b_causes_a": {
+      "f_stat": 5.251298535029595,
+      "p_value": 0.023645219804551455,
+      "p_value_fdr_adj": 0.10471454484872787,
+      "significant": false
+    }
+  },
+  "cointegration_engle_granger": {
+    "statistic": -5.54864753457245,
+    "p_value": 1.4295337380121403e-05,
+    "cointegrated": true
+  },
+  "cointegration_johansen": {
+    "trace_statistic": [
+      31.576344841190572,
+      5.509151868699058
+    ],
+    "critical_values": [
+      [
+        13.4294,
+        15.4943,
+        19.9349
+      ],
+      [
+        2.7055,
+        3.8415,
+        6.6349
+      ]
+    ],
+    "cointegration_rank": 2
+  },
+  "vecm": {
+    "cointegration_vector": [
+      1.0,
+      9.099879133570345e-17
+    ],
+    "adjustment_speed": [
+      -0.23857801934001158,
+      0.405194400933499
+    ]
+  },
+  "warnings": []
+}

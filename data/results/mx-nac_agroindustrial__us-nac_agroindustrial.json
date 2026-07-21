@@ -8,45 +8,45 @@
   },
   "series_a": {
     "id": "mx-nac_agroindustrial_emim",
-    "source": "INEGI - IMAI (clave 736427) [APROXIMACIÓN: Proxy ya declarado en scian_naics_crosswalk.csv (cacao/vainilla vía panadería y tortillas); no existe indicador SCIAN 311800 exacto en IMAI.]",
+    "source": "INEGI - EMIM (mock)",
     "region": "NAC",
     "proxy_type": "output_index",
     "seasonal_adjustment": "nsa"
   },
   "series_b": {
     "id": "us-nac_agroindustrial_ip",
-    "source": "FRED - IPN3118N (Industrial Production)",
+    "source": "FRED - Industrial Production (mock)",
     "region": "NAC",
     "proxy_type": "output_index",
     "seasonal_adjustment": "nsa"
   },
   "sample": {
     "frequency_used": "monthly",
-    "start": "1993-01-31",
-    "end": "2026-05-31",
-    "n_obs": 401
+    "start": "2010-01-31",
+    "end": "2026-06-30",
+    "n_obs": 198
   },
-  "generated_at": "2026-07-21T20:26:41.204236+00:00",
-  "data_vintage": "2026-06-01",
+  "generated_at": "2026-07-21T21:23:32.829337+00:00",
+  "data_vintage": "2026-08-14",
   "data_vintage_detail": {
-    "a": "2026-05-01",
-    "b": "2026-06-01"
+    "a": "2026-08-14",
+    "b": "2026-07-15"
   },
   "insufficient_data": false,
   "stationarity": {
     "a": {
-      "adf_statistic": -5.395593454254102,
-      "adf_p_value": 3.4601409081082676e-06,
-      "kpss_statistic": 0.41463803928207194,
-      "kpss_p_value": 0.07084567272324487,
+      "adf_statistic": -8.528535801582475,
+      "adf_p_value": 1.0529547913177654e-13,
+      "kpss_statistic": 0.022286404269928752,
+      "kpss_p_value": 0.1,
       "is_stationary": true,
       "order_of_integration": 1,
       "log_transformed": true
     },
     "b": {
-      "adf_statistic": -5.510572343540575,
-      "adf_p_value": 1.976438093010444e-06,
-      "kpss_statistic": 0.05055509805387803,
+      "adf_statistic": -6.967763562311482,
+      "adf_p_value": 8.824284414763093e-10,
+      "kpss_statistic": 0.04100812496362819,
       "kpss_p_value": 0.1,
       "is_stationary": true,
       "order_of_integration": 1,
@@ -54,30 +54,30 @@
     }
   },
   "granger": {
-    "optimal_lag": 6,
+    "optimal_lag": 1,
     "selection_criterion": "bic",
     "a_causes_b": {
-      "f_stat": 10.591982972240773,
-      "p_value": 2.567318409684875e-11,
-      "p_value_fdr_adj": 4.749539057917018e-10,
-      "significant": true
+      "f_stat": 0.12314771614739402,
+      "p_value": 0.725836744937486,
+      "p_value_fdr_adj": 0.8333681145578542,
+      "significant": false
     },
     "b_causes_a": {
-      "f_stat": 29.156585607655575,
-      "p_value": 1.6566454323311086e-31,
-      "p_value_fdr_adj": 4.0863920664167346e-30,
-      "significant": true
+      "f_stat": 4.33183880940104,
+      "p_value": 0.03806441932297744,
+      "p_value_fdr_adj": 0.1311107776680334,
+      "significant": false
     }
   },
   "cointegration_engle_granger": {
-    "statistic": -0.7490254983370022,
-    "p_value": 0.9410811084991266,
-    "cointegrated": false
+    "statistic": -3.928478806663351,
+    "p_value": 0.00905740753466343,
+    "cointegrated": true
   },
   "cointegration_johansen": {
     "trace_statistic": [
-      34.0175551154626,
-      2.337664403404464
+      13.858675881144194,
+      0.0007962147650828766
     ],
     "critical_values": [
       [
@@ -91,17 +91,8 @@
         6.6349
       ]
     ],
-    "cointegration_rank": 1
+    "cointegration_rank": 0
   },
-  "vecm": {
-    "cointegration_vector": [
-      1.0,
-      8.19786334268979
-    ],
-    "adjustment_speed": [
-      -0.002062664352165291,
-      -0.018554806835559615
-    ]
-  },
+  "vecm": null,
   "warnings": []
 }

@@ -8,45 +8,45 @@
   },
   "series_a": {
     "id": "mx-bc_aeroespacial_itaee",
-    "source": "INEGI - ITAEE (clave 741651) [APROXIMACIÓN: ITAEE específico de este sector no existe en el catálogo estatal público de INEGI (la granularidad máxima es manufactura 31-33 total); se usa 741651 (ITAEE manufactura total) como mejor proxy disponible del lado MX.]",
+    "source": "INEGI - ITAEE (mock)",
     "region": "02",
     "proxy_type": "output_index",
     "seasonal_adjustment": "nsa"
   },
   "series_b": {
     "id": "us-ca_aeroespacial_bc_bls",
-    "source": "BLS - CES SMU06000003133640001 (California)",
+    "source": "BLS - State and Area Employment (mock)",
     "region": "06",
     "proxy_type": "labor_input",
     "seasonal_adjustment": "nsa"
   },
   "sample": {
     "frequency_used": "quarterly",
-    "start": "2006-03-31",
-    "end": "2025-12-31",
-    "n_obs": 80
+    "start": "2010-03-31",
+    "end": "2026-06-30",
+    "n_obs": 66
   },
-  "generated_at": "2026-07-21T20:26:41.280638+00:00",
-  "data_vintage": "2025-12-01",
+  "generated_at": "2026-07-21T21:23:32.874264+00:00",
+  "data_vintage": "2026-10-03",
   "data_vintage_detail": {
-    "a": "2025-12-01",
-    "b": "2025-12-01"
+    "a": "2026-10-03",
+    "b": "2026-07-21"
   },
   "insufficient_data": false,
   "stationarity": {
     "a": {
-      "adf_statistic": -7.59517005595848,
-      "adf_p_value": 2.4713729897234948e-11,
-      "kpss_statistic": 0.1536102411032818,
+      "adf_statistic": -5.4066517507157155,
+      "adf_p_value": 3.279926857673695e-06,
+      "kpss_statistic": 0.12093932164205433,
       "kpss_p_value": 0.1,
       "is_stationary": true,
       "order_of_integration": 1,
       "log_transformed": true
     },
     "b": {
-      "adf_statistic": -3.8335353268804666,
-      "adf_p_value": 0.0025822500138836433,
-      "kpss_statistic": 0.1919589115924843,
+      "adf_statistic": -7.938579833963397,
+      "adf_p_value": 3.361354258335663e-12,
+      "kpss_statistic": 0.14915968970768537,
       "kpss_p_value": 0.1,
       "is_stationary": true,
       "order_of_integration": 1,
@@ -54,30 +54,30 @@
     }
   },
   "granger": {
-    "optimal_lag": 3,
+    "optimal_lag": 1,
     "selection_criterion": "bic",
     "a_causes_b": {
-      "f_stat": 0.3129514012619288,
-      "p_value": 0.8159946438911688,
-      "p_value_fdr_adj": 0.9210128182480896,
-      "significant": false
+      "f_stat": 15.333121018530665,
+      "p_value": 0.00014899191397575888,
+      "p_value_fdr_adj": 0.002052777481443789,
+      "significant": true
     },
     "b_causes_a": {
-      "f_stat": 0.24358297881230961,
-      "p_value": 0.8657822327724525,
-      "p_value_fdr_adj": 0.928520075726978,
+      "f_stat": 1.0897987194003702,
+      "p_value": 0.2985799304030293,
+      "p_value_fdr_adj": 0.5365784256518209,
       "significant": false
     }
   },
   "cointegration_engle_granger": {
-    "statistic": -1.7207560752074946,
-    "p_value": 0.6673550425379049,
-    "cointegrated": false
+    "statistic": -5.990004585823356,
+    "p_value": 1.7060890420218208e-06,
+    "cointegrated": true
   },
   "cointegration_johansen": {
     "trace_statistic": [
-      6.858884932998123,
-      0.40238022805315277
+      22.00403313286255,
+      2.015068767576411
     ],
     "critical_values": [
       [
@@ -91,8 +91,17 @@
         6.6349
       ]
     ],
-    "cointegration_rank": 0
+    "cointegration_rank": 1
   },
-  "vecm": null,
+  "vecm": {
+    "cointegration_vector": [
+      1.0,
+      -1.4462845844776677
+    ],
+    "adjustment_speed": [
+      0.07896221482118417,
+      0.43960393360642736
+    ]
+  },
   "warnings": []
 }
