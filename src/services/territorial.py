@@ -101,6 +101,7 @@ def compute_indicator_values(
     ucr_data = _load_ucr_if_needed(catalog, country)
     bls_state_data = _load_bls_state_if_needed(catalog, country)
     cbp_data = _load_cbp_if_needed(catalog, country)
+    saipe_data = _load_saipe_if_needed(catalog, country)
 
     rng = np.random.default_rng(42)
 
@@ -109,7 +110,7 @@ def compute_indicator_values(
         region_name = _get_region_name(country, region_code)
         for ind in catalog:
             value, data_quality, note = _compute_value(
-                ind, country, region_code, rng, crime_data, censo_data, coneval_data, enoe_data, denue_data, conagua_data, survey_data, acs_data, ucr_data, bls_state_data, cbp_data
+                ind, country, region_code, rng, crime_data, censo_data, coneval_data, enoe_data, denue_data, conagua_data, survey_data, acs_data, ucr_data, bls_state_data, cbp_data, saipe_data
             )
 
             results.append({
@@ -152,6 +153,7 @@ def _compute_value(
     ucr_data: dict[str, Any] | None = None,
     bls_state_data: dict[str, dict[str, float]] | None = None,
     cbp_data: dict[str, dict[str, int]] | None = None,
+    saipe_data: dict[str, dict[str, float]] | None = None,
 ) -> tuple[float, str, str]:
     indicator_id = ind["id"]
 
@@ -166,6 +168,8 @@ def _compute_value(
         _acs_ids = {
             "potable_water_access", "drainage_access", "internet_access",
             "overcrowding", "self_built_housing", "talent_attraction",
+            "educated_personnel", "public_transport_usage", "avg_commute_time",
+            "land_tenure_vulnerability",
         }
         if indicator_id in _acs_ids and acs_data:
             value, dq, note = _acs_indicator_value(indicator_id, region_code, acs_data)
@@ -190,6 +194,12 @@ def _compute_value(
         _cbp_ids = {"foreign_capital_presence", "daycare_services", "innovation_economic_units"}
         if indicator_id in _cbp_ids and cbp_data:
             value, dq, note = _cbp_indicator_value(indicator_id, region_code, cbp_data)
+            if dq == "real":
+                return value, dq, note
+
+        # SAIPE poverty indicator
+        if indicator_id == "extreme_poverty" and saipe_data:
+            value, dq, note = _saipe_indicator_value(indicator_id, region_code, saipe_data)
             if dq == "real":
                 return value, dq, note
 
@@ -1136,3 +1146,54 @@ def _cbp_indicator_value(
         "real",
         f"{name} — Census CBP 2022, {unit}, total state",
     )
+
+
+# ————————————————————————————————————————————
+# Census SAIPE data loading and indicator computation
+# ————————————————————————————————————————————
+
+_SAIPE_CACHE: dict[str, dict[str, float]] | None = None
+_SAIPE_LOADED = False
+
+
+def _load_saipe_if_needed(
+    catalog: list[dict[str, Any]], country: str
+) -> dict[str, dict[str, float]] | None:
+    global _SAIPE_CACHE, _SAIPE_LOADED
+    if _SAIPE_LOADED:
+        return _SAIPE_CACHE
+    _SAIPE_LOADED = True
+
+    if country != "US":
+        return None
+
+    if not any(ind["id"] == "extreme_poverty" for ind in catalog):
+        return None
+
+    try:
+        from src.services.ingestion.census_saipe import parse_saipe_data
+        data = parse_saipe_data()
+        if not data:
+            logger.info("CensusSAIPE: no data available")
+            return None
+        _SAIPE_CACHE = data
+        logger.info(f"CensusSAIPE: loaded poverty data for {len(data.get('extreme_poverty', {}))} states")
+        return _SAIPE_CACHE
+    except Exception as exc:
+        logger.warning(f"CensusSAIPE: failed to load ({exc}), using mock values")
+        return None
+
+
+def _saipe_indicator_value(
+    indicator_id: str,
+    region_code: str,
+    saipe_data: dict[str, dict[str, float]],
+) -> tuple[float, str, str]:
+    value = saipe_data.get(indicator_id, {}).get(region_code)
+    if value is not None:
+        return (
+            round(value, 2),
+            "real",
+            f"Poverty rate — Census SAIPE 2022, state-level, %",
+        )
+    return (0.0, "synthetic", f"Mock — SAIPE no data for state {region_code}")

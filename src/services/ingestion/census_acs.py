@@ -112,6 +112,58 @@ FALLBACK_ACS: dict[str, dict[str, float]] = {
         "50": 41.7, "51": 40.3, "53": 38.0, "54": 22.7, "55": 32.0,
         "56": 29.2,
     },
+    "educated_personnel": {
+        "01": 30.2, "02": 29.5, "04": 32.5, "05": 30.6, "06": 28.4,
+        "08": 32.1, "09": 27.0, "10": 29.8, "11": 18.5, "12": 30.2,
+        "13": 29.8, "15": 33.5, "16": 34.0, "17": 31.5, "18": 31.2,
+        "19": 32.5, "20": 32.5, "21": 31.8, "22": 31.5, "23": 30.8,
+        "24": 26.5, "25": 26.8, "26": 32.4, "27": 33.0, "28": 32.4,
+        "29": 30.5, "30": 33.2, "31": 33.0, "32": 33.8, "33": 29.0,
+        "34": 27.4, "35": 33.8, "36": 29.5, "37": 31.0, "38": 34.2,
+        "39": 30.8, "40": 31.5, "41": 33.5, "42": 28.0, "44": 28.2,
+        "45": 31.0, "46": 33.8, "47": 30.0, "48": 29.8, "49": 34.8,
+        "50": 27.2, "51": 27.8, "53": 33.5, "54": 32.0, "55": 32.5,
+        "56": 35.0,
+    },
+    "public_transport_usage": {
+        "01": 0.4, "02": 1.5, "04": 1.8, "05": 0.4, "06": 4.8,
+        "08": 3.2, "09": 4.5, "10": 2.8, "11": 34.0, "12": 2.0,
+        "13": 2.0, "15": 5.8, "16": 0.5, "17": 12.5, "18": 1.2,
+        "19": 1.0, "20": 0.4, "21": 1.2, "22": 1.5, "23": 0.8,
+        "24": 8.5, "25": 9.2, "26": 1.2, "27": 3.5, "28": 0.3,
+        "29": 1.4, "30": 0.5, "31": 0.5, "32": 3.5, "33": 0.8,
+        "34": 10.5, "35": 0.8, "36": 27.8, "37": 1.0, "38": 0.5,
+        "39": 1.5, "40": 0.3, "41": 3.8, "42": 5.5, "44": 2.5,
+        "45": 0.5, "46": 0.5, "47": 0.8, "48": 1.2, "49": 2.5,
+        "50": 1.0, "51": 3.2, "53": 5.8, "54": 0.8, "55": 1.8,
+        "56": 0.5,
+    },
+    "avg_commute_time": {
+        "01": 25.3, "02": 19.5, "04": 25.5, "05": 22.5, "06": 29.8,
+        "08": 25.8, "09": 26.8, "10": 25.8, "11": 30.8, "12": 28.0,
+        "13": 28.5, "15": 26.5, "16": 21.5, "17": 28.5, "18": 24.2,
+        "19": 20.0, "20": 19.5, "21": 21.5, "22": 25.5, "23": 24.5,
+        "24": 33.2, "25": 30.2, "26": 24.8, "27": 23.5, "28": 24.8,
+        "29": 23.8, "30": 18.5, "31": 19.2, "32": 24.8, "33": 27.0,
+        "34": 31.5, "35": 22.5, "36": 33.5, "37": 25.2, "38": 18.5,
+        "39": 23.8, "40": 22.2, "41": 23.5, "42": 27.2, "44": 25.5,
+        "45": 25.5, "46": 17.5, "47": 25.2, "48": 27.0, "49": 22.0,
+        "50": 23.5, "51": 27.8, "53": 28.0, "54": 26.5, "55": 22.2,
+        "56": 18.5,
+    },
+    "land_tenure_vulnerability": {
+        "01": 30.5, "02": 35.0, "04": 35.5, "05": 34.5, "06": 44.8,
+        "08": 34.8, "09": 34.5, "10": 31.0, "11": 58.5, "12": 34.0,
+        "13": 35.5, "15": 41.5, "16": 31.0, "17": 34.0, "18": 30.5,
+        "19": 29.5, "20": 30.2, "21": 32.0, "22": 33.0, "23": 28.5,
+        "24": 33.5, "25": 38.2, "26": 27.5, "27": 28.0, "28": 30.5,
+        "29": 32.5, "30": 32.0, "31": 34.0, "32": 42.5, "33": 35.0,
+        "34": 36.5, "35": 32.5, "36": 46.2, "37": 34.8, "38": 37.0,
+        "39": 33.5, "40": 34.5, "41": 37.8, "42": 31.5, "44": 39.5,
+        "45": 30.0, "46": 32.5, "47": 34.0, "48": 38.5, "49": 30.5,
+        "50": 28.5, "51": 34.2, "53": 36.8, "54": 27.5, "55": 32.8,
+        "56": 29.0,
+    },
 }
 
 
@@ -251,6 +303,52 @@ def get_talent_attraction() -> dict[str, float]:
     return result if result else dict(FALLBACK_ACS["talent_attraction"])
 
 
+def get_educated_personnel() -> dict[str, float]:
+    """% of population 25+ with some college or associate's degree
+    (educational attainment below bachelor's but above high school)."""
+    def _compute(data: list[list[str]]) -> dict[str, float]:
+        total = _parse_table(data, "B15003_001E")
+        sc = _parse_table(data, "B15003_019E")
+        ad = _parse_table(data, "B15003_020E")
+        result: dict[str, float] = {}
+        for fips in total:
+            t = total.get(fips, 0)
+            ed = sc.get(fips, 0) + ad.get(fips, 0)
+            if t > 0:
+                result[fips] = round(ed / t * 100, 2)
+            else:
+                result[fips] = 0.0
+        return result
+
+    result = _try_fetch_acs("educated_personnel", ["B15003_001E", "B15003_019E", "B15003_020E"], _compute)
+    return result if result else dict(FALLBACK_ACS["educated_personnel"])
+
+
+def get_public_transport_usage() -> dict[str, float]:
+    """% of workers 16+ who commute via public transportation (excluding taxicab)."""
+    return _compute_ratio_with_fallback("B08301_010E", "B08301_001E", "public_transport_usage")
+
+
+def get_avg_commute_time() -> dict[str, float]:
+    """Mean travel time to work in minutes (workers 16+ who did not work at home)."""
+    def _compute(data: list[list[str]]) -> dict[str, float]:
+        return _parse_table(data, "B08303_001E")
+
+    result = _try_fetch_acs("avg_commute_time", ["B08303_001E"], _compute)
+    return result if result else dict(FALLBACK_ACS["avg_commute_time"])
+
+
+def get_land_tenure_vulnerability() -> dict[str, float]:
+    """% of occupied housing units that are renter-occupied (proxy for tenure vulnerability)."""
+    return _compute_ratio_with_fallback("B25003_003E", "B25003_001E", "land_tenure_vulnerability")
+
+
+def _compute_ratio_with_fallback(num_var: str, den_var: str, indicator_id: str) -> dict[str, float]:
+    result = _try_fetch_acs(indicator_id, [num_var, den_var],
+                            lambda data: _compute_ratio(data, num_var, den_var, invert=False))
+    return result if result else dict(FALLBACK_ACS.get(indicator_id, {}))
+
+
 def _compute_ratio(data: list[list[str]], num_var: str, den_var: str, invert: bool = False) -> dict[str, float]:
     num = _parse_table(data, num_var)
     den = _parse_table(data, den_var)
@@ -288,6 +386,10 @@ def parse_acs_data() -> dict[str, dict[str, float]]:
         "overcrowding": get_overcrowding,
         "self_built_housing": get_self_built_housing,
         "talent_attraction": get_talent_attraction,
+        "educated_personnel": get_educated_personnel,
+        "public_transport_usage": get_public_transport_usage,
+        "avg_commute_time": get_avg_commute_time,
+        "land_tenure_vulnerability": get_land_tenure_vulnerability,
     }
     for ind_id, fetcher in fetchers.items():
         try:
