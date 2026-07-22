@@ -26,7 +26,7 @@
     "end": "2026-06-30",
     "n_obs": 66
   },
-  "generated_at": "2026-07-21T21:23:33.123076+00:00",
+  "generated_at": "2026-07-21T21:28:58.148869+00:00",
   "data_vintage": "2026-10-03",
   "data_vintage_detail": {
     "a": "2026-10-03",
@@ -59,13 +59,13 @@
     "a_causes_b": {
       "f_stat": 0.832863059822749,
       "p_value": 0.3632458491033331,
-      "p_value_fdr_adj": 0.6255900734557402,
+      "p_value_fdr_adj": 0.6107673568994096,
       "significant": false
     },
     "b_causes_a": {
       "f_stat": 0.049323155512180396,
       "p_value": 0.8246165923409065,
-      "p_value_fdr_adj": 0.8891518039154123,
+      "p_value_fdr_adj": 0.8608634755207265,
       "significant": false
     }
   },

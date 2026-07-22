@@ -26,7 +26,7 @@
     "end": "2026-06-30",
     "n_obs": 66
   },
-  "generated_at": "2026-07-21T21:23:33.181410+00:00",
+  "generated_at": "2026-07-21T21:28:58.213664+00:00",
   "data_vintage": "2026-10-03",
   "data_vintage_detail": {
     "a": "2026-10-03",
@@ -35,12 +35,12 @@
   "insufficient_data": false,
   "stationarity": {
     "a": {
-      "adf_statistic": -3.5367499076842184,
-      "adf_p_value": 0.007091942494857506,
-      "kpss_statistic": 0.15041693726386393,
+      "adf_statistic": -10.379083116099846,
+      "adf_p_value": 2.1626419241415633e-18,
+      "kpss_statistic": 0.16984769594615365,
       "kpss_p_value": 0.1,
       "is_stationary": true,
-      "order_of_integration": 2,
+      "order_of_integration": 1,
       "log_transformed": true
     },
     "b": {
@@ -54,30 +54,30 @@
     }
   },
   "granger": {
-    "optimal_lag": 3,
+    "optimal_lag": 1,
     "selection_criterion": "bic",
     "a_causes_b": {
-      "f_stat": 0.5297624784056937,
-      "p_value": 0.662801533279033,
-      "p_value_fdr_adj": 0.8137365359069316,
+      "f_stat": 0.3470935378050539,
+      "p_value": 0.5568523849717033,
+      "p_value_fdr_adj": 0.751611792269086,
       "significant": false
     },
     "b_causes_a": {
-      "f_stat": 4.25946808592706,
-      "p_value": 0.00694305849321475,
-      "p_value_fdr_adj": 0.050643485479919356,
+      "f_stat": 0.6486228955630111,
+      "p_value": 0.422172338665164,
+      "p_value_fdr_adj": 0.6468769705353319,
       "significant": false
     }
   },
   "cointegration_engle_granger": {
-    "statistic": -4.871244711364578,
-    "p_value": 0.0002819671793714271,
-    "cointegrated": true
+    "statistic": -2.954503927962351,
+    "p_value": 0.12141986220678508,
+    "cointegrated": false
   },
   "cointegration_johansen": {
     "trace_statistic": [
-      21.082983293730354,
-      0.06994298897264477
+      8.442670017610174,
+      0.17614260611754565
     ],
     "critical_values": [
       [
@@ -91,17 +91,8 @@
         6.6349
       ]
     ],
-    "cointegration_rank": 1
+    "cointegration_rank": 0
   },
-  "vecm": {
-    "cointegration_vector": [
-      1.0,
-      -1.4057058085551364
-    ],
-    "adjustment_speed": [
-      -0.024266845145452926,
-      0.3947851582310102
-    ]
-  },
+  "vecm": null,
   "warnings": []
 }

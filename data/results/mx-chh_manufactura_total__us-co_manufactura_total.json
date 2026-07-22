@@ -26,7 +26,7 @@
     "end": "2026-06-30",
     "n_obs": 66
   },
-  "generated_at": "2026-07-21T21:23:33.222964+00:00",
+  "generated_at": "2026-07-21T21:28:58.259079+00:00",
   "data_vintage": "2026-10-03",
   "data_vintage_detail": {
     "a": "2026-10-03",
@@ -35,9 +35,9 @@
   "insufficient_data": false,
   "stationarity": {
     "a": {
-      "adf_statistic": -7.101098752486236,
-      "adf_p_value": 4.1661043539943797e-10,
-      "kpss_statistic": 0.2787469744882297,
+      "adf_statistic": -7.317918761650838,
+      "adf_p_value": 1.215477223055502e-10,
+      "kpss_statistic": 0.08446382915974043,
       "kpss_p_value": 0.1,
       "is_stationary": true,
       "order_of_integration": 1,
@@ -57,27 +57,27 @@
     "optimal_lag": 5,
     "selection_criterion": "bic",
     "a_causes_b": {
-      "f_stat": 0.8791113896988932,
-      "p_value": 0.4982286512894064,
-      "p_value_fdr_adj": 0.7222480430436071,
+      "f_stat": 0.6744669036731308,
+      "p_value": 0.6437863506464822,
+      "p_value_fdr_adj": 0.7985224130665858,
       "significant": false
     },
     "b_causes_a": {
-      "f_stat": 1.561362085045698,
-      "p_value": 0.17837150243288086,
-      "p_value_fdr_adj": 0.3999418146580873,
+      "f_stat": 0.5256740425919665,
+      "p_value": 0.7563123438381549,
+      "p_value_fdr_adj": 0.8354613100537758,
       "significant": false
     }
   },
   "cointegration_engle_granger": {
-    "statistic": -4.635439567015428,
-    "p_value": 0.0007272459241707001,
+    "statistic": -3.340316537178216,
+    "p_value": 0.04942538653531877,
     "cointegrated": true
   },
   "cointegration_johansen": {
     "trace_statistic": [
-      30.713251005972953,
-      1.8353205779092574
+      13.726033266548855,
+      1.4484485834819563
     ],
     "critical_values": [
       [
@@ -91,17 +91,8 @@
         6.6349
       ]
     ],
-    "cointegration_rank": 1
+    "cointegration_rank": 0
   },
-  "vecm": {
-    "cointegration_vector": [
-      1.0,
-      -1.3998551933688115
-    ],
-    "adjustment_speed": [
-      -0.09933680237953738,
-      0.6012424274499075
-    ]
-  },
+  "vecm": null,
   "warnings": []
 }

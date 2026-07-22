@@ -26,7 +26,7 @@
     "end": "2026-06-30",
     "n_obs": 66
   },
-  "generated_at": "2026-07-21T21:23:33.212335+00:00",
+  "generated_at": "2026-07-21T21:28:58.247361+00:00",
   "data_vintage": "2026-10-03",
   "data_vintage_detail": {
     "a": "2026-10-03",
@@ -35,9 +35,9 @@
   "insufficient_data": false,
   "stationarity": {
     "a": {
-      "adf_statistic": -10.578920617851391,
-      "adf_p_value": 6.987397114913704e-19,
-      "kpss_statistic": 0.166850719408657,
+      "adf_statistic": -8.315936453535683,
+      "adf_p_value": 3.680874540567146e-13,
+      "kpss_statistic": 0.15643811024652438,
       "kpss_p_value": 0.1,
       "is_stationary": true,
       "order_of_integration": 1,
@@ -54,30 +54,30 @@
     }
   },
   "granger": {
-    "optimal_lag": 1,
+    "optimal_lag": 3,
     "selection_criterion": "bic",
     "a_causes_b": {
-      "f_stat": 0.41899134379500097,
-      "p_value": 0.5186771366415815,
-      "p_value_fdr_adj": 0.7327167306000711,
+      "f_stat": 4.16296628457506,
+      "p_value": 0.007834547353754821,
+      "p_value_fdr_adj": 0.06472017379188766,
       "significant": false
     },
     "b_causes_a": {
-      "f_stat": 0.12634937975165136,
-      "p_value": 0.7228716152475538,
-      "p_value_fdr_adj": 0.8333681145578542,
+      "f_stat": 1.7695772656497561,
+      "p_value": 0.1573070543777309,
+      "p_value_fdr_adj": 0.3881602640489464,
       "significant": false
     }
   },
   "cointegration_engle_granger": {
-    "statistic": -6.125949931725484,
-    "p_value": 8.641737718925415e-07,
-    "cointegrated": true
+    "statistic": -1.135607348782389,
+    "p_value": 0.8739659668271094,
+    "cointegrated": false
   },
   "cointegration_johansen": {
     "trace_statistic": [
-      29.510090346466473,
-      3.5294605458734343
+      9.75333990458873,
+      0.049684610008423634
     ],
     "critical_values": [
       [
@@ -91,17 +91,8 @@
         6.6349
       ]
     ],
-    "cointegration_rank": 1
+    "cointegration_rank": 0
   },
-  "vecm": {
-    "cointegration_vector": [
-      1.0,
-      -1.766295835361113
-    ],
-    "adjustment_speed": [
-      0.05527966609542869,
-      0.4439915443963893
-    ]
-  },
+  "vecm": null,
   "warnings": []
 }
