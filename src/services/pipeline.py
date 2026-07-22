@@ -38,9 +38,11 @@ def run_mock_pipeline() -> PipelineRunResult:
         _state_pair_frames,
         _national_pair_frames_ca,
         _state_pair_frames_ca,
+        _us_ca_national_pair_def,
         ADDITIONAL_STATE_PAIRS,
         MX_CA_NATIONAL_PAIRS,
         MX_CA_STATE_PAIRS,
+        US_CA_NATIONAL_PAIRS,
     )
     from src.services.econometrics.pipeline_runner import run_all
     from src.services.export.to_json import export_all
@@ -117,6 +119,15 @@ def run_mock_pipeline() -> PipelineRunResult:
         series_lookup.update(state_frames)
         series_labels.update(state_labels)
         pair_defs.append(state_pair_def)
+
+    for spec in US_CA_NATIONAL_PAIRS:
+        sector = sectors_by_id.get(spec["sector_id"])
+        if not sector:
+            continue
+        pair_def = _us_ca_national_pair_def(sector, series_lookup)
+        if pair_def is None:
+            continue
+        pair_defs.append(pair_def)
 
     results = run_all(pair_defs, series_lookup, sectors_by_id)
 

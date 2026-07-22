@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-21T21:28:59.254185+00:00",
+  "generated_at": "2026-07-22T20:11:09.427382+00:00",
   "mode": "mock",
   "refresh_cadence": "trimestral",
   "sectors": [
@@ -2709,6 +2709,48 @@
       "sector_id": "petroquimica",
       "series_a": "mx-tam_petroquimica_itaee",
       "series_b": "ca-ab_petroquimica_sc"
+    },
+    {
+      "pair_id": "us-nac_eolica__ca-nac_eolica",
+      "level": "nacional",
+      "sector_id": "eolica",
+      "series_a": "us-nac_eolica_ip",
+      "series_b": "ca-nac_eolica_sc"
+    },
+    {
+      "pair_id": "us-nac_farmaceutica__ca-nac_farmaceutica",
+      "level": "nacional",
+      "sector_id": "farmaceutica",
+      "series_a": "us-nac_farmaceutica_ip",
+      "series_b": "ca-nac_farmaceutica_sc"
+    },
+    {
+      "pair_id": "us-nac_aeroespacial__ca-nac_aeroespacial",
+      "level": "nacional",
+      "sector_id": "aeroespacial",
+      "series_a": "us-nac_aeroespacial_ip",
+      "series_b": "ca-nac_aeroespacial_sc"
+    },
+    {
+      "pair_id": "us-nac_agroindustrial__ca-nac_agroindustrial",
+      "level": "nacional",
+      "sector_id": "agroindustrial",
+      "series_a": "us-nac_agroindustrial_ip",
+      "series_b": "ca-nac_agroindustrial_sc"
+    },
+    {
+      "pair_id": "us-nac_petroquimica__ca-nac_petroquimica",
+      "level": "nacional",
+      "sector_id": "petroquimica",
+      "series_a": "us-nac_petroquimica_ip",
+      "series_b": "ca-nac_petroquimica_sc"
+    },
+    {
+      "pair_id": "us-nac_manufactura_total__ca-nac_manufactura_total",
+      "level": "nacional",
+      "sector_id": "manufactura_total",
+      "series_a": "us-nac_manufactura_total_ip",
+      "series_b": "ca-nac_manufactura_total_sc"
     }
   ]
 }

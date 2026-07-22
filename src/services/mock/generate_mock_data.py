@@ -424,6 +424,23 @@ MX_CA_STATE_PAIRS: list[dict[str, Any]] = [
     },
 ]
 
+# --- Pares EEUU ↔ Canadá (nacional) ---
+# A diferencia de MX_CA_NATIONAL_PAIRS, este bloque NO lleva `rng_index`
+# propio: reutiliza las series `us-nac_{sector}_ip` (ya generada por
+# _national_pair_frames) y `ca-nac_{sector}_sc` (ya generada por
+# _national_pair_frames_ca) sin regenerar valores — ver _us_ca_national_pair_def.
+# NUNCA agregar un rng_index aquí sin releer ese razonamiento: regenerar
+# estas series pisaría los pares MX-US y MX-CA ya publicados (misma clase
+# de bug que ya existe en _national_pair_frames_ca sobre mx-nac_{sector}_emim).
+US_CA_NATIONAL_PAIRS: list[dict[str, Any]] = [
+    {"sector_id": "eolica"},
+    {"sector_id": "farmaceutica"},
+    {"sector_id": "aeroespacial"},
+    {"sector_id": "agroindustrial"},
+    {"sector_id": "petroquimica"},
+    {"sector_id": "manufactura_total"},
+]
+
 
 def _load_sectors() -> list[dict[str, Any]]:
     with open(SECTORS_YAML, encoding="utf-8") as fh:
@@ -765,6 +782,30 @@ def _national_pair_frames_ca(
     return {mx_series_id: mx_tidy, ca_series_id: ca_tidy}, labels, pair_def
 
 
+def _us_ca_national_pair_def(
+    sector: dict[str, Any], series_lookup: dict[str, pd.DataFrame]
+) -> dict[str, Any] | None:
+    """Par nacional Estados Unidos-Canadá: reutiliza las series ya generadas
+    por `_national_pair_frames` (us-nac_{sector}_ip) y `_national_pair_frames_ca`
+    (ca-nac_{sector}_sc) — no genera datos nuevos, así que no necesita
+    `rng_index` propio ni toca `series_lookup`/`series_labels`. Debe llamarse
+    después de que ambos loops ya hayan poblado `series_lookup` (ver orden en
+    `main()`). Devuelve None si falta algún prerequisito (p. ej. el sector no
+    está en MX_CA_NATIONAL_PAIRS)."""
+    sector_id = sector["id"]
+    us_series_id = f"us-nac_{sector_id}_ip"
+    ca_series_id = f"ca-nac_{sector_id}_sc"
+    if us_series_id not in series_lookup or ca_series_id not in series_lookup:
+        return None
+    return {
+        "pair_id": f"us-nac_{sector_id}__ca-nac_{sector_id}",
+        "level": "nacional",
+        "sector_id": sector_id,
+        "series_a": us_series_id,
+        "series_b": ca_series_id,
+    }
+
+
 def _state_pair_frames_ca(
     rng_index: int,
     sector: dict[str, Any],
@@ -916,6 +957,17 @@ def main() -> dict[str, Any]:
         series_lookup.update(state_frames)
         series_labels.update(state_labels)
         pair_defs.append(state_pair_def)
+
+    logger.info("Generando %d pares Estados Unidos-Canadá (nacional)...", len(US_CA_NATIONAL_PAIRS))
+    for spec in US_CA_NATIONAL_PAIRS:
+        sector = sectors_by_id.get(spec["sector_id"])
+        if not sector:
+            continue
+        pair_def = _us_ca_national_pair_def(sector, series_lookup)
+        if pair_def is None:
+            logger.warning("US-CA pair %s: falta serie prerequisito, se omite", spec["sector_id"])
+            continue
+        pair_defs.append(pair_def)
 
     logger.info("Corriendo motor econométrico sobre %d pares...", len(pair_defs))
     results = run_all(pair_defs, series_lookup, sectors_by_id)

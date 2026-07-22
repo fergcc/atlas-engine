@@ -1,20 +1,20 @@
 {
-  "pair_id": "mx-nac_agroindustrial__ca-nac_agroindustrial",
+  "pair_id": "us-nac_farmaceutica__ca-nac_farmaceutica",
   "sector": {
-    "id": "agroindustrial",
-    "scian": "311800",
-    "naics": "3118",
-    "label": "Agroindustrial (cacao y vainilla)"
+    "id": "farmaceutica",
+    "scian": "325400",
+    "naics": "3254",
+    "label": "Farmacéutica"
   },
   "series_a": {
-    "id": "mx-nac_agroindustrial_emim",
-    "source": "INEGI - EMIM (mock)",
+    "id": "us-nac_farmaceutica_ip",
+    "source": "FRED - Industrial Production (mock)",
     "region": "NAC",
     "proxy_type": "output_index",
     "seasonal_adjustment": "nsa"
   },
   "series_b": {
-    "id": "ca-nac_agroindustrial_sc",
+    "id": "ca-nac_farmaceutica_sc",
     "source": "Statistics Canada — Monthly GDP (mock)",
     "region": "NAC",
     "proxy_type": "output_index",
@@ -26,27 +26,27 @@
     "end": "2026-06-30",
     "n_obs": 198
   },
-  "generated_at": "2026-07-22T20:11:08.826873+00:00",
+  "generated_at": "2026-07-22T20:11:08.989859+00:00",
   "data_vintage": "2026-08-29",
   "data_vintage_detail": {
-    "a": "2026-08-14",
+    "a": "2026-07-15",
     "b": "2026-08-29"
   },
   "insufficient_data": false,
   "stationarity": {
     "a": {
-      "adf_statistic": -8.528535801582475,
-      "adf_p_value": 1.0529547913177654e-13,
-      "kpss_statistic": 0.022286404269928752,
+      "adf_statistic": -15.240072307952056,
+      "adf_p_value": 5.177503335752686e-28,
+      "kpss_statistic": 0.10868676825398156,
       "kpss_p_value": 0.1,
       "is_stationary": true,
       "order_of_integration": 1,
       "log_transformed": true
     },
     "b": {
-      "adf_statistic": -7.068850447136477,
-      "adf_p_value": 4.997904020756477e-10,
-      "kpss_statistic": 0.02882934225462917,
+      "adf_statistic": -3.3083378210767576,
+      "adf_p_value": 0.014509862653519121,
+      "kpss_statistic": 0.11675471772999084,
       "kpss_p_value": 0.1,
       "is_stationary": true,
       "order_of_integration": 1,
@@ -57,27 +57,27 @@
     "optimal_lag": 1,
     "selection_criterion": "bic",
     "a_causes_b": {
-      "f_stat": 19.00829061595863,
-      "p_value": 1.67149058183323e-05,
-      "p_value_fdr_adj": 0.0005627351625505209,
-      "significant": true
+      "f_stat": 0.1467605856332554,
+      "p_value": 0.7018613651827136,
+      "p_value_fdr_adj": 0.8282139516818383,
+      "significant": false
     },
     "b_causes_a": {
-      "f_stat": 0.37717048158310157,
-      "p_value": 0.5394832371382813,
-      "p_value_fdr_adj": 0.739553802850067,
+      "f_stat": 0.419664807745158,
+      "p_value": 0.5174894684011759,
+      "p_value_fdr_adj": 0.7290372951474389,
       "significant": false
     }
   },
   "cointegration_engle_granger": {
-    "statistic": -9.72737989377274,
-    "p_value": 1.2148990415381656e-15,
+    "statistic": -4.560009371419366,
+    "p_value": 0.0009742210419087669,
     "cointegrated": true
   },
   "cointegration_johansen": {
     "trace_statistic": [
-      65.55790082951259,
-      0.3602741252366501
+      21.22987720559881,
+      1.4392107459413044
     ],
     "critical_values": [
       [
@@ -96,11 +96,11 @@
   "vecm": {
     "cointegration_vector": [
       1.0,
-      -1.2548874968221073
+      -0.8699111489645498
     ],
     "adjustment_speed": [
-      -0.33226106597792915,
-      0.3083197665557479
+      -0.07089472573940778,
+      0.13446076168282542
     ]
   },
   "warnings": []

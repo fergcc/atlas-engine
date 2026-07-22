@@ -1,5 +1,5 @@
 {
-  "pair_id": "mx-nac_manufactura_total__us-nac_manufactura_total",
+  "pair_id": "us-nac_manufactura_total__ca-nac_manufactura_total",
   "sector": {
     "id": "manufactura_total",
     "scian": "31-33",
@@ -7,15 +7,15 @@
     "label": "Manufactura total (referencia nacional)"
   },
   "series_a": {
-    "id": "mx-nac_manufactura_total_emim",
-    "source": "INEGI - EMIM (mock)",
+    "id": "us-nac_manufactura_total_ip",
+    "source": "FRED - Industrial Production (mock)",
     "region": "NAC",
     "proxy_type": "output_index",
     "seasonal_adjustment": "nsa"
   },
   "series_b": {
-    "id": "us-nac_manufactura_total_ip",
-    "source": "FRED - Industrial Production (mock)",
+    "id": "ca-nac_manufactura_total_sc",
+    "source": "Statistics Canada — Monthly GDP (mock)",
     "region": "NAC",
     "proxy_type": "output_index",
     "seasonal_adjustment": "nsa"
@@ -26,27 +26,27 @@
     "end": "2026-06-30",
     "n_obs": 198
   },
-  "generated_at": "2026-07-22T20:11:07.985186+00:00",
-  "data_vintage": "2026-08-14",
+  "generated_at": "2026-07-22T20:11:09.052449+00:00",
+  "data_vintage": "2026-08-29",
   "data_vintage_detail": {
-    "a": "2026-08-14",
-    "b": "2026-07-15"
+    "a": "2026-07-15",
+    "b": "2026-08-29"
   },
   "insufficient_data": false,
   "stationarity": {
     "a": {
-      "adf_statistic": -15.62649799110568,
-      "adf_p_value": 1.7062308474089615e-28,
-      "kpss_statistic": 0.04914054115299422,
+      "adf_statistic": -8.05021781040871,
+      "adf_p_value": 1.7501899364595326e-12,
+      "kpss_statistic": 0.06846809467707533,
       "kpss_p_value": 0.1,
       "is_stationary": true,
       "order_of_integration": 1,
       "log_transformed": true
     },
     "b": {
-      "adf_statistic": -8.05021781040871,
-      "adf_p_value": 1.7501899364595326e-12,
-      "kpss_statistic": 0.06846809467707533,
+      "adf_statistic": -3.969663323168665,
+      "adf_p_value": 0.0015779645016031243,
+      "kpss_statistic": 0.04470347129587269,
       "kpss_p_value": 0.1,
       "is_stationary": true,
       "order_of_integration": 1,
@@ -57,27 +57,27 @@
     "optimal_lag": 1,
     "selection_criterion": "bic",
     "a_causes_b": {
-      "f_stat": 0.6600300444729171,
-      "p_value": 0.41705009349603633,
-      "p_value_fdr_adj": 0.643084876993888,
+      "f_stat": 3.7746383557306364,
+      "p_value": 0.05276193073897836,
+      "p_value_fdr_adj": 0.19031982159417193,
       "significant": false
     },
     "b_causes_a": {
-      "f_stat": 0.26009857880437826,
-      "p_value": 0.6103439191348303,
-      "p_value_fdr_adj": 0.7729498133821261,
+      "f_stat": 0.8099216541830264,
+      "p_value": 0.36870451599397003,
+      "p_value_fdr_adj": 0.61988247487797,
       "significant": false
     }
   },
   "cointegration_engle_granger": {
-    "statistic": -2.574090273869667,
-    "p_value": 0.2474053154840064,
+    "statistic": -2.851257080289357,
+    "p_value": 0.1499194548087115,
     "cointegrated": false
   },
   "cointegration_johansen": {
     "trace_statistic": [
-      7.150117174933957,
-      0.07292845070793998
+      8.237435764879425,
+      0.12442848434200338
     ],
     "critical_values": [
       [

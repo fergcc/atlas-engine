@@ -93,7 +93,25 @@ def test_live_pipeline_runs_without_api_keys(temp_live_dirs):
     assert len(manifest["sectors"]) == 6
     assert "series_catalog" in manifest
     assert "pairs" in manifest
-    assert len(manifest["pairs"]) == 31
+    assert len(manifest["pairs"]) == 101
+
+
+def test_us_ca_national_pair_exists(temp_live_dirs):
+    """Regresión: el manifiesto debe incluir al menos un par nacional
+    Estados Unidos-Canadá (antes de este cambio, el corredor MX-US/MX-CA
+    nunca generaba la relación directa Estados Unidos<->Canadá)."""
+    from src.services.pipeline import run_pipeline
+
+    result = run_pipeline(mode="mock")
+    assert result.error is None
+    manifest = result.manifest
+    us_ca_pairs = [
+        p
+        for p in manifest["pairs"]
+        if p["series_a"].startswith("us-") and p["series_b"].startswith("ca-")
+    ]
+    assert len(us_ca_pairs) >= 1
+    assert all(p["level"] == "nacional" for p in us_ca_pairs)
 
 
 def test_live_pipeline_via_orchestrator(temp_live_dirs):

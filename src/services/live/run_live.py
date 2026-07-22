@@ -443,6 +443,7 @@ def run_live_pipeline() -> dict[str, Any]:
         ADDITIONAL_STATE_PAIRS,
         MX_CA_NATIONAL_PAIRS,
         MX_CA_STATE_PAIRS,
+        US_CA_NATIONAL_PAIRS,
         _load_sectors,
         _monthly_periods,
         _national_pair_frames,
@@ -450,6 +451,7 @@ def run_live_pipeline() -> dict[str, Any]:
         _quarterly_periods,
         _state_pair_frames,
         _state_pair_frames_ca,
+        _us_ca_national_pair_def,
     )
     from src.services.econometrics.pipeline_runner import run_all
     from src.services.export.to_json import export_all
@@ -466,7 +468,7 @@ def run_live_pipeline() -> dict[str, Any]:
     pair_defs: list[dict[str, Any]] = []
 
     # ——— Step 1: Generate all mock data first (complete baseline) ———
-    logger.info("Step 1/4: generating mock baseline (%d sectors)...", len(sectors))
+    logger.info("Step 1/5: generating mock baseline (%d sectors)...", len(sectors))
 
     for idx, sector in enumerate(sectors):
         frames, labels, pair_def = _national_pair_frames(idx, sector, monthly_dates)
@@ -521,12 +523,15 @@ def run_live_pipeline() -> dict[str, Any]:
     logger.info("Mock baseline: %d series, %d pairs", len(series_lookup), len(pair_defs))
 
     # ——— Step 2: Override MX-US national pairs with real data ———
-    logger.info("Step 2/4: overriding national MX-US pairs with real data...")
+    logger.info("Step 2/5: overriding national MX-US pairs with real data...")
     override_status: list[tuple[str, str, str]] = []
+    us_national_real: dict[str, bool] = {}
+    ca_national_real: dict[str, bool] = {}
 
     for sector in sectors:
         sector_id = sector["id"]
         result = _fetch_national_pair(sector)
+        us_national_real[sector_id] = result is not None
         if result is not None:
             frames, labels = result
             series_lookup.update(frames)
@@ -538,7 +543,7 @@ def run_live_pipeline() -> dict[str, Any]:
             logger.info("  %s: mock (API unavailable)", sector_id)
 
     # ——— Step 3: Override MX-US state pairs with real data ———
-    logger.info("Step 3/4: overriding state MX-US pairs with real data...")
+    logger.info("Step 3/5: overriding state MX-US pairs with real data...")
 
     # All state pairs: aeroespacial (Chihuahua-Texas from step 1) + ADDITIONAL_STATE_PAIRS
     _override_state_pairs: list[dict[str, Any]] = [
@@ -592,7 +597,7 @@ def run_live_pipeline() -> dict[str, Any]:
             logger.info("  %s: mock (API unavailable)", pair_label)
 
     # ——— Step 4: Override Canada pairs with real data ———
-    logger.info("Step 4/4: overriding Canada pairs with real data...")
+    logger.info("Step 4/5: overriding Canada pairs with real data...")
 
     for spec in MX_CA_NATIONAL_PAIRS:
         sector = sectors_by_id.get(spec["sector_id"])
@@ -600,6 +605,7 @@ def run_live_pipeline() -> dict[str, Any]:
             continue
         pair_label = f"mx-nac_{spec['sector_id']}__ca-nac_{spec['sector_id']}"
         result = _fetch_canada_national_pair(sector)
+        ca_national_real[spec["sector_id"]] = result is not None
         if result is not None:
             frames, labels = result
             series_lookup.update(frames)
@@ -630,6 +636,30 @@ def run_live_pipeline() -> dict[str, Any]:
         else:
             override_status.append((pair_label, "mock", "API unavailable"))
             logger.info("  %s: mock (StatCan unavailable)", pair_label)
+
+    # ——— Step 5: Build national US-CA pairs (reusing already-fetched series) ———
+    logger.info("Step 5/5: building national US-CA pairs (no new API calls)...")
+
+    for spec in US_CA_NATIONAL_PAIRS:
+        sector = sectors_by_id.get(spec["sector_id"])
+        if not sector:
+            continue
+        sector_id = spec["sector_id"]
+        pair_def = _us_ca_national_pair_def(sector, series_lookup)
+        if pair_def is None:
+            continue
+        pair_defs.append(pair_def)
+
+        pair_label = f"us-nac_{sector_id}__ca-nac_{sector_id}"
+        us_real = us_national_real.get(sector_id, False)
+        ca_real = ca_national_real.get(sector_id, False)
+        if us_real and ca_real:
+            override_status.append((pair_label, "real", ""))
+            logger.info("  %s: real ✓ (both sides live)", pair_label)
+        else:
+            reason = "US real, CA mock" if us_real else ("CA real, US mock" if ca_real else "both sides mock")
+            override_status.append((pair_label, "mock", reason))
+            logger.info("  %s: mock (%s)", pair_label, reason)
 
     # ————————————————————————————————————————————
     # Determine run mode

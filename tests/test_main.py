@@ -75,7 +75,7 @@ async def test_admin_run_pipeline_mock(client: AsyncClient):
     assert response.status_code == 200
     data = response.json()
     assert data["status"] == "completed"
-    assert data["pairs_total"] == 31
+    assert data["pairs_total"] == 101
     assert data["mode"] == "mock"
 
     response2 = await client.get("/api/v1/admin/status")
