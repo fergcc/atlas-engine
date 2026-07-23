@@ -710,7 +710,14 @@ def run_live_pipeline() -> dict[str, Any]:
 
 
 def _export_territorial() -> None:
-    """Export territorial indicators as static JSON for the Dashboard."""
+    """Export territorial indicators as static JSON for the Dashboard.
+
+    Covers MX, US, and CA — previously this only computed MX, so the
+    Dashboard's US/CA state and province detail pages (which already call
+    `getTerritorialByRegion(code, "US"/"CA")`) silently got zero rows, and the
+    separate territorial_{us,ca}.json exports were orphaned artifacts nothing
+    read (only this file, territorial.json, is consumed by the Dashboard).
+    """
     import json
 
     from src.config import DATA_DIR
@@ -719,28 +726,43 @@ def _export_territorial() -> None:
     logger.info("Exporting territorial indicators...")
     try:
         catalog = load_indicators()
-        region_codes = [f"{i:02d}" for i in range(1, 33)]
-        values = compute_indicator_values("MX", region_codes=region_codes)
+
+        all_values: list[dict[str, Any]] = []
+        region_counts: dict[str, int] = {}
+        for country in ("MX", "US", "CA"):
+            values = compute_indicator_values(country, region_codes=None)
+            all_values.extend(values)
+            region_counts[country] = len({v["region_code"] for v in values})
+
+        qualities = {v.get("data_quality") for v in all_values}
+        if qualities <= {"real"}:
+            overall_quality = "real"
+        elif qualities <= {"synthetic"}:
+            overall_quality = "synthetic"
+        else:
+            overall_quality = "mixed"
 
         territorial = {
             "generated_at": pd.Timestamp.now(tz="UTC").isoformat(),
-            "country": "MX",
+            "country": "MX",  # legacy field kept for schema stability; per-row country is in raw_values[].country
             "total_indicators": len(catalog),
-            "total_regions": len(region_codes),
-            "data_quality": "mixed",
+            "total_regions": sum(region_counts.values()),
+            "regions_by_country": region_counts,
+            "data_quality": overall_quality,
             "by_region": [],
-            "raw_values": values,
+            "raw_values": all_values,
         }
 
-        by_region_map: dict[str, dict[str, object]] = {}
-        for v in values:
-            rc = v["region_code"]
-            if rc not in by_region_map:
-                by_region_map[rc] = {
-                    "region_code": rc,
+        by_region_map: dict[tuple[str, str], dict[str, object]] = {}
+        for v in all_values:
+            key = (v["country"], v["region_code"])
+            if key not in by_region_map:
+                by_region_map[key] = {
+                    "country": v["country"],
+                    "region_code": v["region_code"],
                     "region_name": v["region_name"],
                 }
-            by_region_map[rc][v["indicator_id"]] = v["value"]
+            by_region_map[key][v["indicator_id"]] = v["value"]
         territorial["by_region"] = list(by_region_map.values())
 
         path = DATA_DIR / "territorial.json"

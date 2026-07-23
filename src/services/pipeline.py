@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class PipelineRunResult:
     manifest: dict[str, Any] | None = None
-    mode: str = "mock"
+    mode: str = "mixed"
     pairs_total: int = 0
     pairs_real: int = 0
     pairs_mock: int = 0
@@ -172,7 +172,12 @@ def run_live_pipeline_wrapped() -> PipelineRunResult:
         return PipelineRunResult(error=str(exc), mode="live")
 
 
-def run_pipeline(mode: str = "mock") -> PipelineRunResult:
+def run_pipeline(mode: str = "mixed") -> PipelineRunResult:
+    """Default is "mixed", not "mock": a caller that forgets to specify a
+    mode should get real data where available (silently falling back to mock
+    per-pair/per-indicator when a source or credential is missing) rather
+    than a fully synthetic dataset by default. Explicit `mode="mock"` still
+    works for local dev without API keys — see run_mock_pipeline()."""
     if mode == "mock":
         try:
             return run_mock_pipeline()

@@ -1,5 +1,17 @@
 """INEGI Survey-based indicators — state-level from published reports.
 
+NOT CURRENTLY WIRED IN: `get_survey_data()` has no caller anywhere in
+territorial.py — the 15 indicators below all fall through to the generic
+synthetic mock today (correctly tagged data_quality="synthetic"). This
+module is a draft snapshot only; the real replacement, per the Atlas
+methodology (línea 67: "8 problemas reportados por la industria... de
+Censos Económicos 2019 plus Encuesta Intercensal"), is the Censos
+Económicos ingestion built in Phase 2 (censos_economicos.py). If this
+module is ever wired into territorial.py before that lands, it MUST be
+tagged data_quality="synthetic" — these are hand-transcribed values from a
+single published edition of ENCIG/ENVE/ENAFIN/ENIGH, not a live or
+bulk-file source (same class of bug conagua_eam.py was built to fix).
+
 Uses hardcoded values from INEGI's latest published tabulados for surveys
 that are published at state-level only (ENCIG, ENVE, ENAFIN, ENIGH).
 

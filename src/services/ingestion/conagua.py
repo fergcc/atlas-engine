@@ -1,7 +1,14 @@
-"""CONAGUA water statistics — state-level water stress and consumption.
+"""CONAGUA water statistics — FALLBACK values only.
 
-Uses published data from CONAGUA's "Estadísticas del Agua en México"
-annual report. Values change slowly (yearly updates).
+This module is a static snapshot manually transcribed from CONAGUA's
+"Estadísticas del Agua en México" 2023 report — it has no live or bulk-file
+source, so it goes stale as soon as a new edition is published.
+
+territorial.py uses `conagua_eam.py` (real bulk-file ingestion) first; this
+module is only the fallback when no CONAGUA EAM/SINA file has been placed in
+Engine/data/conagua_eam/. Callers MUST tag values from here as
+data_quality="synthetic", never "real" — see conagua_eam.py's docstring for
+why that mislabeling was a real bug here previously.
 
 Indicators:
   - water_stress (33): % de estrés hídrico (extracción / disponibilidad)
@@ -9,9 +16,6 @@ Indicators:
 
 Source: CONAGUA, Estadísticas del Agua en México, edición 2023
 https://www.gob.mx/conagua/acciones-y-programas/estadisticas-del-agua-en-mexico
-
-Data is hardcoded from the latest report. To update, replace values
-with the new edition's tables.
 """
 
 from __future__ import annotations

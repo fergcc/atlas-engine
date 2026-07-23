@@ -24,6 +24,34 @@ def temp_live_dirs(monkeypatch: pytest.MonkeyPatch):
     tmp_data.cleanup()
 
 
+def test_run_pipeline_defaults_to_mixed_not_mock(monkeypatch):
+    """Regression: run_pipeline() called with no explicit mode must dispatch
+    to the live/mixed path (which itself gracefully falls back to mock
+    per-pair when a source/credential is unavailable), not to a fully
+    synthetic run — mock-by-default was silently shipping synthetic data as
+    the out-of-the-box behavior. Mocks run_live_pipeline_wrapped so this only
+    tests the dispatch, not the network-touching implementation underneath
+    (that's covered by the existing live/mixed tests below)."""
+    from src.services import pipeline
+
+    calls: list[str] = []
+    monkeypatch.setattr(
+        pipeline,
+        "run_live_pipeline_wrapped",
+        lambda: (calls.append("live_or_mixed"), pipeline.PipelineRunResult(mode="mixed"))[1],
+    )
+    monkeypatch.setattr(
+        pipeline,
+        "run_mock_pipeline",
+        lambda: (calls.append("mock"), pipeline.PipelineRunResult(mode="mock"))[1],
+    )
+
+    result = pipeline.run_pipeline()
+
+    assert calls == ["live_or_mixed"]
+    assert result.mode == "mixed"
+
+
 @pytest.mark.asyncio
 async def test_admin_run_pipeline_live_falls_back_to_mock(client: AsyncClient):
     """Without API keys, live mode should complete successfully by falling back to mock."""

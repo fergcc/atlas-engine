@@ -90,6 +90,9 @@ class Settings:
     bls_api_key: str = field(
         default_factory=lambda: os.getenv("BLS_API_KEY", "")
     )
+    census_api_key: str = field(
+        default_factory=lambda: os.getenv("CENSUS_API_KEY", "")
+    )
 
     @property
     def is_development(self) -> bool:

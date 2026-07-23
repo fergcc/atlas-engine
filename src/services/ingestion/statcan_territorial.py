@@ -249,29 +249,53 @@ def _get_dwelling_csv() -> Path | None:
     return _download_csv(_CENSUS_DWELLING_PID, "census2021_dwelling.csv")
 
 
+def _resolve(indicator_id: str, live_fn: Any) -> tuple[dict[str, float], bool]:
+    """Attempt a live fetch via `live_fn`; fall back to FALLBACK_CA on empty/failed result.
+
+    Returns (data, is_live) so callers can track real vs. synthetic provenance
+    instead of assuming any non-empty dict is real — that assumption was the
+    original bug: several indicators here always returned FALLBACK_CA, and
+    territorial.py tagged them "real" because the dict was merely non-empty.
+    """
+    try:
+        result = live_fn()
+    except Exception as exc:
+        logger.warning(f"{SOURCE_NAME}: live fetch failed for {indicator_id} ({exc})")
+        result = {}
+    if result:
+        return result, True
+    return dict(FALLBACK_CA.get(indicator_id, {})), False
+
+
+def _fetch_live_potable_water_access() -> dict[str, float]:
+    csv_path = _get_dwelling_csv()
+    if csv_path:
+        return _parse_csv_column(csv_path, ["average household size"])
+    return {}
+
+
 def get_potable_water_access() -> dict[str, float]:
     """% of dwellings not needing major repairs — proxy for water/drainage quality.
     From dwelling condition: 'Regular maintenance only' and 'Minor repairs needed'."""
-    csv_path = _get_dwelling_csv()
-    if csv_path:
-        result = _parse_csv_column(csv_path, ["average household size"])
-        if result:
-            return result
-    return dict(FALLBACK_CA["potable_water_access"])
+    data, _ = _resolve("potable_water_access", _fetch_live_potable_water_access)
+    return data
 
 
 def get_drainage_access() -> dict[str, float]:
     return get_potable_water_access()
 
 
-def get_overcrowding() -> dict[str, float]:
-    """Average household size — proxy for overcrowding (inverted: smaller is better)."""
+def _fetch_live_overcrowding() -> dict[str, float]:
     csv_path = _get_dwelling_csv()
     if csv_path:
-        result = _parse_csv_column(csv_path, ["average household size"])
-        if result:
-            return result
-    return dict(FALLBACK_CA["overcrowding"])
+        return _parse_csv_column(csv_path, ["average household size"])
+    return {}
+
+
+def get_overcrowding() -> dict[str, float]:
+    """Average household size — proxy for overcrowding (inverted: smaller is better)."""
+    data, _ = _resolve("overcrowding", _fetch_live_overcrowding)
+    return data
 
 
 def get_self_built_housing() -> dict[str, float]:
@@ -315,16 +339,19 @@ _CRIME_PID = 35100177
 def _get_crime_csv() -> Path | None:
     return _download_csv(_CRIME_PID, "crime_stats.csv")
 
-def get_homicide_rate() -> dict[str, float]:
-    """Homicide rate per 100k population. Filters: Statistics='Rate per 100,000 population', Violations contains 'homicide'."""
+def _fetch_live_homicide_rate() -> dict[str, float]:
     csv_path = _get_crime_csv()
     if csv_path:
-        result = _parse_csv_column(csv_path, ["rate", "100000"],
-                                    filter_col="Statistics",
-                                    filter_value="Rate per 100,000 population")
-        if result:
-            return result
-    return dict(FALLBACK_CA["homicide_rate"])
+        return _parse_csv_column(csv_path, ["rate", "100000"],
+                                  filter_col="Statistics",
+                                  filter_value="Rate per 100,000 population")
+    return {}
+
+
+def get_homicide_rate() -> dict[str, float]:
+    """Homicide rate per 100k population. Filters: Statistics='Rate per 100,000 population', Violations contains 'homicide'."""
+    data, _ = _resolve("homicide_rate", _fetch_live_homicide_rate)
+    return data
 
 
 def get_robbery_rate() -> dict[str, float]:
@@ -343,46 +370,55 @@ def get_domestic_violence_rate() -> dict[str, float]:
 
 _POVERTY_PID = 11100135
 
+def _fetch_live_extreme_poverty() -> dict[str, float]:
+    csv_path = _download_csv(_POVERTY_PID, "low_income.csv")
+    if csv_path:
+        return _parse_csv_column(csv_path, ["poverty"],
+                                  filter_col="Statistics",
+                                  filter_value="Persons in low income, prevalence (%)")
+    return {}
+
+
 def get_extreme_poverty() -> dict[str, float]:
     """% of population below Low Income Measure (LIM).
     Filters: 'Low income lines' contains 'LIM', 'Statistics' contains 'prevalence'."""
-    csv_path = _download_csv(_POVERTY_PID, "low_income.csv")
-    if csv_path:
-        result = _parse_csv_column(csv_path, ["poverty"],
-                                    filter_col="Statistics",
-                                    filter_value="Persons in low income, prevalence (%)")
-        if result:
-            return result
-    return dict(FALLBACK_CA["extreme_poverty"])
+    data, _ = _resolve("extreme_poverty", _fetch_live_extreme_poverty)
+    return data
 
 
 # ————————————————————————————————————————————
 # Business indicators
 # ————————————————————————————————————————————
 
+def _fetch_live_foreign_capital_presence() -> dict[str, float]:
+    csv_path = _download_csv(33100570, "foreign_enterprises.csv")
+    if csv_path:
+        return _parse_csv_column(csv_path, ["enterprises"],
+                                  filter_col="Country of control",
+                                  filter_value="Foreign")
+    return {}
+
+
 def get_foreign_capital_presence() -> dict[str, float]:
     """Foreign-controlled enterprises — total assets or number of enterprises by province.
     Filters: Country of control = 'Foreign', gets all NAICS (total)."""
-    csv_path = _download_csv(33100570, "foreign_enterprises.csv")
+    data, _ = _resolve("foreign_capital_presence", _fetch_live_foreign_capital_presence)
+    return data
+
+
+def _fetch_live_innovation_economic_units() -> dict[str, float]:
+    csv_path = _download_csv(27100032, "patents.csv")
     if csv_path:
-        result = _parse_csv_column(csv_path, ["enterprises"],
-                                    filter_col="Country of control",
-                                    filter_value="Foreign")
-        if result:
-            return result
-    return dict(FALLBACK_CA["foreign_capital_presence"])
+        return _parse_csv_column(csv_path, ["patent"],
+                                  filter_col="Patenting office of registration",
+                                  filter_value="Total patenting offices of registration")
+    return {}
 
 
 def get_innovation_economic_units() -> dict[str, float]:
     """Patent applications — number of enterprises applying for patents."""
-    csv_path = _download_csv(27100032, "patents.csv")
-    if csv_path:
-        result = _parse_csv_column(csv_path, ["patent"],
-                                    filter_col="Patenting office of registration",
-                                    filter_value="Total patenting offices of registration")
-        if result:
-            return result
-    return dict(FALLBACK_CA["innovation_economic_units"])
+    data, _ = _resolve("innovation_economic_units", _fetch_live_innovation_economic_units)
+    return data
 
 
 def get_daycare_services() -> dict[str, float]:
@@ -394,16 +430,19 @@ def get_daycare_services() -> dict[str, float]:
 # Water indicators
 # ————————————————————————————————————————————
 
-def get_water_stress() -> dict[str, float]:
-    """Water use — total water use by province (all sectors)."""
+def _fetch_live_water_stress() -> dict[str, float]:
     csv_path = _download_csv(38100250, "water_use.csv")
     if csv_path:
-        result = _parse_csv_column(csv_path, ["water"],
-                                    filter_col="Sector",
-                                    filter_value="Total, industries and households")
-        if result:
-            return result
-    return dict(FALLBACK_CA["water_stress"])
+        return _parse_csv_column(csv_path, ["water"],
+                                  filter_col="Sector",
+                                  filter_value="Total, industries and households")
+    return {}
+
+
+def get_water_stress() -> dict[str, float]:
+    """Water use — total water use by province (all sectors)."""
+    data, _ = _resolve("water_stress", _fetch_live_water_stress)
+    return data
 
 
 def get_water_consumption_intensity() -> dict[str, float]:
@@ -414,8 +453,7 @@ def get_water_consumption_intensity() -> dict[str, float]:
 # Employment indicators (via LFS vector API)
 # ————————————————————————————————————————————
 
-def get_employed_population() -> dict[str, float]:
-    """Employment rate by province (LFS). Uses fallback if live API unavailable."""
+def _fetch_live_employed_population() -> dict[str, float]:
     try:
         from src.services.ingestion.statcan import fetch_cube_coord_data
         result: dict[str, float] = {}
@@ -430,10 +468,16 @@ def get_employed_population() -> dict[str, float]:
                 continue
         if result:
             logger.info(f"{SOURCE_NAME}: LFS employment for {len(result)} provinces (live)")
-            return result
+        return result
     except Exception as exc:
         logger.warning(f"{SOURCE_NAME}: LFS employment failed ({exc})")
-    return dict(FALLBACK_CA["employed_population"])
+        return {}
+
+
+def get_employed_population() -> dict[str, float]:
+    """Employment rate by province (LFS). Uses fallback if live API unavailable."""
+    data, _ = _resolve("employed_population", _fetch_live_employed_population)
+    return data
 
 
 def get_female_employment() -> dict[str, float]:
@@ -523,50 +567,66 @@ def get_state_aggregates(data: dict[str, dict[str, float]], indicator_id: str) -
     return data.get(indicator_id, {})
 
 
-def parse_statcan_territorial_data() -> dict[str, dict[str, float]]:
-    """Main entry point — mirrors parse_acs_data, parse_ucr_data pattern."""
-    data: dict[str, dict[str, float]] = {}
+def parse_statcan_territorial_data() -> tuple[dict[str, dict[str, float]], dict[str, bool]]:
+    """Main entry point — mirrors parse_acs_data, parse_ucr_data pattern.
 
-    fetchers: dict[str, Any] = {
+    Returns (data, is_live). `is_live[indicator_id]` is True only when the
+    value for that indicator came from an actual StatCan fetch this run —
+    never from FALLBACK_CA. Callers (territorial.py) must use this instead of
+    "value present" to decide data_quality; several indicators here have no
+    live source wired yet and always resolve to the fallback dict.
+    """
+    data: dict[str, dict[str, float]] = {}
+    is_live: dict[str, bool] = {}
+
+    # None = no live source wired yet, always falls back to FALLBACK_CA.
+    live_fetchers: dict[str, Any] = {
         # Census 2021
-        "potable_water_access": get_potable_water_access,
-        "drainage_access": get_drainage_access,
-        "overcrowding": get_overcrowding,
-        "self_built_housing": get_self_built_housing,
-        "talent_attraction": get_talent_attraction,
-        "educated_personnel": get_educated_personnel,
-        "land_tenure_vulnerability": get_land_tenure_vulnerability,
-        "internet_access": get_internet_access,
-        "public_transport_usage": get_public_transport_usage,
-        "avg_commute_time": get_avg_commute_time,
+        "potable_water_access": _fetch_live_potable_water_access,
+        "drainage_access": _fetch_live_potable_water_access,
+        "overcrowding": _fetch_live_overcrowding,
+        "self_built_housing": _fetch_live_overcrowding,
+        "talent_attraction": None,
+        "educated_personnel": None,
+        "land_tenure_vulnerability": None,
+        "internet_access": None,
+        "public_transport_usage": None,
+        "avg_commute_time": None,
         # Crime
-        "homicide_rate": get_homicide_rate,
-        "robbery_rate": get_robbery_rate,
-        "domestic_violence_rate": get_domestic_violence_rate,
+        "homicide_rate": _fetch_live_homicide_rate,
+        "robbery_rate": _fetch_live_homicide_rate,
+        "domestic_violence_rate": _fetch_live_homicide_rate,
         # Poverty
-        "extreme_poverty": get_extreme_poverty,
+        "extreme_poverty": _fetch_live_extreme_poverty,
         # Employment
-        "employed_population": get_employed_population,
-        "female_employment": get_female_employment,
-        "hours_worked": get_hours_worked,
-        "remuneration_level": get_remuneration_level,
+        "employed_population": _fetch_live_employed_population,
+        "female_employment": _fetch_live_employed_population,
+        "hours_worked": None,
+        "remuneration_level": None,
         # Business
-        "foreign_capital_presence": get_foreign_capital_presence,
-        "innovation_economic_units": get_innovation_economic_units,
-        "daycare_services": get_daycare_services,
+        "foreign_capital_presence": _fetch_live_foreign_capital_presence,
+        "innovation_economic_units": _fetch_live_innovation_economic_units,
+        "daycare_services": None,
         # Water
-        "water_stress": get_water_stress,
-        "water_consumption_intensity": get_water_consumption_intensity,
+        "water_stress": _fetch_live_water_stress,
+        "water_consumption_intensity": _fetch_live_water_stress,
     }
 
-    for ind_id, fetcher in fetchers.items():
+    for ind_id, live_fn in live_fetchers.items():
+        if live_fn is None:
+            data[ind_id] = dict(FALLBACK_CA.get(ind_id, {}))
+            is_live[ind_id] = False
+            continue
         try:
-            data[ind_id] = fetcher()
+            result = live_fn()
         except Exception as exc:
             logger.warning(f"{SOURCE_NAME}: failed to load {ind_id} ({exc}), using fallback")
-            if ind_id in FALLBACK_CA:
-                data[ind_id] = dict(FALLBACK_CA[ind_id])
-            else:
-                data[ind_id] = {}
+            result = {}
+        if result:
+            data[ind_id] = result
+            is_live[ind_id] = True
+        else:
+            data[ind_id] = dict(FALLBACK_CA.get(ind_id, {}))
+            is_live[ind_id] = False
 
-    return data
+    return data, is_live

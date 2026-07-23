@@ -94,14 +94,16 @@ def compute_indicator_values(
     coneval_data = _load_coneval_if_needed(catalog, country)
     enoe_data = _load_enoe_if_needed(catalog, country)
     denue_data = _load_denue_if_needed(catalog, country)
-    conagua_data = _load_conagua_if_needed(catalog, country)
+    conagua_loaded = _load_conagua_if_needed(catalog, country)
+    conagua_data, conagua_is_live = conagua_loaded if conagua_loaded is not None else (None, {})
 
     acs_data = _load_acs_if_needed(catalog, country)
     ucr_data = _load_ucr_if_needed(catalog, country)
     bls_state_data = _load_bls_state_if_needed(catalog, country)
     cbp_data = _load_cbp_if_needed(catalog, country)
     saipe_data = _load_saipe_if_needed(catalog, country)
-    statcan_data = _load_statcan_if_needed(catalog, country)
+    statcan_loaded = _load_statcan_if_needed(catalog, country)
+    statcan_data, statcan_is_live = statcan_loaded if statcan_loaded is not None else (None, {})
 
     rng = np.random.default_rng(42)
 
@@ -110,7 +112,7 @@ def compute_indicator_values(
         region_name = _get_region_name(country, region_code)
         for ind in catalog:
             value, data_quality, note = _compute_value(
-                ind, country, region_code, rng, crime_data, censo_data, coneval_data, enoe_data, denue_data, conagua_data, acs_data, ucr_data, bls_state_data, cbp_data, saipe_data, statcan_data
+                ind, country, region_code, rng, crime_data, censo_data, coneval_data, enoe_data, denue_data, conagua_data, acs_data, ucr_data, bls_state_data, cbp_data, saipe_data, statcan_data, statcan_is_live, conagua_is_live
             )
 
             results.append({
@@ -154,6 +156,8 @@ def _compute_value(
     cbp_data: dict[str, dict[str, int]] | None = None,
     saipe_data: dict[str, dict[str, float]] | None = None,
     statcan_data: dict[str, dict[str, float]] | None = None,
+    statcan_is_live: dict[str, bool] | None = None,
+    conagua_is_live: dict[str, bool] | None = None,
 ) -> tuple[float, str, str]:
     indicator_id = ind["id"]
 
@@ -253,7 +257,9 @@ def _compute_value(
         # CONAGUA water indicators
         _conagua_ids = {"water_stress", "water_consumption_intensity"}
         if indicator_id in _conagua_ids and conagua_data:
-            value, dq, note = _conagua_indicator_value(indicator_id, region_code, conagua_data)
+            value, dq, note = _conagua_indicator_value(
+                indicator_id, region_code, conagua_data, conagua_is_live or {}
+            )
             if dq == "real":
                 return value, dq, note
 
@@ -272,7 +278,9 @@ def _compute_value(
             "internet_access", "public_transport_usage", "avg_commute_time",
         }
         if indicator_id in _ca_ids and statcan_data:
-            value, dq, note = _statcan_indicator_value(indicator_id, region_code, statcan_data)
+            value, dq, note = _statcan_indicator_value(
+                indicator_id, region_code, statcan_data, statcan_is_live or {}
+            )
             if dq == "real":
                 return value, dq, note
 
@@ -766,13 +774,22 @@ def _denue_indicator_value(
 # CONAGUA data loading and indicator computation
 # ————————————————————————————————————————————
 
-_CONAGUA_CACHE: dict[str, dict[str, float]] | None = None
+_CONAGUA_CACHE: tuple[dict[str, dict[str, float]], dict[str, bool]] | None = None
 _CONAGUA_LOADED = False
 
 
 def _load_conagua_if_needed(
     catalog: list[dict[str, Any]], country: str
-) -> dict[str, dict[str, float]] | None:
+) -> tuple[dict[str, dict[str, float]], dict[str, bool]] | None:
+    """Loads CONAGUA water indicators: real bulk-file data (conagua_eam) first
+    per indicator, falling back to the hardcoded 2023-snapshot dict
+    (conagua.py) only for indicators the bulk file didn't cover.
+
+    Returns (data, is_live) — is_live[indicator_id] is True only when that
+    indicator's values came from a real conagua_eam file this run, never from
+    the hardcoded fallback (see conagua_eam.py's docstring for the bug this
+    distinction fixes).
+    """
     global _CONAGUA_CACHE, _CONAGUA_LOADED
     if _CONAGUA_LOADED:
         return _CONAGUA_CACHE
@@ -785,41 +802,65 @@ def _load_conagua_if_needed(
     if not any(ind["id"] in conagua_ids for ind in catalog):
         return None
 
+    data: dict[str, dict[str, float]] = {}
+    is_live: dict[str, bool] = {}
+
+    try:
+        from src.services.ingestion.conagua_eam import parse_conagua_eam_data
+        eam_data = parse_conagua_eam_data()
+    except Exception as exc:
+        logger.warning(f"CONAGUA EAM: failed to load ({exc}), using fallback only")
+        eam_data = {}
+
     try:
         from src.services.ingestion.conagua import get_conagua_data
-        data = get_conagua_data()
-        _CONAGUA_CACHE = data
-        logger.info(f"CONAGUA: loaded water data for {len(data)} indicators, {len(data.get('water_stress', {}))} states")
-        return _CONAGUA_CACHE
+        fallback_data = get_conagua_data()
     except Exception as exc:
-        logger.warning(f"CONAGUA: failed to load ({exc}), using mock values")
-        return None
+        logger.warning(f"CONAGUA fallback: failed to load ({exc})")
+        fallback_data = {}
+
+    for ind_id in conagua_ids:
+        live_values = eam_data.get(ind_id) or {}
+        if live_values:
+            data[ind_id] = live_values
+            is_live[ind_id] = True
+        else:
+            data[ind_id] = dict(fallback_data.get(ind_id, {}))
+            is_live[ind_id] = False
+
+    n_live = sum(1 for v in is_live.values() if v)
+    logger.info(
+        f"CONAGUA: loaded {len(data)} indicators ({n_live} from real EAM file, {len(data) - n_live} fallback)"
+    )
+    _CONAGUA_CACHE = (data, is_live)
+    return _CONAGUA_CACHE
 
 
 def _conagua_indicator_value(
     indicator_id: str,
     region_code: str,
     conagua_data: dict[str, dict[str, float]],
+    conagua_is_live: dict[str, bool],
 ) -> tuple[float, str, str]:
     values = conagua_data.get(indicator_id, {})
     value = values.get(region_code)
-    if value is not None:
-        indicator_names = {
-            "water_stress": "Estrés hídrico",
-            "water_consumption_intensity": "Intensidad de consumo de agua",
-        }
-        units = {
-            "water_stress": "%",
-            "water_consumption_intensity": "m³/millón MXN",
-        }
-        name = indicator_names.get(indicator_id, indicator_id)
-        unit = units.get(indicator_id, "")
+    indicator_names = {
+        "water_stress": "Estrés hídrico",
+        "water_consumption_intensity": "Intensidad de consumo de agua",
+    }
+    units = {
+        "water_stress": "%",
+        "water_consumption_intensity": "m³/millón MXN",
+    }
+    name = indicator_names.get(indicator_id, indicator_id)
+    unit = units.get(indicator_id, "")
+    if value is not None and conagua_is_live.get(indicator_id):
         return (
             round(value, 2),
             "real",
-            f"{name} — CONAGUA 2023, {unit}, estatal",
+            f"{name} — CONAGUA EAM/SINA, {unit}, estatal",
         )
-    return (0.0, "synthetic", f"Mock — CONAGUA sin datos para estado {region_code}")
+    return (0.0, "synthetic", f"Mock — CONAGUA sin datos en vivo para estado {region_code}")
 
 
 
@@ -1132,13 +1173,13 @@ def _saipe_indicator_value(
 # Statistics Canada data loading and indicator computation
 # ————————————————————————————————————————————
 
-_STATCAN_CACHE: dict[str, dict[str, float]] | None = None
+_STATCAN_CACHE: tuple[dict[str, dict[str, float]], dict[str, bool]] | None = None
 _STATCAN_LOADED = False
 
 
 def _load_statcan_if_needed(
     catalog: list[dict[str, Any]], country: str
-) -> dict[str, dict[str, float]] | None:
+) -> tuple[dict[str, dict[str, float]], dict[str, bool]] | None:
     global _STATCAN_CACHE, _STATCAN_LOADED
     if _STATCAN_LOADED:
         return _STATCAN_CACHE
@@ -1149,12 +1190,15 @@ def _load_statcan_if_needed(
 
     try:
         from src.services.ingestion.statcan_territorial import parse_statcan_territorial_data
-        data = parse_statcan_territorial_data()
+        data, is_live = parse_statcan_territorial_data()
         if not data:
             logger.info("StatCan Territorial: no data available")
             return None
-        _STATCAN_CACHE = data
-        logger.info(f"StatCan Territorial: loaded data for {len(data)} indicators")
+        _STATCAN_CACHE = (data, is_live)
+        n_live = sum(1 for v in is_live.values() if v)
+        logger.info(
+            f"StatCan Territorial: loaded data for {len(data)} indicators ({n_live} live, {len(data) - n_live} fallback)"
+        )
         return _STATCAN_CACHE
     except Exception as exc:
         logger.warning(f"StatCan Territorial: failed to load ({exc}), using mock values")
@@ -1165,6 +1209,7 @@ def _statcan_indicator_value(
     indicator_id: str,
     region_code: str,
     statcan_data: dict[str, dict[str, float]],
+    statcan_is_live: dict[str, bool],
 ) -> tuple[float, str, str]:
     indicator_names = {
         "potable_water_access": "Acceptable housing",
@@ -1197,7 +1242,7 @@ def _statcan_indicator_value(
     }
 
     value = statcan_data.get(indicator_id, {}).get(region_code)
-    if value is not None and value > 0:
+    if value is not None and value > 0 and statcan_is_live.get(indicator_id):
         name = indicator_names.get(indicator_id, indicator_id)
         unit = units.get(indicator_id, "%")
         return (
@@ -1205,4 +1250,4 @@ def _statcan_indicator_value(
             "real",
             f"{name} — Statistics Canada, province-level, {unit}",
         )
-    return (0.0, "synthetic", f"Mock — StatCan no data for province {region_code}")
+    return (0.0, "synthetic", f"Mock — StatCan no live data for province {region_code}")

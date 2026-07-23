@@ -71,15 +71,23 @@ class USAdapter(StatisticalOfficeAdapter):
         scian_code: str | None = None,
         naics_code: str | None = None,
         frequency: str | None = None,
+        indicator_id: str | None = None,
     ) -> SeriesBundle:
+        """`indicator_id` picks among this adapter's state-level indicators
+        when there's more than one (see list_indicators()) — "bea_gdp_state"
+        routes to BEA; anything else (including the default, None) keeps the
+        original BLS employment series so existing behavior is unchanged."""
         is_national = region_code == "NAC"
 
         if is_national:
             return self._fetch_national(sector_id, scian_code=scian_code, naics_code=naics_code)
-        else:
-            return self._fetch_state(
+        if indicator_id == "bea_gdp_state":
+            return self._fetch_bea_state(
                 sector_id, region_code, scian_code=scian_code, naics_code=naics_code
             )
+        return self._fetch_state(
+            sector_id, region_code, scian_code=scian_code, naics_code=naics_code
+        )
 
     def _fetch_national(
         self, sector_id: str, scian_code: str | None = None, naics_code: str | None = None
@@ -177,6 +185,64 @@ class USAdapter(StatisticalOfficeAdapter):
 
         return SeriesBundle(series_id=engine_series_id, tidy=tidy, label=label)
 
+    def _fetch_bea_state(
+        self,
+        sector_id: str,
+        region_code: str,
+        scian_code: str | None = None,
+        naics_code: str | None = None,
+    ) -> SeriesBundle:
+        """BEA Regional GDP by state (SQGDP1, all-industry total) — was
+        advertised in list_indicators() as "bea_gdp_state" but had no fetch
+        path until now; fetch_regional_gdp() and BEA_API_KEY already existed
+        in bea.py/config.py, just never called from this adapter."""
+        from src.services.ingestion.bea import fetch_regional_gdp
+        from src.services.processing.normalize import SeriesMeta, normalize_series
+
+        data = fetch_regional_gdp(geo_fips=region_code)
+
+        observations = []
+        for row in data:
+            period = row.get("TimePeriod")
+            value = row.get("DataValue")
+            if not period or value in (None, "", "(NA)", "(D)"):
+                continue
+            try:
+                value_f = float(str(value).replace(",", ""))
+            except (ValueError, TypeError):
+                continue
+            date_str = _bea_period_to_month(period)
+            if date_str:
+                observations.append((date_str, value_f))
+
+        if not observations:
+            raise ValueError(f"BEA: sin observaciones para region={region_code}")
+
+        engine_series_id = self.get_series_id(sector_id, region_code, "bea")
+        last_date = pd.Timestamp(max(o[0] for o in observations))
+        vintage = (last_date + timedelta(days=90)).date().isoformat()
+
+        meta = SeriesMeta(
+            series_id=engine_series_id,
+            source="BEA - Regional GDP by State (SQGDP1)",
+            country="US",
+            region_code=region_code,
+            sector_id=sector_id,
+            frequency="quarterly",
+            seasonal_adjustment="nsa",
+            units="Millions of current dollars",
+            proxy_type="output_index",
+            publication_lag_days=90,
+            vintage_date=vintage,
+            scian_code=scian_code,
+            naics_code=naics_code,
+        )
+
+        tidy = normalize_series(observations, meta)
+        label = f"GDP by state ({sector_id}, {region_code}, BEA)"
+
+        return SeriesBundle(series_id=engine_series_id, tidy=tidy, label=label)
+
     def list_indicators(self) -> list[IndicatorInfo]:
         return [
             IndicatorInfo(
@@ -225,3 +291,18 @@ class USAdapter(StatisticalOfficeAdapter):
 
     def get_default_proxy_type(self) -> str:
         return "output_index"
+
+
+def _bea_period_to_month(period: str) -> str | None:
+    """Convert a BEA `TimePeriod` value ("2021Q1" or "2021") to a "YYYY-MM"
+    string usable by normalize_series. Returns None for unrecognized formats."""
+    import re
+
+    m = re.match(r"^(\d{4})Q([1-4])$", period)
+    if m:
+        year, quarter = m.groups()
+        month = {"1": "01", "2": "04", "3": "07", "4": "10"}[quarter]
+        return f"{year}-{month}"
+    if re.match(r"^\d{4}$", period):
+        return f"{period}-01"
+    return None
